@@ -1,0 +1,78 @@
+import { createFileRoute, notFound } from "@tanstack/react-router";
+import { ArrowRight } from "lucide-react";
+
+import { Logo } from "../../components/Logo";
+import { RoastCard } from "../../components/RoastCard";
+import { publicRoastMeta } from "../../lib/public-roasts";
+import { getPublicRoast } from "../../lib/public-roasts.functions";
+
+export const Route = createFileRoute("/r/$slug")({
+	loader: async ({ params }) => {
+		const roast = await getPublicRoast({ data: params.slug });
+		if (!roast) throw notFound();
+		return roast;
+	},
+	head: ({ loaderData }) => {
+		if (!loaderData) return { meta: [{ title: "Roast not found · Roast0" }] };
+		const meta = publicRoastMeta(loaderData);
+		return {
+			meta: [
+				{ title: meta.title },
+				{ name: "description", content: meta.description },
+				{ property: "og:type", content: "website" },
+				{ property: "og:site_name", content: "Roast0" },
+				{ property: "og:title", content: meta.title },
+				{ property: "og:description", content: meta.description },
+				{ name: "twitter:card", content: "summary" },
+				{ name: "twitter:title", content: meta.title },
+				{ name: "twitter:description", content: meta.description },
+			],
+		};
+	},
+	component: PublicRoastPage,
+	notFoundComponent: PublicRoastNotFound,
+});
+
+function PublicTopbar() {
+	return (
+		<header className="public-topbar">
+			<div>
+				<Logo inverse />
+				<a href="/app/new">
+					Roast yours <ArrowRight aria-hidden="true" />
+				</a>
+			</div>
+		</header>
+	);
+}
+
+function PublicRoastPage() {
+	const roast = Route.useLoaderData();
+	return (
+		<div className="public-page">
+			<PublicTopbar />
+			<main className="public-page__main">
+				<RoastCard roast={roast} />
+				<p className="public-page__stamp">
+					Roasted by Roast0 · agent trace intelligence
+				</p>
+			</main>
+		</div>
+	);
+}
+
+function PublicRoastNotFound() {
+	return (
+		<div className="public-page">
+			<PublicTopbar />
+			<main className="public-not-found">
+				<p className="mono-label">404 · COLD TRAIL</p>
+				<h1>This roast left the grill.</h1>
+				<p>Check the public URL, or put a fresh trace on the fire.</p>
+				<a className="button" href="/app/new">
+					Roast a trace <ArrowRight aria-hidden="true" />
+				</a>
+			</main>
+		</div>
+	);
+}

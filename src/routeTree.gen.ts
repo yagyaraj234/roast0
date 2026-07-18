@@ -10,33 +10,196 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppRouteImport } from './routes/app'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as SignupRouteImport } from './routes/signup'
+import { Route as UpdatePasswordRouteImport } from './routes/update-password'
+import { Route as ApiIngestRouteImport } from './routes/api.ingest'
+import { Route as AppIndexRouteImport } from './routes/app.index'
+import { Route as AppNewRouteImport } from './routes/app.new'
+import { Route as AppRoastsRouteImport } from './routes/app.roasts'
+import { Route as AppSettingsRouteImport } from './routes/app.settings'
+import { Route as RSlugRouteImport } from './routes/r/$slug'
+import { Route as AppRoastsIndexRouteImport } from './routes/app.roasts.index'
+import { Route as AppRoastsBatchRouteImport } from './routes/app.roasts.$batch'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppRoute = AppRouteImport.update({
+  id: '/app',
+  path: '/app',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UpdatePasswordRoute = UpdatePasswordRouteImport.update({
+  id: '/update-password',
+  path: '/update-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiIngestRoute = ApiIngestRouteImport.update({
+  id: '/api/ingest',
+  path: '/api/ingest',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppIndexRoute = AppIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppNewRoute = AppNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppRoastsRoute = AppRoastsRouteImport.update({
+  id: '/roasts',
+  path: '/roasts',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSettingsRoute = AppSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AppRoute,
+} as any)
+const RSlugRoute = RSlugRouteImport.update({
+  id: '/r/$slug',
+  path: '/r/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppRoastsIndexRoute = AppRoastsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppRoastsRoute,
+} as any)
+const AppRoastsBatchRoute = AppRoastsBatchRouteImport.update({
+  id: '/$batch',
+  path: '/$batch',
+  getParentRoute: () => AppRoastsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/app': typeof AppRouteWithChildren
+  '/login': typeof LoginRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/signup': typeof SignupRoute
+  '/update-password': typeof UpdatePasswordRoute
+  '/api/ingest': typeof ApiIngestRoute
+  '/app/new': typeof AppNewRoute
+  '/app/roasts': typeof AppRoastsRouteWithChildren
+  '/app/settings': typeof AppSettingsRoute
+  '/r/$slug': typeof RSlugRoute
+  '/app/': typeof AppIndexRoute
+  '/app/roasts/$batch': typeof AppRoastsBatchRoute
+  '/app/roasts/': typeof AppRoastsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/signup': typeof SignupRoute
+  '/update-password': typeof UpdatePasswordRoute
+  '/api/ingest': typeof ApiIngestRoute
+  '/app/new': typeof AppNewRoute
+  '/app/settings': typeof AppSettingsRoute
+  '/r/$slug': typeof RSlugRoute
+  '/app': typeof AppIndexRoute
+  '/app/roasts/$batch': typeof AppRoastsBatchRoute
+  '/app/roasts': typeof AppRoastsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/app': typeof AppRouteWithChildren
+  '/login': typeof LoginRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/signup': typeof SignupRoute
+  '/update-password': typeof UpdatePasswordRoute
+  '/api/ingest': typeof ApiIngestRoute
+  '/app/new': typeof AppNewRoute
+  '/app/roasts': typeof AppRoastsRouteWithChildren
+  '/app/settings': typeof AppSettingsRoute
+  '/r/$slug': typeof RSlugRoute
+  '/app/': typeof AppIndexRoute
+  '/app/roasts/$batch': typeof AppRoastsBatchRoute
+  '/app/roasts/': typeof AppRoastsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/app'
+    | '/login'
+    | '/reset-password'
+    | '/signup'
+    | '/update-password'
+    | '/api/ingest'
+    | '/app/new'
+    | '/app/roasts'
+    | '/app/settings'
+    | '/r/$slug'
+    | '/app/'
+    | '/app/roasts/$batch'
+    | '/app/roasts/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/login'
+    | '/reset-password'
+    | '/signup'
+    | '/update-password'
+    | '/api/ingest'
+    | '/app/new'
+    | '/app/settings'
+    | '/r/$slug'
+    | '/app'
+    | '/app/roasts/$batch'
+    | '/app/roasts'
+  id:
+    | '__root__'
+    | '/'
+    | '/app'
+    | '/login'
+    | '/reset-password'
+    | '/signup'
+    | '/update-password'
+    | '/api/ingest'
+    | '/app/new'
+    | '/app/roasts'
+    | '/app/settings'
+    | '/r/$slug'
+    | '/app/'
+    | '/app/roasts/$batch'
+    | '/app/roasts/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AppRoute: typeof AppRouteWithChildren
+  LoginRoute: typeof LoginRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
+  SignupRoute: typeof SignupRoute
+  UpdatePasswordRoute: typeof UpdatePasswordRoute
+  ApiIngestRoute: typeof ApiIngestRoute
+  RSlugRoute: typeof RSlugRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +211,139 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/app': {
+      id: '/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/update-password': {
+      id: '/update-password'
+      path: '/update-password'
+      fullPath: '/update-password'
+      preLoaderRoute: typeof UpdatePasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/ingest': {
+      id: '/api/ingest'
+      path: '/api/ingest'
+      fullPath: '/api/ingest'
+      preLoaderRoute: typeof ApiIngestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/': {
+      id: '/app/'
+      path: '/'
+      fullPath: '/app/'
+      preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/new': {
+      id: '/app/new'
+      path: '/new'
+      fullPath: '/app/new'
+      preLoaderRoute: typeof AppNewRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/roasts': {
+      id: '/app/roasts'
+      path: '/roasts'
+      fullPath: '/app/roasts'
+      preLoaderRoute: typeof AppRoastsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/settings': {
+      id: '/app/settings'
+      path: '/settings'
+      fullPath: '/app/settings'
+      preLoaderRoute: typeof AppSettingsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/r/$slug': {
+      id: '/r/$slug'
+      path: '/r/$slug'
+      fullPath: '/r/$slug'
+      preLoaderRoute: typeof RSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/roasts/': {
+      id: '/app/roasts/'
+      path: '/'
+      fullPath: '/app/roasts/'
+      preLoaderRoute: typeof AppRoastsIndexRouteImport
+      parentRoute: typeof AppRoastsRoute
+    }
+    '/app/roasts/$batch': {
+      id: '/app/roasts/$batch'
+      path: '/$batch'
+      fullPath: '/app/roasts/$batch'
+      preLoaderRoute: typeof AppRoastsBatchRouteImport
+      parentRoute: typeof AppRoastsRoute
+    }
   }
 }
 
+interface AppRoastsRouteChildren {
+  AppRoastsBatchRoute: typeof AppRoastsBatchRoute
+  AppRoastsIndexRoute: typeof AppRoastsIndexRoute
+}
+
+const AppRoastsRouteChildren: AppRoastsRouteChildren = {
+  AppRoastsBatchRoute: AppRoastsBatchRoute,
+  AppRoastsIndexRoute: AppRoastsIndexRoute,
+}
+
+const AppRoastsRouteWithChildren = AppRoastsRoute._addFileChildren(
+  AppRoastsRouteChildren,
+)
+
+interface AppRouteChildren {
+  AppNewRoute: typeof AppNewRoute
+  AppRoastsRoute: typeof AppRoastsRouteWithChildren
+  AppSettingsRoute: typeof AppSettingsRoute
+  AppIndexRoute: typeof AppIndexRoute
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppNewRoute: AppNewRoute,
+  AppRoastsRoute: AppRoastsRouteWithChildren,
+  AppSettingsRoute: AppSettingsRoute,
+  AppIndexRoute: AppIndexRoute,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AppRoute: AppRouteWithChildren,
+  LoginRoute: LoginRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
+  SignupRoute: SignupRoute,
+  UpdatePasswordRoute: UpdatePasswordRoute,
+  ApiIngestRoute: ApiIngestRoute,
+  RSlugRoute: RSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
