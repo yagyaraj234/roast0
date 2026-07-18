@@ -71,9 +71,9 @@ function NewRoast() {
 	return (
 		<main className="app-page">
 			<AppPageHeader
-				breadcrumb="Dashboard / New roast"
+				breadcrumb="Dashboard / New scan"
 				description="Single object, array, or JSONL. Maximum 20 traces per upload."
-				title="Roast new traces"
+				title="Scan traces"
 			/>
 
 			<form
@@ -153,7 +153,7 @@ function NewRoast() {
 				)}
 				<div className="mt-5 flex flex-col-reverse items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between">
 					<p className="text-xs text-stone-500">
-						Secrets are redacted before any row is stored.
+						Flint redacts supported secrets before any row is stored.
 					</p>
 					<button
 						type="submit"
@@ -161,7 +161,7 @@ function NewRoast() {
 						className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-orange-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-orange-700 disabled:cursor-wait disabled:opacity-60 sm:w-auto"
 					>
 						<FileJson size={16} aria-hidden="true" />
-						{submitting ? "Staging…" : "Roast traces"}
+						{submitting ? "Staging…" : "Scan traces"}
 					</button>
 				</div>
 			</form>

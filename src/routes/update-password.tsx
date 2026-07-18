@@ -101,7 +101,7 @@ function UpdatePasswordPage() {
 					value={confirmation}
 				/>
 				{errors.form ? (
-					<p className="text-sm text-[var(--ember,#ff4d00)]" role="alert">
+					<p className="text-sm text-[var(--spark,#ff4d00)]" role="alert">
 						{errors.form}
 					</p>
 				) : null}

@@ -1,10 +1,10 @@
 @import "tailwindcss";
 
 :root {
-	--ink: #0c0a09;
-	--ink-2: #1c1917;
-	--ember: #ff4d00;
-	--ember-soft: #ff8a4c;
+	--stone: #0c0a09;
+	--graphite: #1c1917;
+	--spark: #ff4d00;
+	--spark-soft: #ff8a4c;
 	--cream: #faf7f2;
 	--app-bg: #fafaf9;
 	--surface: #ffffff;
@@ -32,14 +32,14 @@ textarea {
 }
 
 ::selection {
-	background: var(--ember);
+	background: var(--spark);
 	color: white;
 }
 
 .landing {
 	min-height: 100vh;
 	overflow: hidden;
-	background: var(--ink);
+	background: var(--stone);
 	color: var(--cream);
 }
 
@@ -112,9 +112,9 @@ textarea {
 	gap: 10px;
 	min-height: 50px;
 	padding: 0 23px;
-	border: 1px solid var(--ember);
+	border: 1px solid var(--spark);
 	border-radius: 999px;
-	background: var(--ember);
+	background: var(--spark);
 	box-shadow: 0 12px 34px rgba(255, 77, 0, 0.24);
 	color: white;
 	font-size: 14px;
@@ -172,7 +172,7 @@ textarea {
 	bottom: 0;
 	left: 0;
 	height: 220px;
-	background: linear-gradient(transparent, var(--ink));
+	background: linear-gradient(transparent, var(--stone));
 	content: "";
 }
 
@@ -222,7 +222,7 @@ textarea {
 .announcement span {
 	padding: 4px 8px;
 	border-radius: 999px;
-	background: var(--ember);
+	background: var(--spark);
 	color: white;
 	font-size: 9px;
 	font-weight: 600;
@@ -251,7 +251,7 @@ textarea {
 
 .hero .eyebrow {
 	margin-bottom: 20px;
-	color: var(--ember-soft);
+	color: var(--spark-soft);
 }
 
 .hero h1 {
@@ -266,7 +266,7 @@ textarea {
 
 .hero h1 em {
 	display: block;
-	color: var(--ember-soft);
+	color: var(--spark-soft);
 	font-weight: 400;
 }
 
@@ -299,17 +299,18 @@ textarea {
 	opacity: 0.42;
 }
 
-.dot-matrix__flame {
-	color: #ff5310;
+.dot-matrix__flake {
+	color: var(--spark);
 	animation: matrix-shimmer 8s ease-in-out infinite;
 }
 
-.dot-matrix__core {
-	color: #ff9b62;
+.dot-matrix__facet {
+	color: var(--spark-soft);
 	animation: matrix-shimmer 8s 1.6s ease-in-out infinite;
 }
 
-.dot-matrix__white {
+
+.dot-matrix__spark-burst {
 	color: #fff4e8;
 	animation: matrix-shimmer 8s 3.2s ease-in-out infinite;
 }
@@ -396,7 +397,7 @@ textarea {
 }
 
 .browser-frame__bar > span:first-child {
-	background: var(--ember);
+	background: var(--spark);
 }
 
 .browser-frame__bar div {
@@ -420,6 +421,51 @@ textarea {
 	letter-spacing: 0.11em;
 	text-align: center;
 	text-transform: uppercase;
+}
+
+.findings-list {
+	padding-top: 128px;
+	padding-bottom: 24px;
+}
+
+.findings-list__items {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 0;
+	margin: 0;
+	padding: 0;
+	border-top: 1px solid rgba(255, 255, 255, 0.12);
+	border-left: 1px solid rgba(255, 255, 255, 0.12);
+	list-style: none;
+}
+
+.findings-list__items li {
+	position: relative;
+	min-height: 96px;
+	padding: 22px 26px 22px 48px;
+	border-right: 1px solid rgba(255, 255, 255, 0.12);
+	border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+	color: rgba(250, 247, 242, 0.72);
+	font-family: var(--font-mono);
+	font-size: 12px;
+	line-height: 1.55;
+}
+
+.findings-list__items li::before {
+	position: absolute;
+	left: 24px;
+	color: var(--spark);
+	content: "•";
+}
+
+@media (max-width: 640px) {
+	.findings-list {
+		padding-top: 88px;
+	}
+
+	.findings-list__items {
+		grid-template-columns: 1fr;
+	}
 }
 
 .public-page {
@@ -456,7 +502,7 @@ textarea {
 }
 
 .public-topbar > div > a:hover {
-	color: var(--ember-soft);
+	color: var(--spark-soft);
 }
 
 .public-topbar > div > a svg {
@@ -492,7 +538,7 @@ textarea {
 
 .public-card__topline .mono-label {
 	margin-bottom: 9px;
-	color: var(--ember-soft);
+	color: var(--spark-soft);
 }
 
 .public-card__title {
@@ -538,8 +584,8 @@ textarea {
 	height: 178px;
 	border-radius: 50%;
 	background: conic-gradient(
-		var(--ember) 0deg,
-		var(--ember-soft) var(--score-angle),
+		var(--spark) 0deg,
+		var(--spark-soft) var(--score-angle),
 		rgba(255, 255, 255, 0.08) var(--score-angle),
 		rgba(255, 255, 255, 0.08) 360deg
 	);
@@ -586,9 +632,9 @@ textarea {
 .tier-chip {
 	display: inline-flex;
 	padding: 6px 9px;
-	border: 1px solid var(--ember);
+	border: 1px solid var(--spark);
 	border-radius: 2px;
-	color: var(--ember-soft);
+	color: var(--spark-soft);
 	font-family: var(--font-mono);
 	font-size: 9px;
 	letter-spacing: 0.13em;
@@ -657,7 +703,7 @@ textarea {
 }
 
 .share-actions > span {
-	color: var(--ember-soft);
+	color: var(--spark-soft);
 	font-size: 10px;
 }
 
@@ -721,7 +767,7 @@ textarea {
 .finding-tags span {
 	padding: 4px 6px;
 	border: 1px solid rgba(255, 77, 0, 0.35);
-	color: var(--ember-soft);
+	color: var(--spark-soft);
 	font-family: var(--font-mono);
 	font-size: 7px;
 	letter-spacing: 0.08em;
@@ -797,7 +843,7 @@ textarea {
 }
 
 .cost-grid__hot strong {
-	color: var(--ember-soft);
+	color: var(--spark-soft);
 }
 
 .public-cost > p {
@@ -891,7 +937,7 @@ textarea {
 }
 
 .public-not-found .mono-label {
-	color: var(--ember-soft);
+	color: var(--spark-soft);
 }
 
 .public-not-found h1 {
@@ -954,7 +1000,7 @@ textarea {
 
 .section-heading .eyebrow {
 	margin-bottom: 17px;
-	color: var(--ember-soft);
+	color: var(--spark-soft);
 }
 
 .section-heading h2 {
@@ -1011,11 +1057,11 @@ textarea {
 .dot-glyph {
 	width: 40px;
 	height: 40px;
-	fill: var(--ember);
+	fill: var(--spark);
 }
 
 .dot-glyph circle:nth-child(2n) {
-	fill: var(--ember-soft);
+	fill: var(--spark-soft);
 }
 
 .feature-card .mono-label {
@@ -1086,7 +1132,7 @@ textarea {
 	overflow-x: auto;
 	padding-bottom: 20px;
 	scroll-snap-type: x mandatory;
-	scrollbar-color: var(--ember) rgba(255, 255, 255, 0.05);
+	scrollbar-color: var(--spark) rgba(255, 255, 255, 0.05);
 }
 
 .live-roast {
@@ -1121,7 +1167,7 @@ textarea {
 }
 
 .live-roast span {
-	color: var(--ember-soft);
+	color: var(--spark-soft);
 	font-family: var(--font-mono);
 	font-size: 8px;
 	letter-spacing: 0.12em;
@@ -1169,7 +1215,7 @@ textarea {
 	display: inline-flex;
 	align-items: center;
 	gap: 8px;
-	color: var(--ember-soft);
+	color: var(--spark-soft);
 	font-size: 12px;
 }
 
@@ -1213,7 +1259,7 @@ textarea {
 	}
 
 	.landing .brand--inverse {
-		color: var(--ink);
+		color: var(--stone);
 	}
 
 	.landing-nav__links,
@@ -1223,13 +1269,13 @@ textarea {
 
 	.landing-nav__links a:hover,
 	.nav-login:hover {
-		color: var(--ink);
+		color: var(--stone);
 	}
 
 	.landing .button--ghost {
 		border-color: rgba(28, 25, 23, 0.16);
 		background: rgba(255, 255, 255, 0.56);
-		color: var(--ink);
+		color: var(--stone);
 	}
 
 	.landing .button--ghost:hover {
@@ -1322,8 +1368,8 @@ textarea {
 
 	.public-card--preview .score-ring {
 		background: conic-gradient(
-			var(--ember) 0deg,
-			var(--ember-soft) var(--score-angle),
+			var(--spark) 0deg,
+			var(--spark-soft) var(--score-angle),
 			rgba(28, 25, 23, 0.1) var(--score-angle),
 			rgba(28, 25, 23, 0.1) 360deg
 		);
@@ -1378,7 +1424,7 @@ textarea {
 	}
 
 	.live-track {
-		scrollbar-color: var(--ember) rgba(28, 25, 23, 0.08);
+		scrollbar-color: var(--spark) rgba(28, 25, 23, 0.08);
 	}
 
 	.live-roast {
@@ -1407,7 +1453,7 @@ textarea {
 a:focus-visible,
 button:focus-visible,
 [tabindex]:focus-visible {
-	outline: 2px solid var(--ember-soft);
+	outline: 2px solid var(--spark-soft);
 	outline-offset: 4px;
 }
 

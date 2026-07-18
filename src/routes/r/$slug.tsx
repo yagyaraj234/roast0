@@ -13,14 +13,14 @@ export const Route = createFileRoute("/r/$slug")({
 		return roast;
 	},
 	head: ({ loaderData }) => {
-		if (!loaderData) return { meta: [{ title: "Roast not found · Roast0" }] };
+		if (!loaderData) return { meta: [{ title: "Report not found · Flint" }] };
 		const meta = publicRoastMeta(loaderData);
 		return {
 			meta: [
 				{ title: meta.title },
 				{ name: "description", content: meta.description },
 				{ property: "og:type", content: "website" },
-				{ property: "og:site_name", content: "Roast0" },
+				{ property: "og:site_name", content: "Flint" },
 				{ property: "og:title", content: meta.title },
 				{ property: "og:description", content: meta.description },
 				{ name: "twitter:card", content: "summary" },
@@ -39,7 +39,7 @@ function PublicTopbar() {
 			<div>
 				<Logo inverse />
 				<a href="/app/new">
-					Roast yours <ArrowRight aria-hidden="true" />
+					Scan yours <ArrowRight aria-hidden="true" />
 				</a>
 			</div>
 		</header>
@@ -54,7 +54,7 @@ function PublicRoastPage() {
 			<main className="public-page__main">
 				<RoastCard roast={roast} />
 				<p className="public-page__stamp">
-					Roasted by Roast0 · agent trace intelligence
+					Flint · security scanning for AI agent traces
 				</p>
 			</main>
 		</div>
@@ -66,11 +66,11 @@ function PublicRoastNotFound() {
 		<div className="public-page">
 			<PublicTopbar />
 			<main className="public-not-found">
-				<p className="mono-label">404 · COLD TRAIL</p>
-				<h1>This roast left the grill.</h1>
-				<p>Check the public URL, or put a fresh trace on the fire.</p>
+				<p className="mono-label">404 · REPORT NOT FOUND</p>
+				<h1>This report is unavailable.</h1>
+				<p>Check the public URL, or scan a fresh trace.</p>
 				<a className="button" href="/app/new">
-					Roast a trace <ArrowRight aria-hidden="true" />
+					Scan a trace <ArrowRight aria-hidden="true" />
 				</a>
 			</main>
 		</div>

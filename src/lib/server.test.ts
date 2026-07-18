@@ -63,6 +63,7 @@ describe("dashboard database boundary", () => {
 		expect(await getBatchRoasts("batch", "user-id")).toEqual([
 			{
 				error: "Failed",
+				findingCounts: { critical: 0, notice: 0, warning: 0 },
 				id: "one",
 				score: 0,
 				slug: "one",

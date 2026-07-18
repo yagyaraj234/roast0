@@ -37,7 +37,7 @@ export function RoastProductShot() {
 				<span />
 				<span />
 				<span />
-				<div>roast0.dev/r/demo-trace</div>
+				<div>flint.example/r/demo-trace</div>
 			</div>
 			<RoastCard roast={demoRoast} preview />
 		</div>

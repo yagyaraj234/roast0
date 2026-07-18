@@ -16,7 +16,7 @@ export function DotMatrix() {
 					<circle cx="3" cy="3" r="2.15" fill="currentColor" />
 				</pattern>
 				<pattern
-					id="dot-ember"
+					id="dot-spark"
 					width="24"
 					height="24"
 					patternUnits="userSpaceOnUse"
@@ -56,17 +56,22 @@ export function DotMatrix() {
 				fill="url(#dot-field)"
 				mask="url(#field-mask)"
 			/>
-			<g className="dot-matrix__flame" fill="url(#dot-ember)">
-				<path d="M365 565c-116 0-202-73-202-184 0-78 43-133 93-186-4 64 17 94 45 109 0-96 72-169 147-242-12 89 44 128 74 185 24 45 36 91 27 142-17 101-88 176-184 176Z" />
-			</g>
-			<g className="dot-matrix__core" fill="url(#dot-soft)">
-				<path d="M374 540c-63 0-111-42-111-105 0-48 31-85 63-116-1 42 18 62 36 74 10-62 54-103 92-142-4 58 34 83 47 124 28 88-34 165-127 165Z" />
-			</g>
 			<path
-				className="dot-matrix__white"
-				d="M370 510c-34 0-62-23-62-57 0-29 18-51 41-70 0 28 13 40 27 47 9-34 31-56 53-78-3 37 23 55 23 88 0 40-34 70-82 70Z"
-				fill="url(#dot-white)"
+				className="dot-matrix__flake"
+				d="m228 526 139-360 205 119-97 284-120-62-71 60Z"
+				fill="url(#dot-spark)"
 			/>
+			<path
+				className="dot-matrix__facet"
+				d="m367 166 1 244 204-125-97 284-120-62-71 60Z"
+				fill="url(#dot-soft)"
+			/>
+			<g className="dot-matrix__spark-burst" fill="url(#dot-white)">
+				<circle cx="454" cy="144" r="12" />
+				<circle cx="526" cy="92" r="8" />
+				<circle cx="579" cy="166" r="6" />
+				<circle cx="626" cy="62" r="5" />
+			</g>
 		</svg>
 	);
 }

@@ -336,7 +336,7 @@ describe("static, SEO, and router routes", () => {
 		unmount();
 
 		render(<AuthShell title="Reset" />);
-		expect(screen.getByLabelText("Roast0 home")).toBeTruthy();
+		expect(screen.getByLabelText("Flint home")).toBeTruthy();
 		expect(document.querySelector(".auth-card__placeholder")).toBeTruthy();
 		cleanup();
 
@@ -346,7 +346,7 @@ describe("static, SEO, and router routes", () => {
 		outletChild = <SearchProbe />;
 		render(<AppShell totalRoasts={4} user={{ email: "u@test.dev" }} />);
 		expect(screen.getByText("empty search")).toBeTruthy();
-		fireEvent.change(screen.getByPlaceholderText("Search roasts"), {
+		fireEvent.change(screen.getByPlaceholderText("Search scans"), {
 			target: { value: "leaky" },
 		});
 		expect(await screen.findByText("leaky")).toBeTruthy();
@@ -370,7 +370,11 @@ describe("static, SEO, and router routes", () => {
 
 	it("renders root metadata, analyzer content, and router defaults", () => {
 		const rootHead = (rootModule.Route.options.head as () => RouteOptions)();
-		expect(rootHead.links).toHaveLength(7);
+		expect(rootHead.links).toHaveLength(8);
+		expect(rootHead.links).toContainEqual({
+			rel: "manifest",
+			href: "/manifest.json",
+		});
 		const rootOptions = rootModule.Route.options as unknown as RouteOptions;
 		const Shell = rootOptions.shellComponent as (props: {
 			children: ReactNode;
@@ -468,7 +472,7 @@ describe("landing and public card routes", () => {
 		)();
 		expect(landingHead.meta).toHaveLength(2);
 		expect(landingHead.meta).toContainEqual({
-			title: "Roast0 — Every trace tells on your agent",
+			title: "Flint — Security scanning for AI agent traces",
 		});
 
 		queryResponses.push({ error: { message: "offline" } });
@@ -497,12 +501,10 @@ describe("landing and public card routes", () => {
 		});
 		const { unmount } = render(component(landingModule.Route));
 		expect(screen.getByText("Database live")).toBeTruthy();
-		expect(
-			screen.getByText("This trace is waiting for its last word."),
-		).toBeTruthy();
+		expect(screen.getByText("Public report ready to review.")).toBeTruthy();
 		expect(
 			screen
-				.getByRole("link", { name: "See a live roast" })
+				.getByRole("link", { name: "See a live report" })
 				.getAttribute("href"),
 		).toBe("/r/hot%20one");
 		unmount();
@@ -510,7 +512,7 @@ describe("landing and public card routes", () => {
 		routeData.set("/", { available: false, roasts: [] });
 		render(component(landingModule.Route));
 		expect(screen.getByText("Live data unavailable")).toBeTruthy();
-		expect(screen.getByText(/No public roasts yet/)).toBeTruthy();
+		expect(screen.getByText(/No public reports yet/)).toBeTruthy();
 	});
 
 	it("loads, describes, renders, and rejects public roasts", async () => {
@@ -547,19 +549,19 @@ describe("landing and public card routes", () => {
 		const head = publicModule.Route.options.head as (options: {
 			loaderData?: ReturnType<typeof validRoast>;
 		}) => RouteOptions;
-		expect(head({}).meta).toEqual([{ title: "Roast not found · Roast0" }]);
+		expect(head({}).meta).toEqual([{ title: "Report not found · Flint" }]);
 		expect(head({ loaderData: roast }).meta).toHaveLength(9);
 
 		routeData.set("/r/$slug", roast);
 		const { unmount } = render(component(publicModule.Route));
 		expect(
-			screen.getByText("Roasted by Roast0 · agent trace intelligence"),
+			screen.getByText("Flint · security scanning for AI agent traces"),
 		).toBeTruthy();
 		unmount();
 		const NotFound = publicModule.Route.options
 			.notFoundComponent as () => ReactNode;
 		render(<NotFound />);
-		expect(screen.getByText("This roast left the grill.")).toBeTruthy();
+		expect(screen.getByText("This report is unavailable.")).toBeTruthy();
 	});
 });
 
@@ -673,7 +675,7 @@ describe("auth page routes", () => {
 
 	it("handles signup validation, errors, direct sessions, and confirmation", async () => {
 		render(component(signupModule.Route));
-		submit("Start roasting");
+		submit("Start scanning");
 		expect(
 			await screen.findByText("Password must be at least 8 characters."),
 		).toBeTruthy();
@@ -684,15 +686,15 @@ describe("auth page routes", () => {
 			data: { session: null },
 			error: { message: "Taken" },
 		});
-		submit("Start roasting");
+		submit("Start scanning");
 		expect((await screen.findByRole("alert")).textContent).toBe("Taken");
 		auth.signUp.mockRejectedValueOnce(new Error("offline"));
-		submit("Start roasting");
+		submit("Start scanning");
 		expect((await screen.findByRole("alert")).textContent).toBe(
 			"Could not create account. Try again.",
 		);
 		auth.signUp.mockResolvedValueOnce({ data: { session: null }, error: null });
-		submit("Start roasting");
+		submit("Start scanning");
 		expect(
 			await screen.findByText("Open the confirmation link, then log in."),
 		).toBeTruthy();
@@ -703,7 +705,7 @@ describe("auth page routes", () => {
 		setField("Password", "password");
 		setField("Confirm password", "password");
 		auth.signUp.mockResolvedValueOnce({ data: { session: {} }, error: null });
-		submit("Start roasting");
+		submit("Start scanning");
 		await waitFor(() => expect(auth.signUp).toHaveBeenCalledTimes(4));
 	});
 
@@ -841,7 +843,7 @@ describe("authenticated app routes", () => {
 		expect(screen.getByText("Nested route")).toBeTruthy();
 		cleanup();
 		render(component(roastsModule.Route));
-		expect(screen.getByText("Nothing roasted yet")).toBeTruthy();
+		expect(screen.getByText("No scans yet")).toBeTruthy();
 		cleanup();
 		render(component(profileModule.Route));
 		expect(screen.getByText("user@example.com")).toBeTruthy();
@@ -851,14 +853,12 @@ describe("authenticated app routes", () => {
 		render(component(profileModule.Route));
 		expect(screen.getByRole("heading", { name: "Profile" })).toBeTruthy();
 		expect(document.querySelector(".app-page__breadcrumb")?.textContent).toBe(
-			"Roast0 / Profile",
+			"Flint / Profile",
 		);
 		cleanup();
 
 		render(component(newModule.Route));
-		expect(
-			screen.getByRole("heading", { name: "Roast new traces" }),
-		).toBeTruthy();
+		expect(screen.getByRole("heading", { name: "Scan traces" })).toBeTruthy();
 		expect(
 			screen.getByText(
 				"Single object, array, or JSONL. Maximum 20 traces per upload.",
@@ -868,7 +868,7 @@ describe("authenticated app routes", () => {
 		cleanup();
 
 		render(component(dashboardModule.Route));
-		expect(screen.getByRole("link", { name: "New roast" })).toBeTruthy();
+		expect(screen.getByRole("link", { name: "New scan" })).toBeTruthy();
 		expect(document.querySelector(".app-page__title-row > a")).toBeTruthy();
 	});
 
@@ -913,7 +913,7 @@ describe("authenticated app routes", () => {
 
 	it("stages pasted and uploaded trace files and reports errors", async () => {
 		render(component(newModule.Route));
-		submit("Roast traces");
+		submit("Scan traces");
 		await screen.findByRole("alert");
 		expect(screen.getByRole("alert").textContent).toContain("Paste JSON");
 
@@ -922,7 +922,7 @@ describe("authenticated app routes", () => {
 			target: { value: "{}" },
 		});
 		queryResponses.push({});
-		submit("Roast traces");
+		submit("Scan traces");
 		await waitFor(() =>
 			expect(navigate).toHaveBeenCalledWith({
 				params: { batch: expect.any(String) },
@@ -931,14 +931,14 @@ describe("authenticated app routes", () => {
 		);
 
 		setDbError("bad upload");
-		submit("Roast traces");
+		submit("Scan traces");
 		expect((await screen.findByRole("alert")).textContent).toBe(
 			"Could not upload traces.",
 		);
 		resetDb();
 
 		fireEvent.click(screen.getByRole("tab", { name: "Upload file" }));
-		expect(screen.getByRole("button", { name: "Roast traces" })).toBeTruthy();
+		expect(screen.getByRole("button", { name: "Scan traces" })).toBeTruthy();
 		const fileInput = document.querySelector(
 			'input[type="file"]',
 		) as HTMLInputElement;

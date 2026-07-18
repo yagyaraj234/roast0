@@ -32,7 +32,7 @@ export function AuthField({
 				aria-describedby={error ? errorId : undefined}
 				aria-invalid={Boolean(error)}
 				autoComplete={autoComplete}
-				className="w-full rounded-xl border border-[var(--border,#e7e5e4)] bg-[var(--surface,#fff)] px-4 py-3 outline-none focus:border-[var(--ember,#ff4d00)]"
+				className="w-full rounded-xl border border-[var(--border,#e7e5e4)] bg-[var(--surface,#fff)] px-4 py-3 outline-none focus:border-[var(--spark,#ff4d00)]"
 				id={id}
 				maxLength={maxLength}
 				minLength={minLength}
@@ -42,7 +42,7 @@ export function AuthField({
 				value={value}
 			/>
 			{error ? (
-				<p className="mt-1 text-sm text-[var(--ember,#ff4d00)]" id={errorId}>
+				<p className="mt-1 text-sm text-[var(--spark,#ff4d00)]" id={errorId}>
 					{error}
 				</p>
 			) : null}
@@ -51,4 +51,4 @@ export function AuthField({
 }
 
 export const authButtonClass =
-	"w-full rounded-full bg-[var(--ember,#ff4d00)] px-4 py-3 font-medium text-white disabled:cursor-not-allowed disabled:opacity-60";
+	"w-full rounded-full bg-[var(--spark,#ff4d00)] px-4 py-3 font-medium text-white disabled:cursor-not-allowed disabled:opacity-60";

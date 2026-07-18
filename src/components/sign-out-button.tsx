@@ -33,7 +33,7 @@ export function SignOutButton() {
 				{pending ? "Signing out…" : "Sign out"}
 			</button>
 			{error ? (
-				<p className="mt-1 text-sm text-[var(--ember,#ff4d00)]" role="alert">
+				<p className="mt-1 text-sm text-[var(--spark,#ff4d00)]" role="alert">
 					{error}
 				</p>
 			) : null}

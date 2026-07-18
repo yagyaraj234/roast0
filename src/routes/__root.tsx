@@ -7,8 +7,8 @@ export const Route = createRootRoute({
 		meta: [
 			{ charSet: "utf-8" },
 			{ name: "viewport", content: "width=device-width, initial-scale=1" },
-			{ name: "theme-color", content: "#0c0a09" },
-			{ title: "Roast0 — agent trace intelligence" },
+			{ name: "theme-color", content: "#0C0A09" },
+			{ title: "Flint — Security scanning for AI agent traces" },
 		],
 		links: [
 			{ rel: "stylesheet", href: appCss },
@@ -28,6 +28,7 @@ export const Route = createRootRoute({
 				href: "https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600&display=swap",
 			},
 			{ rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
+			{ rel: "manifest", href: "/manifest.json" },
 		],
 	}),
 	shellComponent: RootDocument,

@@ -49,8 +49,8 @@ const { RoastCard } = await import("./RoastCard");
 const { RoastProductShot } = await import("./RoastProductShot");
 const { ShareButtons } = await import("./ShareButtons");
 const { AuthField } = await import("./auth-form");
-const { DotFlameMark, DotMatrixFlame, Logo } = await import("./brand");
-const { RoastTable, TierChip } = await import("./roast-table");
+const { DotMatrixSpark, FlintMark, Logo } = await import("./brand");
+const { RoastTable, SeverityCounts } = await import("./roast-table");
 
 const roast: PublicRoast = {
 	slug: "hot-one",
@@ -140,14 +140,14 @@ describe("presentational components", () => {
 				<DotGlyph />
 				<LandingLogo />
 				<LandingLogo inverse />
-				<DotFlameMark />
+				<FlintMark />
 				<Logo className="custom" />
-				<DotMatrixFlame className="custom" />
+				<DotMatrixSpark className="custom" />
 				<RoastProductShot />
 			</>,
 		);
 
-		expect(screen.getAllByText("Roast0")).toHaveLength(3);
+		expect(screen.getAllByText("flint")).toHaveLength(3);
 		expect(container.querySelectorAll("svg").length).toBeGreaterThan(5);
 		expect(screen.getByText("Leaky support agent")).toBeTruthy();
 	});
@@ -182,6 +182,7 @@ describe("presentational components", () => {
 			score: 91,
 			tier: "Rare",
 			status: "done" as const,
+			findingCounts: { critical: 1, warning: 1, notice: 0 },
 			createdAt: "2026-07-18T00:00:00Z",
 		};
 		const { rerender } = render(<RoastTable query="first" roasts={[row]} />);
@@ -189,19 +190,17 @@ describe("presentational components", () => {
 		expect(screen.getByText(/Jul 18, 2026/)).toBeTruthy();
 
 		rerender(<RoastTable query="missing" roasts={[row]} />);
-		expect(screen.getByText(/No roast titles match/)).toBeTruthy();
+		expect(screen.getByText(/No scan titles match/)).toBeTruthy();
 		rerender(<RoastTable query="" roasts={[]} />);
-		expect(screen.getByText("Nothing roasted yet")).toBeTruthy();
+		expect(screen.getByText("No scans yet")).toBeTruthy();
 
 		rerender(
 			<>
-				<TierChip tier="Rare" />
-				<TierChip tier="Medium" />
-				<TierChip tier="Well Done" />
-				<TierChip tier="Charcoal" />
+				<SeverityCounts counts={{ critical: 3, warning: 1, notice: 0 }} />
 				<RoastTable query="" roasts={[{ ...row, createdAt: "invalid" }]} />
 			</>,
 		);
+		expect(screen.getByText("3 critical, 1 warning")).toBeTruthy();
 		expect(screen.getByText("Unknown")).toBeTruthy();
 	});
 });

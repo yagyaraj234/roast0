@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#0C0A09"/>
+  <circle cx="1010" cy="108" r="178" fill="#FF4D00" opacity=".14"/>
+  <path d="M877 492 973 232l174 100-82 206-109-56-58 50Z" fill="#FF4D00"/>
+  <path d="m973 232 1 174 173-74-82 206-109-56-58 50Z" fill="#FF8A4C"/>
+  <circle cx="1130" cy="164" r="12" fill="#FFF4E8"/>
+  <text x="76" y="112" fill="#FFF4E8" font-family="Georgia, serif" font-size="58">flint</text>
+  <text x="76" y="226" fill="#FFF4E8" font-family="Georgia, serif" font-size="84">Secrets don't ship.</text>
+  <text x="80" y="288" fill="#C9C3BE" font-family="ui-monospace, monospace" font-size="22">SECURITY SCANNING FOR AI AGENT TRACES</text>
+  <rect x="76" y="374" width="304" height="154" rx="16" fill="#2A2726"/>
+  <text x="104" y="420" fill="#C9C3BE" font-family="ui-monospace, monospace" font-size="18">FLINT SCORE</text>
+  <text x="102" y="497" fill="#FFF4E8" font-family="Georgia, serif" font-size="82">28</text>
+  <text x="220" y="487" fill="#FF8A4C" font-family="ui-monospace, monospace" font-size="22">/100</text>
+  <text x="426" y="416" fill="#FF4D00" font-family="ui-monospace, monospace" font-size="20">3 CRITICAL</text>
+  <text x="426" y="463" fill="#FF8A4C" font-family="ui-monospace, monospace" font-size="20">1 WARNING</text>
+  <text x="426" y="510" fill="#C9C3BE" font-family="ui-monospace, monospace" font-size="20">REDACTED ON DETECTION</text>
+</svg>

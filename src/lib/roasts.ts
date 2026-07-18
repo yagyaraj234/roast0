@@ -9,8 +9,15 @@ export interface RoastListItem {
 	source: RoastSource;
 	score: number;
 	tier: string;
+	findingCounts?: FindingCounts;
 	status: RoastStatus;
 	createdAt: string;
+}
+
+export interface FindingCounts {
+	critical: number;
+	warning: number;
+	notice: number;
 }
 
 export interface RoastMetrics {
@@ -35,6 +42,7 @@ export interface BatchRoast {
 	status: RoastStatus;
 	score: number;
 	tier: string;
+	findingCounts?: FindingCounts;
 	error: string | null;
 }
 
@@ -87,4 +95,20 @@ export function filterRoasts(rows: RoastListItem[], query: string) {
 				row.title.toLocaleLowerCase().includes(normalizedQuery),
 			)
 		: rows;
+}
+
+export function findingCounts(value: unknown): FindingCounts {
+	const counts: FindingCounts = { critical: 0, warning: 0, notice: 0 };
+	if (!Array.isArray(value)) return counts;
+
+	for (const finding of value) {
+		const severity =
+			finding && typeof finding === "object"
+				? (finding as { severity?: unknown }).severity
+				: undefined;
+		if (severity === 3) counts.critical += 1;
+		else if (severity === 2) counts.warning += 1;
+		else if (severity === 1) counts.notice += 1;
+	}
+	return counts;
 }

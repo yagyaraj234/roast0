@@ -1,6 +1,10 @@
-import { ArrowUpRight, Flame } from "lucide-react";
+import { ArrowUpRight, ScanSearch } from "lucide-react";
 
-import { filterRoasts, type RoastListItem } from "#/lib/roasts";
+import {
+	type FindingCounts,
+	filterRoasts,
+	type RoastListItem,
+} from "#/lib/roasts";
 
 export function RoastTable({
 	roasts,
@@ -15,7 +19,7 @@ export function RoastTable({
 	if (filtered.length === 0) {
 		return (
 			<div className="rounded-xl border border-stone-200 bg-white px-6 py-12 text-center text-sm text-stone-500">
-				No roast titles match “{query.trim()}”.
+				No scan titles match “{query.trim()}”.
 			</div>
 		);
 	}
@@ -27,8 +31,8 @@ export function RoastTable({
 					<tr>
 						<th className="px-5 py-3 font-medium">Title</th>
 						<th className="px-5 py-3 font-medium">Source</th>
-						<th className="px-5 py-3 font-medium">Score</th>
-						<th className="px-5 py-3 font-medium">Tier</th>
+						<th className="px-5 py-3 font-medium">Flint score</th>
+						<th className="px-5 py-3 font-medium">Findings</th>
 						<th className="px-5 py-3 font-medium">Created</th>
 						<th className="px-5 py-3">
 							<span className="sr-only">Open</span>
@@ -50,7 +54,7 @@ export function RoastTable({
 								{roast.score}
 							</td>
 							<td className="px-5 py-4">
-								<TierChip tier={roast.tier} />
+								<SeverityCounts counts={roast.findingCounts} />
 							</td>
 							<td className="px-5 py-4 text-stone-500">
 								{formatDate(roast.createdAt)}
@@ -71,19 +75,22 @@ export function RoastTable({
 	);
 }
 
-export function TierChip({ tier }: { tier: string }) {
-	const color =
-		tier === "Rare"
-			? "bg-green-100 text-green-700"
-			: tier === "Medium"
-				? "bg-amber-100 text-amber-700"
-				: tier === "Well Done"
-					? "bg-orange-100 text-orange-700"
-					: "bg-stone-900 text-orange-400";
+const noFindings: FindingCounts = { critical: 0, warning: 0, notice: 0 };
+
+export function SeverityCounts({
+	counts = noFindings,
+}: {
+	counts?: FindingCounts;
+}) {
+	const labels = [
+		counts.critical > 0 ? `${counts.critical} critical` : null,
+		counts.warning > 0 ? `${counts.warning} warning` : null,
+		counts.notice > 0 ? `${counts.notice} notice` : null,
+	].filter((label): label is string => label !== null);
 
 	return (
-		<span className={`rounded-full px-2.5 py-1 text-xs font-medium ${color}`}>
-			{tier}
+		<span className="text-xs text-stone-600">
+			{labels.join(", ") || "No findings"}
 		</span>
 	);
 }
@@ -93,12 +100,12 @@ function EmptyRoasts() {
 		<div className="rounded-xl border border-dashed border-stone-300 bg-white px-6 py-14 text-center">
 			<div
 				role="img"
-				aria-label="No roasts yet"
+				aria-label="No scans yet"
 				className="mx-auto mb-4 grid size-14 place-items-center rounded-full bg-orange-50 text-orange-500 opacity-70"
 			>
-				<Flame size={26} />
+				<ScanSearch size={26} />
 			</div>
-			<h2 className="text-lg font-semibold">Nothing roasted yet</h2>
+			<h2 className="text-lg font-semibold">No scans yet</h2>
 			<p className="mt-1 text-sm text-stone-500">
 				Upload a trace to get your first score.
 			</p>
@@ -106,7 +113,7 @@ function EmptyRoasts() {
 				href="/app/new"
 				className="mt-5 inline-flex rounded-full bg-orange-600 px-4 py-2 text-sm font-medium text-white hover:bg-orange-700"
 			>
-				Roast a trace
+				Scan a trace
 			</a>
 		</div>
 	);

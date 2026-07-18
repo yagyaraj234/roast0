@@ -94,7 +94,7 @@ describe("public roasts", () => {
 			"12/100 · Charcoal · $0.50 waste found",
 		);
 		expect(publicRoastMeta(roast)).toEqual({
-			title: "This agent put its secrets on speakerphone. · Roast0",
+			title: "This agent put its secrets on speakerphone. · Flint",
 			description: "12/100 · Charcoal · $0.50 waste found. Leaky agent",
 		});
 	});

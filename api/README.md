@@ -1,6 +1,9 @@
-# Roast0 API
+# Flint API
 
-FastAPI backend. Owns the whole pipeline: normalize → redact → analyze → score → Supabase. See PLAN.md at the repo root for the contract and stage plan.
+FastAPI backend for Flint, security scanning for AI agent traces. Owns the whole
+pipeline: normalize → redact → analyze → score → Supabase. Flint redacts
+supported secrets before storage. See PLAN.md at the repo root for the contract
+and stage plan.
 
 ## Endpoints
 

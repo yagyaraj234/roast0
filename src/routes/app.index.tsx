@@ -20,7 +20,7 @@ function Dashboard() {
 						href="/app/new"
 						className="inline-flex items-center justify-center rounded-full bg-orange-600 px-4 py-2 text-sm font-medium text-white hover:bg-orange-700"
 					>
-						New roast
+						New scan
 					</a>
 				}
 				breadcrumb="Dashboard / Overview"
@@ -30,9 +30,9 @@ function Dashboard() {
 
 			<section
 				className="mt-7 grid gap-4 sm:grid-cols-2 xl:grid-cols-4"
-				aria-label="Roast stats"
+				aria-label="Scan stats"
 			>
-				<Stat label="Total roasts" value={String(stats.totalRoasts)} />
+				<Stat label="Total scans" value={String(stats.totalRoasts)} />
 				<Stat
 					label="Secrets caught"
 					value={String(stats.secretsCaught)}
@@ -51,7 +51,7 @@ function Dashboard() {
 
 			<section className="mt-8">
 				<div className="mb-3 flex items-center justify-between">
-					<h2 className="text-lg font-semibold">Recent roasts</h2>
+					<h2 className="text-lg font-semibold">Recent scans</h2>
 					<a
 						href="/app/roasts"
 						className="text-sm font-medium text-orange-700 hover:text-orange-900"
