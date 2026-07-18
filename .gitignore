@@ -11,3 +11,7 @@ dist-ssr
 .vinxi
 __unconfig*
 todos.json
+
+api/.venv
+api/__pycache__
+api/**/__pycache__
