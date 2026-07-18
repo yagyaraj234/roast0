@@ -46,6 +46,7 @@ const { cleanup, fireEvent, render, screen, waitFor } = await import(
 );
 const { DotGlyph, DotMatrix } = await import("./DotMatrix");
 const { Logo: LandingLogo } = await import("./Logo");
+const { ReportView } = await import("./ReportView");
 const { RoastCard } = await import("./RoastCard");
 const { RoastProductShot } = await import("./RoastProductShot");
 const { ShareButtons } = await import("./ShareButtons");
@@ -61,6 +62,9 @@ const roast: PublicRoast = {
 	tier: "Well Done",
 	roastLine: null,
 	createdAt: "2026-07-18T00:00:00Z",
+	traceId: "trace-123",
+	visibility: "public",
+	isOwner: false,
 	findings: [
 		{
 			rule: "leaked-secret",
@@ -99,6 +103,7 @@ const roast: PublicRoast = {
 		tokenSource: "measured",
 		monthlyProjectionUsd: 12000,
 		projectionAssumption: "at 1,000 runs/day",
+		unpricedModels: [],
 	},
 	detailedReport: {
 		summary: "A secret reached a tool and the trace repeated paid work.",
@@ -198,6 +203,33 @@ describe("presentational components", () => {
 		);
 		expect(screen.getByText("No material finding in this trace.")).toBeTruthy();
 		expect(screen.getByText("No normalized spans available.")).toBeTruthy();
+	});
+
+	it("renders the professional report hierarchy and cost caveats", () => {
+		render(
+			<ReportView
+				roast={{
+					...roast,
+					cost: { ...roast.cost, unpricedModels: ["custom-model"] },
+				}}
+			/>,
+		);
+
+		expect(screen.getByRole("heading", { level: 1 }).textContent).toBe(
+			"Leaky agent",
+		);
+		expect(
+			screen.getByText(
+				"A secret reached a tool and the trace repeated paid work.",
+			),
+		).toBeTruthy();
+		expect(screen.getByText("High")).toBeTruthy();
+		expect(
+			screen.getByText("Rotate the credential and pass a reference instead."),
+		).toBeTruthy();
+		expect(screen.getByText("$12,000.00")).toBeTruthy();
+		expect(screen.getByRole("note").textContent).toContain("custom-model");
+		expect(screen.queryByText(/cooked the budget/)).toBeNull();
 	});
 
 	it("renders table results, empty states, dates, and all tier colors", () => {

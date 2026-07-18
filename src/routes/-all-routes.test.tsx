@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
-const state = vi.hoisted(() => ({
+const state = {
 	api: {
 		getMyRoasts: vi.fn(),
 		getRecentRoasts: vi.fn(),
@@ -9,11 +9,12 @@ const state = vi.hoisted(() => ({
 		ingestTrace: vi.fn(),
 	},
 	auth: {
+		getAccessToken: vi.fn(),
 		requireAccessToken: vi.fn(),
 		requireAuthenticatedUser: vi.fn(),
 	},
 	routes: new Map<string, { options: Record<string, unknown> }>(),
-}));
+};
 
 vi.mock("@tanstack/react-router", () => ({
 	createFileRoute: (path: string) => (options: Record<string, unknown>) => {
@@ -92,6 +93,7 @@ beforeEach(() => {
 	for (const fn of Object.values(state.api)) fn.mockReset();
 	for (const fn of Object.values(state.auth)) fn.mockReset();
 	state.auth.requireAccessToken.mockResolvedValue("access-token");
+	state.auth.getAccessToken.mockResolvedValue(null);
 	state.auth.requireAuthenticatedUser.mockResolvedValue({ id: "user-id" });
 	state.api.getMyRoasts.mockResolvedValue([]);
 	state.api.getRecentRoasts.mockResolvedValue([]);
@@ -185,6 +187,28 @@ describe("public and ingest route boundaries", () => {
 
 		expect(await getPublicRoast({ data: "bad slug" })).toBeNull();
 		expect(state.api.getRoast).not.toHaveBeenCalled();
+
+		state.auth.getAccessToken.mockResolvedValue("access-token");
+		state.api.getRoast.mockResolvedValue({
+			...ownerRoast,
+			detailed_report: {
+				summary: "Owner report.",
+				actions: [],
+				generated: false,
+				model: null,
+			},
+			is_owner: true,
+			normalized: { trace_id: "trace-1", workflow: "test", spans: [] },
+			roast_line: null,
+			visibility: "private",
+		});
+		await expect(
+			getPublicRoast({ data: ownerRoast.slug }),
+		).resolves.toMatchObject({ isOwner: true, visibility: "private" });
+		expect(state.api.getRoast).toHaveBeenCalledWith(
+			ownerRoast.slug,
+			"access-token",
+		);
 	});
 
 	test("forwards the authenticated ingest endpoint payload to FastAPI", async () => {

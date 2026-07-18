@@ -6,6 +6,7 @@ import {
 	toPublicRoast,
 	toPublicRoastSummaries,
 } from "./public-roasts";
+import { getAccessToken } from "./supabase-auth.server";
 
 export const getRecentPublicRoasts = createServerFn({ method: "GET" }).handler(
 	getRecentPublicRoastsData,
@@ -27,16 +28,22 @@ export const getPublicRoast = createServerFn({ method: "GET" })
 	.validator((slug: string): string | null =>
 		/^[a-zA-Z0-9_-]{1,64}$/.test(slug) ? slug : null,
 	)
-	.handler(({ data: slug }) => getPublicRoastData(slug));
+	.handler(async ({ data: slug }) =>
+		getPublicRoastData(
+			slug,
+			slug ? await getAccessToken().catch(() => null) : null,
+		),
+	);
 
 export async function getPublicRoastData(
 	slug: string | null,
+	accessToken: string | null = null,
 ): Promise<PublicRoast | null> {
 	if (!slug) return null;
 
 	try {
 		const { getRoast } = await import("#/lib/api");
-		return toPublicRoast(await getRoast(slug));
+		return toPublicRoast(await getRoast(slug, accessToken ?? undefined));
 	} catch {
 		return null;
 	}
