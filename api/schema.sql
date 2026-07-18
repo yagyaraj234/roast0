@@ -28,6 +28,7 @@ alter table public.roasts
   add column if not exists batch_id uuid;
 
 update public.roasts set status = 'done' where status is null;
+update public.roasts set created_at = now() where created_at is null;
 
 alter table public.roasts
   alter column status set default 'done',
