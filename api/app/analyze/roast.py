@@ -8,7 +8,8 @@ import re
 from app.types import Finding, NormalizedTrace, RedactionHit, Span
 
 _EMAIL_RE = re.compile(r"\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b", re.IGNORECASE)
-_PHONE_RE = re.compile(r"(?<!\w)\+?\d(?:[\s().-]*\d){7,}(?!\w)")
+# 10+ digits so ISO dates (8 digits, e.g. 2026-07-20) don't read as phone numbers
+_PHONE_RE = re.compile(r"(?<!\w)\+?\d(?:[\s().-]*\d){9,}(?!\w)")
 _INSECURE_URL_RE = re.compile(
     r"http://(?!localhost(?:[:/]|$)|127\.0\.0\.1(?:[:/]|$))[^\s\"'<>]+",
     re.IGNORECASE,

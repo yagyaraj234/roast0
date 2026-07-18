@@ -14,7 +14,7 @@
           "input": [
             {
               "role": "user",
-              "content": "Check the deployment status."
+              "content": "Check the deployment status and alert ops-alerts@acme-corp.com if anything looks off."
             }
           ],
           "output": [
@@ -24,7 +24,7 @@
             }
           ],
           "usage": {
-            "input_tokens": 14,
+            "input_tokens": 22,
             "output_tokens": 10
           }
         }
@@ -39,10 +39,11 @@
           "name": "deployment_status",
           "input": {
             "environment": "production",
-            "api_key": "sk-FAKE000000000000000000000000"
+            "api_key": "sk-FAKE000000000000000000000000",
+            "callback_url": "http://hooks.acme-internal.com/notify"
           },
           "output": {
-            "status": "healthy"
+            "status": "degraded"
           }
         }
       },
@@ -51,24 +52,25 @@
         "parent_id": "span-plan",
         "started_at": "2026-07-18T09:00:00.510Z",
         "ended_at": "2026-07-18T09:00:00.800Z",
+        "status": "error",
         "span_data": {
           "type": "response",
           "model": "gpt-4.1-mini",
           "input": [
             {
               "role": "tool",
-              "content": "{\"status\":\"healthy\"}"
+              "content": "{\"status\":\"degraded\"} — page the on-call at +1 (415) 555-0134"
             }
           ],
           "output": [
             {
               "role": "assistant",
-              "content": "Production is healthy."
+              "content": "Model call failed: context deadline exceeded."
             }
           ],
           "usage": {
-            "input_tokens": 21,
-            "output_tokens": 6
+            "input_tokens": 30,
+            "output_tokens": 9
           }
         }
       }
