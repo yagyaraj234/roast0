@@ -15,7 +15,7 @@ function ProfilePage() {
 
 	return (
 		<div className="app-page">
-			<AppPageHeader breadcrumb="Flint / Profile" title="Profile" />
+			<AppPageHeader title="Profile" />
 			<section className="max-w-xl rounded-xl border border-stone-200 bg-white p-6">
 				<div className="flex items-center gap-4">
 					<span aria-hidden="true" className="avatar">

@@ -364,7 +364,7 @@ describe("static, SEO, and router routes", () => {
 		expect(screen.getAllByText("R").length).toBeGreaterThan(0);
 		cleanup();
 
-		render(<AppPage breadcrumb="Dashboard" title="Overview" />);
+		render(<AppPage title="Overview" />);
 		expect(screen.getByLabelText("Overview content")).toBeTruthy();
 	});
 
@@ -852,9 +852,7 @@ describe("authenticated app routes", () => {
 	it("uses the shared page header for authenticated route hierarchy", () => {
 		render(component(profileModule.Route));
 		expect(screen.getByRole("heading", { name: "Profile" })).toBeTruthy();
-		expect(document.querySelector(".app-page__breadcrumb")?.textContent).toBe(
-			"Flint / Profile",
-		);
+		expect(document.querySelector(".app-page__breadcrumb")).toBeNull();
 		cleanup();
 
 		render(component(newModule.Route));

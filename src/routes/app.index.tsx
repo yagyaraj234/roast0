@@ -23,7 +23,6 @@ function Dashboard() {
 						New scan
 					</a>
 				}
-				breadcrumb="Dashboard / Overview"
 				description="Real traces, findings, and cost waste."
 				title="Dashboard"
 			/>

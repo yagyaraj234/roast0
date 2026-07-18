@@ -15,7 +15,6 @@ function Roasts() {
 	return (
 		<main className="app-page">
 			<AppPageHeader
-				breadcrumb="Dashboard / Scans"
 				description="Search by title from the top bar."
 				title="All scans"
 			/>

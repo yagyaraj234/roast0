@@ -98,7 +98,6 @@ function BatchStatus() {
 	return (
 		<main className="app-page">
 			<AppPageHeader
-				breadcrumb="Dashboard / Batch"
 				description={
 					settled
 						? "All traces settled. Polling stopped."

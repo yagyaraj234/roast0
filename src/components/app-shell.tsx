@@ -88,17 +88,10 @@ export function AppShell({
 	);
 }
 
-export function AppPage({
-	breadcrumb,
-	title,
-}: {
-	breadcrumb: string;
-	title: string;
-}) {
+export function AppPage({ title }: { title: string }) {
 	return (
 		<div className="app-page">
 			<header className="app-page__header">
-				<p>{breadcrumb}</p>
 				<h1>{title}</h1>
 			</header>
 			<section

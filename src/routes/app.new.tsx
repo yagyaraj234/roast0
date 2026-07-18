@@ -71,7 +71,6 @@ function NewRoast() {
 	return (
 		<main className="app-page">
 			<AppPageHeader
-				breadcrumb="Dashboard / New scan"
 				description="Single object, array, or JSONL. Maximum 20 traces per upload."
 				title="Scan traces"
 			/>
