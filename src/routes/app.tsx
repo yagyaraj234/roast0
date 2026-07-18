@@ -5,10 +5,11 @@ import { AppShell } from "#/components/app-shell";
 import { getCurrentUser } from "#/lib/auth.functions";
 
 const loadDashboard = createServerFn({ method: "GET" }).handler(async () => {
-	const [{ getDashboardData }, { requireAuthenticatedUser }] = await Promise.all([
-		import("#/lib/roasts.server"),
-		import("#/lib/supabase-auth.server"),
-	]);
+	const [{ getDashboardData }, { requireAuthenticatedUser }] =
+		await Promise.all([
+			import("#/lib/roasts.server"),
+			import("#/lib/supabase-auth.server"),
+		]);
 	const user = await requireAuthenticatedUser();
 	return getDashboardData(user.id);
 });
