@@ -211,7 +211,11 @@ input {
 	overflow: hidden;
 	padding: 36px;
 	background:
-		radial-gradient(circle at 70% 76%, rgba(255, 181, 133, 0.8), transparent 26%),
+		radial-gradient(
+			circle at 70% 76%,
+			rgba(255, 181, 133, 0.8),
+			transparent 26%
+		),
 		linear-gradient(145deg, var(--ink) 6%, #7c1d04 55%, var(--ember) 100%);
 	color: var(--cream);
 }

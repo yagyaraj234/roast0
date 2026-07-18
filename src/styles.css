@@ -62,6 +62,7 @@ textarea {
 	min-height: 100vh;
 	overflow: hidden;
 	background: var(--ink);
+	color: var(--cream);
 }
 
 .section-shell,

@@ -30,10 +30,11 @@ const batchValidator = (value: unknown) => {
 const loadBatch = createServerFn({ method: "GET" })
 	.validator(batchValidator)
 	.handler(async ({ data }) => {
-		const [{ getBatchRoasts }, { requireAuthenticatedUser }] = await Promise.all([
-			import("#/lib/roasts.server"),
-			import("#/lib/supabase-auth.server"),
-		]);
+		const [{ getBatchRoasts }, { requireAuthenticatedUser }] =
+			await Promise.all([
+				import("#/lib/roasts.server"),
+				import("#/lib/supabase-auth.server"),
+			]);
 		const user = await requireAuthenticatedUser();
 		return getBatchRoasts(data.batchId, user.id);
 	});
