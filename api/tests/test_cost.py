@@ -68,7 +68,10 @@ def test_repeated_bloat_prices_redundant_prefix_tokens() -> None:
     assert finding.severity == 2
     assert finding.span_ids == ["one", "two", "three"]
     assert finding.est_waste_usd == pytest.approx(0.008)
-    assert report.waste_usd == pytest.approx(0.008)
+    # estimated per-finding waste exceeds measured spend here, so the report
+    # caps waste at total_usd — a card never claims more waste than spend
+    assert report.waste_usd == pytest.approx(report.total_usd)
+    assert report.waste_usd < 0.008
     assert report.token_source == "estimated"
 
 

@@ -7,7 +7,7 @@ class Settings(BaseSettings):
     supabase_url: str = ""
     supabase_service_role_key: str = ""
     openai_api_key: str = ""
-    roast_model: str = "gpt-4o-mini"
+    roast_model: str = "gpt-5.6-luna"
     cors_origins: list[str] = ["http://localhost:3000"]
 
     model_config = {"env_file": ".env"}

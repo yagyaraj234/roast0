@@ -154,6 +154,10 @@ def analyze_cost(
     total_tokens_out = sum(span.tokens_out or 0 for span in trace.spans)
     total_usd = sum(_span_cost(span, active_pricing) for span in llm_spans)
     waste_usd = sum(finding.est_waste_usd or 0.0 for finding in findings)
+    # estimated waste (chars/4 prefixes) can overshoot measured billing;
+    # a card must never claim more waste than total spend
+    if total_usd > 0:
+        waste_usd = min(waste_usd, total_usd)
 
     report = CostReport(
         total_tokens_in=total_tokens_in,
