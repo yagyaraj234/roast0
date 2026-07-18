@@ -1,6 +1,11 @@
 import { createServerFn } from "@tanstack/react-start";
 
-import { type LiveWallData, toPublicRoastSummaries } from "./public-roasts";
+import {
+	type LiveWallData,
+	type PublicRoast,
+	toPublicRoast,
+	toPublicRoastSummaries,
+} from "./public-roasts";
 
 export const getRecentPublicRoasts = createServerFn({ method: "GET" }).handler(
 	async (): Promise<LiveWallData> => {
@@ -9,6 +14,7 @@ export const getRecentPublicRoasts = createServerFn({ method: "GET" }).handler(
 			const { data, error } = await db
 				.from("roasts")
 				.select("slug,title,score,tier,roast_line,created_at")
+				.eq("status", "done")
 				.order("created_at", { ascending: false })
 				.limit(8);
 
@@ -20,3 +26,30 @@ export const getRecentPublicRoasts = createServerFn({ method: "GET" }).handler(
 		}
 	},
 );
+
+export const getPublicRoast = createServerFn({ method: "GET" })
+	.validator((slug: string): string | null =>
+		/^[a-zA-Z0-9_-]{1,64}$/.test(slug) ? slug : null,
+	)
+	.handler(async ({ data: slug }): Promise<PublicRoast | null> => {
+		if (!slug) return null;
+
+		try {
+			const { db } = await import("./db.server");
+			const { data, error } = await db
+				.from("roasts")
+				.select(
+					"slug,title,source,score,tier,roast_line,findings,cost,normalized,created_at",
+				)
+				.eq("slug", slug)
+				.eq("status", "done")
+				.limit(1)
+				.maybeSingle();
+
+			if (error) return null;
+			const row: unknown = data;
+			return toPublicRoast(row);
+		} catch {
+			return null;
+		}
+	});
