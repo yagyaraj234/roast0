@@ -1,7 +1,10 @@
 import { Link, Outlet } from "@tanstack/react-router";
+import { createContext, useContext, useState } from "react";
 
 import { Logo } from "./brand";
 import { SignOutButton } from "./sign-out-button";
+
+const SearchContext = createContext("");
 
 const navItems = [
 	{ label: "Dashboard", to: "/app" },
@@ -10,63 +13,79 @@ const navItems = [
 	{ label: "Settings", to: "/app/settings" },
 ] as const;
 
+export function useAppSearch() {
+	return useContext(SearchContext);
+}
+
 export function AppShell({
-	totalRoasts = 0,
+	totalRoasts,
 	user,
 }: {
-	totalRoasts?: number;
+	totalRoasts: number;
 	user: { email: string };
 }) {
+	const [search, setSearch] = useState("");
+	const initial = user.email.slice(0, 1).toUpperCase() || "R";
+
 	return (
-		<div className="app-shell">
-			<aside className="app-sidebar">
-				<Link aria-label="Roast0 home" className="app-sidebar__brand" to="/">
-					<Logo />
-				</Link>
-				<nav aria-label="App navigation" className="app-sidebar__nav">
-					{navItems.map((item) => (
-						<Link
-							activeOptions={{ exact: item.to === "/app" }}
-							activeProps={{ className: "is-active" }}
-							key={item.to}
-							to={item.to}
-						>
-							{item.label}
-							{item.to === "/app/roasts" ? (
-								<span className="nav-count">{totalRoasts}</span>
-							) : null}
-						</Link>
-					))}
-				</nav>
-				<div className="app-sidebar__footer">
-					<div className="ingest-status">
-						<span>Ingest</span>
-						<span className="status-pill">Idle</span>
+		<SearchContext.Provider value={search}>
+			<div className="app-shell">
+				<aside className="app-sidebar">
+					<Link aria-label="Roast0 home" className="app-sidebar__brand" to="/">
+						<Logo />
+					</Link>
+					<nav aria-label="App navigation" className="app-sidebar__nav">
+						{navItems.map((item) => (
+							<Link
+								activeOptions={{ exact: item.to === "/app" }}
+								activeProps={{ className: "is-active" }}
+								key={item.to}
+								to={item.to}
+							>
+								{item.label}
+								{item.to === "/app/roasts" ? (
+									<span className="nav-count">{totalRoasts}</span>
+								) : null}
+							</Link>
+						))}
+					</nav>
+					<div className="app-sidebar__footer">
+						<div className="ingest-status">
+							<span>Ingest</span>
+							<span className="status-pill">Idle</span>
+						</div>
+						<div className="account-row">
+							<span aria-hidden="true" className="avatar">
+								{initial}
+							</span>
+							<span className="account-email" title={user.email}>
+								{user.email}
+							</span>
+							<SignOutButton />
+						</div>
 					</div>
-					<div className="account-row">
+				</aside>
+				<div className="app-column">
+					<header className="app-topbar">
+						<label className="search-field">
+							<span className="sr-only">Search roasts by title</span>
+							<input
+								onChange={(event) => setSearch(event.target.value)}
+								placeholder="Search roasts"
+								type="search"
+								value={search}
+							/>
+						</label>
 						<span aria-hidden="true" className="avatar">
-							{user.email.slice(0, 1).toUpperCase() || "R"}
+							{initial}
 						</span>
-						<span title={user.email}>{user.email}</span>
-						<SignOutButton />
-					</div>
+					</header>
+					<main className="app-content">
+						<Outlet />
+					</main>
 				</div>
-			</aside>
-			<div className="app-column">
-				<header className="app-topbar">
-					<label className="search-field">
-						<span className="sr-only">Search roasts</span>
-						<input placeholder="Search roasts" readOnly type="search" />
-					</label>
-					<span aria-hidden="true" className="avatar">
-						{user.email.slice(0, 1).toUpperCase() || "R"}
-					</span>
-				</header>
-				<main className="app-content">
-					<Outlet />
-				</main>
 			</div>
-		</div>
+		</SearchContext.Provider>
 	);
 }
 

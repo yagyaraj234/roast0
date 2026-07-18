@@ -17,6 +17,7 @@ import { Route as SignupRouteImport } from './routes/signup'
 import { Route as UpdatePasswordRouteImport } from './routes/update-password'
 import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AppNewRouteImport } from './routes/app.new'
+import { Route as AppRoastsRouteImport } from './routes/app.roasts'
 import { Route as AppSettingsRouteImport } from './routes/app.settings'
 import { Route as RSlugRouteImport } from './routes/r.$slug'
 import { Route as AppRoastsIndexRouteImport } from './routes/app.roasts.index'
@@ -62,6 +63,11 @@ const AppNewRoute = AppNewRouteImport.update({
   path: '/new',
   getParentRoute: () => AppRoute,
 } as any)
+const AppRoastsRoute = AppRoastsRouteImport.update({
+  id: '/roasts',
+  path: '/roasts',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppSettingsRoute = AppSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -73,14 +79,14 @@ const RSlugRoute = RSlugRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppRoastsIndexRoute = AppRoastsIndexRouteImport.update({
-  id: '/roasts/',
-  path: '/roasts/',
-  getParentRoute: () => AppRoute,
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppRoastsRoute,
 } as any)
 const AppRoastsBatchRoute = AppRoastsBatchRouteImport.update({
-  id: '/roasts/$batch',
-  path: '/roasts/$batch',
-  getParentRoute: () => AppRoute,
+  id: '/$batch',
+  path: '/$batch',
+  getParentRoute: () => AppRoastsRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -91,6 +97,7 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/update-password': typeof UpdatePasswordRoute
   '/app/new': typeof AppNewRoute
+  '/app/roasts': typeof AppRoastsRouteWithChildren
   '/app/settings': typeof AppSettingsRoute
   '/r/$slug': typeof RSlugRoute
   '/app/': typeof AppIndexRoute
@@ -119,6 +126,7 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/update-password': typeof UpdatePasswordRoute
   '/app/new': typeof AppNewRoute
+  '/app/roasts': typeof AppRoastsRouteWithChildren
   '/app/settings': typeof AppSettingsRoute
   '/r/$slug': typeof RSlugRoute
   '/app/': typeof AppIndexRoute
@@ -135,6 +143,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/update-password'
     | '/app/new'
+    | '/app/roasts'
     | '/app/settings'
     | '/r/$slug'
     | '/app/'
@@ -162,6 +171,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/update-password'
     | '/app/new'
+    | '/app/roasts'
     | '/app/settings'
     | '/r/$slug'
     | '/app/'
@@ -237,6 +247,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppNewRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/roasts': {
+      id: '/app/roasts'
+      path: '/roasts'
+      fullPath: '/app/roasts'
+      preLoaderRoute: typeof AppRoastsRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/settings': {
       id: '/app/settings'
       path: '/settings'
@@ -253,35 +270,47 @@ declare module '@tanstack/react-router' {
     }
     '/app/roasts/': {
       id: '/app/roasts/'
-      path: '/roasts'
+      path: '/'
       fullPath: '/app/roasts/'
       preLoaderRoute: typeof AppRoastsIndexRouteImport
-      parentRoute: typeof AppRoute
+      parentRoute: typeof AppRoastsRoute
     }
     '/app/roasts/$batch': {
       id: '/app/roasts/$batch'
-      path: '/roasts/$batch'
+      path: '/$batch'
       fullPath: '/app/roasts/$batch'
       preLoaderRoute: typeof AppRoastsBatchRouteImport
-      parentRoute: typeof AppRoute
+      parentRoute: typeof AppRoastsRoute
     }
   }
 }
 
-interface AppRouteChildren {
-  AppNewRoute: typeof AppNewRoute
-  AppSettingsRoute: typeof AppSettingsRoute
-  AppIndexRoute: typeof AppIndexRoute
+interface AppRoastsRouteChildren {
   AppRoastsBatchRoute: typeof AppRoastsBatchRoute
   AppRoastsIndexRoute: typeof AppRoastsIndexRoute
 }
 
-const AppRouteChildren: AppRouteChildren = {
-  AppNewRoute: AppNewRoute,
-  AppSettingsRoute: AppSettingsRoute,
-  AppIndexRoute: AppIndexRoute,
+const AppRoastsRouteChildren: AppRoastsRouteChildren = {
   AppRoastsBatchRoute: AppRoastsBatchRoute,
   AppRoastsIndexRoute: AppRoastsIndexRoute,
+}
+
+const AppRoastsRouteWithChildren = AppRoastsRoute._addFileChildren(
+  AppRoastsRouteChildren,
+)
+
+interface AppRouteChildren {
+  AppNewRoute: typeof AppNewRoute
+  AppRoastsRoute: typeof AppRoastsRouteWithChildren
+  AppSettingsRoute: typeof AppSettingsRoute
+  AppIndexRoute: typeof AppIndexRoute
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppNewRoute: AppNewRoute,
+  AppRoastsRoute: AppRoastsRouteWithChildren,
+  AppSettingsRoute: AppSettingsRoute,
+  AppIndexRoute: AppIndexRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
