@@ -3,6 +3,7 @@ import { ArrowRight, Copy, DollarSign, Gauge, ShieldCheck } from "lucide-react";
 
 import { DotGlyph, DotMatrix } from "../components/DotMatrix";
 import { Logo } from "../components/Logo";
+import { RoastProductShot } from "../components/RoastProductShot";
 import { getRecentPublicRoasts } from "../lib/public-roasts.functions";
 
 export const Route = createFileRoute("/")({
@@ -107,40 +108,7 @@ function LandingPage() {
 				</section>
 
 				<section className="product-shot" aria-label="Roast0 product preview">
-					<div className="browser-frame">
-						<div className="browser-frame__bar">
-							<span />
-							<span />
-							<span />
-							<div>roast0.dev/r/demo-trace</div>
-						</div>
-						<div className="product-card">
-							<div className="product-card__head">
-								<div>
-									<p className="mono-label">DEMO TRACE · LIVE CARD MARKUP</p>
-									<h2>Leaky support agent</h2>
-								</div>
-								<span className="source-chip">OPENAI AGENTS</span>
-							</div>
-							<div className="product-card__body">
-								<div className="product-score">
-									<span>12</span>
-									<strong>CHARCOAL</strong>
-									<small>trace health</small>
-								</div>
-								<div className="product-finding">
-									<p>“Your agent put the API key on speakerphone.”</p>
-									<div className="finding-row">
-										<span className="severity-dot" />
-										<div>
-											<strong>Leaked secret in tool arguments</strong>
-											<small>Redacted before this trace reached storage.</small>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
+					<RoastProductShot />
 					<p className="product-shot__caption">
 						Real card UI · illustrative redacted demo trace
 					</p>

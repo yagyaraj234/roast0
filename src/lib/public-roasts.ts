@@ -12,8 +12,125 @@ export interface LiveWallData {
 	available: boolean;
 }
 
+export type PublicFindingCategory = "security" | "reliability" | "cost";
+export type PublicTokenSource = "measured" | "estimated" | "mixed";
+
+export interface PublicFinding {
+	rule: string;
+	category: PublicFindingCategory;
+	severity: 1 | 2 | 3;
+	message: string;
+	estWasteUsd: number | null;
+}
+
+export interface PublicCostReport {
+	totalTokensIn: number;
+	totalTokensOut: number;
+	totalUsd: number;
+	wasteUsd: number;
+	tokenSource: PublicTokenSource;
+	monthlyProjectionUsd: number;
+	projectionAssumption: string;
+}
+
+export interface PublicSpan {
+	id: string;
+	type: string;
+	name: string;
+	model: string | null;
+	tokensIn: number | null;
+	tokensOut: number | null;
+	durationMs: number | null;
+}
+
+export interface PublicRoast extends PublicRoastSummary {
+	source: string;
+	findings: PublicFinding[];
+	cost: PublicCostReport;
+	timeline: PublicSpan[];
+}
+
 function isRecord(value: unknown): value is Record<string, unknown> {
 	return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function finiteNumber(value: unknown): number | null {
+	return typeof value === "number" && Number.isFinite(value) ? value : null;
+}
+
+function parseFinding(value: unknown): PublicFinding | null {
+	if (!isRecord(value)) return null;
+	const category = value.category;
+	const severity = finiteNumber(value.severity);
+	const message = value.message ?? value.detail ?? value.title;
+	if (
+		(category !== "security" &&
+			category !== "reliability" &&
+			category !== "cost") ||
+		severity === null ||
+		typeof message !== "string"
+	) {
+		return null;
+	}
+
+	return {
+		rule:
+			typeof value.rule === "string"
+				? value.rule
+				: typeof value.title === "string"
+					? value.title
+					: "trace-finding",
+		category,
+		severity: severity >= 3 ? 3 : severity >= 2 ? 2 : 1,
+		message,
+		estWasteUsd: finiteNumber(value.estWasteUsd),
+	};
+}
+
+function parseCost(value: unknown): PublicCostReport {
+	const cost = isRecord(value) ? value : {};
+	const tokenSource = cost.tokenSource;
+
+	return {
+		totalTokensIn: finiteNumber(cost.totalTokensIn) ?? 0,
+		totalTokensOut: finiteNumber(cost.totalTokensOut) ?? 0,
+		totalUsd: finiteNumber(cost.totalUsd) ?? 0,
+		wasteUsd: finiteNumber(cost.wasteUsd) ?? 0,
+		tokenSource:
+			tokenSource === "measured" ||
+			tokenSource === "mixed" ||
+			tokenSource === "estimated"
+				? tokenSource
+				: "estimated",
+		monthlyProjectionUsd: finiteNumber(cost.monthlyProjectionUsd) ?? 0,
+		projectionAssumption:
+			typeof cost.projectionAssumption === "string"
+				? cost.projectionAssumption
+				: "projection unavailable",
+	};
+}
+
+function parseSpan(value: unknown, index: number): PublicSpan | null {
+	if (!isRecord(value) || typeof value.name !== "string") return null;
+
+	return {
+		id: typeof value.id === "string" ? value.id : `span-${index + 1}`,
+		type: typeof value.type === "string" ? value.type : "other",
+		name: value.name,
+		model: typeof value.model === "string" ? value.model : null,
+		tokensIn: finiteNumber(value.tokensIn),
+		tokensOut: finiteNumber(value.tokensOut),
+		durationMs: finiteNumber(value.durationMs),
+	};
+}
+
+function parseTimeline(value: unknown): PublicSpan[] {
+	if (!isRecord(value) || !Array.isArray(value.spans)) return [];
+	// ponytail: public cards cap at 50 spans; paginate if shared traces routinely exceed that.
+	return value.spans.slice(0, 50).flatMap((span, index) => {
+		const parsed = parseSpan(span, index);
+		return parsed ? [parsed] : [];
+	});
 }
 
 export function toPublicRoastSummary(
@@ -55,4 +172,51 @@ export function toPublicRoastSummaries(value: unknown): PublicRoastSummary[] {
 		const roast = toPublicRoastSummary(row);
 		return roast ? [roast] : [];
 	});
+}
+
+export function toPublicRoast(value: unknown): PublicRoast | null {
+	const summary = toPublicRoastSummary(value);
+	if (!summary || !isRecord(value) || typeof value.source !== "string")
+		return null;
+
+	return {
+		...summary,
+		source: value.source,
+		findings: Array.isArray(value.findings)
+			? value.findings.flatMap((finding) => {
+					const parsed = parseFinding(finding);
+					return parsed ? [parsed] : [];
+				})
+			: [],
+		cost: parseCost(value.cost),
+		timeline: parseTimeline(value.normalized),
+	};
+}
+
+export function fallbackRoastLine(tier: string): string {
+	switch (tier.toLowerCase()) {
+		case "rare":
+			return "Clean execution. Suspiciously competent.";
+		case "medium":
+			return "It works, but the trace left fingerprints everywhere.";
+		case "well done":
+			return "This agent cooked the budget longer than the task.";
+		default:
+			return "The agent did not fail quietly. It brought receipts.";
+	}
+}
+
+export function formatShareText(roast: PublicRoast, url: string): string {
+	return `${roast.roastLine ?? fallbackRoastLine(roast.tier)}\n\n${roast.score}/100 · ${roast.tier} · $${roast.cost.wasteUsd.toFixed(2)} waste found\n${url}`;
+}
+
+export function publicRoastMeta(roast: PublicRoast): {
+	title: string;
+	description: string;
+} {
+	const line = roast.roastLine ?? fallbackRoastLine(roast.tier);
+	return {
+		title: `${line} · Roast0`,
+		description: `${roast.score}/100 · ${roast.tier} · $${roast.cost.wasteUsd.toFixed(2)} waste found. ${roast.title}`,
+	};
 }

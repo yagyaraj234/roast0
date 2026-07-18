@@ -20,7 +20,7 @@ import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AppNewRouteImport } from './routes/app.new'
 import { Route as AppRoastsRouteImport } from './routes/app.roasts'
 import { Route as AppSettingsRouteImport } from './routes/app.settings'
-import { Route as RSlugRouteImport } from './routes/r.$slug'
+import { Route as RSlugRouteImport } from './routes/r/$slug'
 import { Route as AppRoastsIndexRouteImport } from './routes/app.roasts.index'
 import { Route as AppRoastsBatchRouteImport } from './routes/app.roasts.$batch'
 
