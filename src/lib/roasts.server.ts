@@ -1,6 +1,7 @@
 import { db } from "./db.server";
 import {
 	type BatchRoast,
+	findingCounts,
 	type RoastDetail,
 	type RoastListItem,
 	type RoastMetrics,
@@ -49,6 +50,7 @@ function mapListItem(value: unknown): RoastListItem | null {
 		source: source(row.source),
 		score: number(row.score),
 		tier: string(row.tier, "Unknown"),
+		findingCounts: findingCounts(row.findings),
 		status: status(row.status),
 		createdAt: string(row.created_at),
 	};
@@ -100,7 +102,7 @@ export async function getBatchRoasts(
 ): Promise<BatchRoast[]> {
 	const { data, error } = await db
 		.from("roasts")
-		.select("id, slug, title, status, score, tier, error")
+		.select("id, slug, title, status, score, tier, findings, error")
 		.eq("batch_id", batchId)
 		.eq("user_id", userId)
 		.order("created_at", { ascending: true });
@@ -119,6 +121,7 @@ export async function getBatchRoasts(
 				status: status(row.status),
 				score: number(row.score),
 				tier: string(row.tier, "Unknown"),
+				findingCounts: findingCounts(row.findings),
 				error: typeof row.error === "string" ? row.error : null,
 			},
 		];

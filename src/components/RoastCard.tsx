@@ -42,6 +42,15 @@ export function RoastCard({
 	const findings = preview
 		? roast.findings.slice(0, 1)
 		: roast.findings.slice(0, 3);
+	const findingCounts = roast.findings.reduce(
+		(counts, finding) => {
+			if (finding.severity === 3) counts.critical += 1;
+			else if (finding.severity === 2) counts.warning += 1;
+			else counts.notice += 1;
+			return counts;
+		},
+		{ critical: 0, warning: 0, notice: 0 },
+	);
 	const scoreStyle: ScoreStyle = {
 		"--score-target": `${roast.score * 3.6}deg`,
 	};
@@ -63,7 +72,7 @@ export function RoastCard({
 					className="score-ring"
 					style={scoreStyle}
 					role="img"
-					aria-label={`Trace health score: ${roast.score} out of 100`}
+					aria-label={`Flint score: ${roast.score} out of 100`}
 				>
 					<div>
 						<strong>{roast.score}</strong>
@@ -75,6 +84,10 @@ export function RoastCard({
 						{roast.tier}
 					</span>
 					{preview ? <h2>“{line}”</h2> : <h1>“{line}”</h1>}
+					<p className="mono-label">
+						{findingCounts.critical} critical · {findingCounts.warning} warning
+						· {findingCounts.notice} notice
+					</p>
 					{!preview && <ShareButtons roast={roast} />}
 				</div>
 			</div>

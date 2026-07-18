@@ -27,7 +27,7 @@ export function ShareButtons({ roast }: { roast: PublicRoast }) {
 		if (!navigator.share) return copyRoast();
 		try {
 			await navigator.share({
-				title: `${roast.score}/100 · ${roast.tier} · Roast0`,
+				title: `${roast.score}/100 · ${roast.tier} · Flint`,
 				text: roast.roastLine ?? fallbackRoastLine(roast.tier),
 				url: window.location.href,
 			});

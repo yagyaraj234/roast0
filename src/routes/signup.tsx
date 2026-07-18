@@ -65,7 +65,7 @@ function SignupPage() {
 				<p className="mb-6 text-sm text-[var(--muted,#78716c)]">
 					Open the confirmation link, then log in.
 				</p>
-				<Link className="text-[var(--ember,#ff4d00)]" to="/login">
+				<Link className="text-[var(--spark,#ff4d00)]" to="/login">
 					Back to login
 				</Link>
 			</AuthShell>
@@ -73,9 +73,9 @@ function SignupPage() {
 	}
 
 	return (
-		<AuthShell title="Start roasting">
+		<AuthShell title="Start scanning">
 			<p className="text-sm text-[var(--muted,#78716c)]">
-				Create an account to roast your first trace.
+				Create an account to scan your first trace.
 			</p>
 			<form className="mt-6 space-y-5" onSubmit={handleSubmit}>
 				<AuthField
@@ -111,17 +111,17 @@ function SignupPage() {
 					value={confirmation}
 				/>
 				{errors.form ? (
-					<p className="text-sm text-[var(--ember,#ff4d00)]" role="alert">
+					<p className="text-sm text-[var(--spark,#ff4d00)]" role="alert">
 						{errors.form}
 					</p>
 				) : null}
 				<button className={authButtonClass} disabled={pending} type="submit">
-					{pending ? "Creating account…" : "Start roasting"}
+					{pending ? "Creating account…" : "Start scanning"}
 				</button>
 			</form>
 			<p className="mt-6 text-center text-sm text-[var(--muted,#78716c)]">
 				Already have an account?{" "}
-				<Link className="text-[var(--ember,#ff4d00)]" to="/login">
+				<Link className="text-[var(--spark,#ff4d00)]" to="/login">
 					Log in
 				</Link>
 			</p>

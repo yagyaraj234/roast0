@@ -9,7 +9,7 @@ import {
 import { useEffect, useState } from "react";
 
 import { AppPageHeader } from "#/components/app-page-header";
-import { TierChip } from "#/components/roast-table";
+import { SeverityCounts } from "#/components/roast-table";
 import type { BatchRoast } from "#/lib/roasts";
 
 const batchValidator = (value: unknown) => {
@@ -104,7 +104,7 @@ function BatchStatus() {
 						? "All traces settled. Polling stopped."
 						: "Processing traces. Status refreshes every 1.5 seconds."
 				}
-				title="Roast status"
+				title="Scan status"
 			/>
 
 			{error && (
@@ -156,13 +156,15 @@ function StatusRow({ row }: { row: BatchRoast }) {
 			</div>
 			{row.status === "done" && (
 				<>
-					<span className="font-mono text-lg font-semibold">{row.score}</span>
-					<TierChip tier={row.tier} />
+					<span className="font-mono text-lg font-semibold">
+						Flint score {row.score}
+					</span>
+					<SeverityCounts counts={row.findingCounts} />
 					<a
 						href={`/r/${row.slug}`}
 						className="inline-flex items-center gap-1 text-sm font-medium text-orange-700 hover:text-orange-900"
 					>
-						Card <ArrowUpRight size={14} aria-hidden="true" />
+						Report <ArrowUpRight size={14} aria-hidden="true" />
 					</a>
 				</>
 			)}

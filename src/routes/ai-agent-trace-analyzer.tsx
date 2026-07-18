@@ -3,25 +3,25 @@ import { ArrowRight } from "lucide-react";
 
 import { Logo } from "../components/Logo";
 
-const title = "AI Agent Trace Analyzer for Security & Cost | Roast0";
+const title = "AI Agent Trace Analyzer for Security & Cost | Flint";
 const description =
-	"Analyze AI agent traces for leaked secrets, tool loops, duplicate calls, bloated context, failures, and token cost waste with Roast0.";
+	"Flint is security scanning for AI agent traces: it catches leaked secrets, unsafe tool calls, loops, failures, and cost waste before production.";
 
 const faqs = [
 	{
 		question: "What does an AI agent trace analyzer find?",
 		answer:
-			"Roast0 checks agent traces for leaked secrets and PII, repeated tool calls, error tails, duplicate LLM calls, bloated context, and token cost waste.",
+			"Flint checks agent traces for leaked secrets and PII, repeated tool calls, error tails, duplicate LLM calls, bloated context, and token cost waste.",
 	},
 	{
-		question: "Does Roast0 store secrets from an uploaded trace?",
+		question: "Does Flint store secrets from an uploaded trace?",
 		answer:
-			"No. Roast0 detects and redacts supported secret patterns before the trace reaches storage, then reports the matching rule without preserving the secret value.",
+			"No. Flint detects and redacts supported secret patterns before the trace reaches storage, then reports the matching rule without preserving the secret value.",
 	},
 	{
-		question: "How does Roast0 calculate agent cost waste?",
+		question: "How does Flint calculate agent cost waste?",
 		answer:
-			"Roast0 uses measured token counts when the trace provides them and clearly labels estimates when usage data is missing. It flags duplicate calls and repeated prompt bloat as avoidable waste.",
+			"Flint uses measured token counts when the trace provides them and clearly labels estimates when usage data is missing. It flags duplicate calls and repeated prompt bloat as avoidable waste.",
 	},
 ] as const;
 
@@ -30,7 +30,7 @@ const structuredData = {
 	"@graph": [
 		{
 			"@type": "WebApplication",
-			name: "Roast0",
+			name: "Flint",
 			description,
 			applicationCategory: "DeveloperApplication",
 			operatingSystem: "Web",
@@ -58,7 +58,7 @@ export const Route = createFileRoute("/ai-agent-trace-analyzer")({
 			{ title },
 			{ name: "description", content: description },
 			{ property: "og:type", content: "website" },
-			{ property: "og:site_name", content: "Roast0" },
+			{ property: "og:site_name", content: "Flint" },
 			{ property: "og:title", content: title },
 			{ property: "og:description", content: description },
 			{ name: "twitter:card", content: "summary" },
@@ -96,10 +96,10 @@ function AgentTraceAnalyzerPage() {
 
 					<section className="public-findings">
 						<div className="card-section-heading">
-							<h2>What is Roast0?</h2>
+							<h2>What is Flint?</h2>
 						</div>
 						<p>
-							Roast0 analyzes an AI agent trace to find leaked secrets, repeated
+							Flint scans an AI agent trace to find leaked secrets, repeated
 							tool calls, duplicate LLM calls, bloated context, error tails, and
 							token cost waste. It redacts supported secrets before storage,
 							then returns a 0–100 health score and a shareable report.
@@ -108,7 +108,7 @@ function AgentTraceAnalyzerPage() {
 
 					<section className="public-findings">
 						<div className="card-section-heading">
-							<h2>What does Roast0 check in an agent trace?</h2>
+							<h2>What does Flint check in an agent trace?</h2>
 						</div>
 						<ol>
 							<li>
@@ -166,7 +166,7 @@ function AgentTraceAnalyzerPage() {
 							</li>
 							<li>
 								<a href="https://github.com/yagyaraj234/roast0">
-									Roast0 source code
+									Flint source code
 								</a>{" "}
 								for the implemented checks and scoring behavior.
 							</li>

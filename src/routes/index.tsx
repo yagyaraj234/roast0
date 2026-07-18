@@ -1,5 +1,11 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { ArrowRight, Copy, DollarSign, Gauge, ShieldCheck } from "lucide-react";
+import {
+	ArrowRight,
+	Copy,
+	DollarSign,
+	Repeat2,
+	ShieldCheck,
+} from "lucide-react";
 
 import { DotGlyph, DotMatrix } from "../components/DotMatrix";
 import { Logo } from "../components/Logo";
@@ -14,11 +20,11 @@ export const Route = createFileRoute("/")({
 	loader: () => getRecentPublicRoasts(),
 	head: () => ({
 		meta: [
-			{ title: "Roast0 — Every trace tells on your agent" },
+			{ title: "Flint — Security scanning for AI agent traces" },
 			{
 				name: "description",
 				content:
-					"Upload an agent trace. Get a score, cost autopsy, security findings, and a public card built to share.",
+					"Flint scans every agent trace for leaked secrets, unsafe tool calls, and runaway costs, then redacts what it finds before storing anything.",
 			},
 		],
 	}),
@@ -27,36 +33,47 @@ export const Route = createFileRoute("/")({
 
 const features = [
 	{
-		label: "01 / REDACTION",
-		title: "Catches it. Refuses to keep it.",
-		copy: "Secrets are redacted before storage, while the finding keeps enough context to act.",
+		label: "01 / SECURITY",
+		title: "Detect and redact in one pass",
+		copy: "Flint catches supported secrets in trace data and replaces them before storage.",
 		icon: ShieldCheck,
 	},
 	{
-		label: "02 / COST AUTOPSY",
-		title: "Find the expensive habits.",
-		copy: "Duplicate calls and bloated context become waste dollars, measured or honestly estimated.",
+		label: "02 / RELIABILITY",
+		title: "Loop and failure flags",
+		copy: "Repeated tool calls and error tails become concrete findings, not dashboard noise.",
+		icon: Repeat2,
+	},
+	{
+		label: "03 / COST",
+		title: "Cost autopsy, measured vs estimated",
+		copy: "Duplicate calls and bloated context show their waste with the source of each number.",
 		icon: DollarSign,
 	},
 	{
-		label: "03 / ROAST SCORE",
-		title: "One number. Zero ambiguity.",
-		copy: "Security, reliability, and cost findings roll into a score from Rare to Charcoal.",
-		icon: Gauge,
-	},
-	{
-		label: "04 / SHARE CARDS",
-		title: "Make the post-mortem travel.",
-		copy: "Every roast gets a public URL and an unfurl made for the team chat.",
+		label: "04 / DISTRIBUTION",
+		title: "Roast cards for the timeline",
+		copy: "Every scan has a shareable report card for the people who need to see it.",
 		icon: Copy,
 	},
+] as const;
+
+const catches = [
+	"OpenAI, AWS, GitHub, Slack, and Google API keys in span inputs, outputs, and tool arguments",
+	"JWTs, bearer tokens, and private key blocks",
+	"Emails and phone numbers passed through prompts",
+	"Plain-http URLs in tool calls",
+	"The same tool called 4+ times with identical arguments",
+	"Traces that end in an unhandled error",
+	"Duplicate LLM calls and repeated 2,000+ token prompt prefixes",
+	"Single calls stuffed past 20k input tokens",
 ] as const;
 
 function LandingPage() {
 	const { roasts, available } = Route.useLoaderData();
 	const liveHref = roasts[0]
 		? `/r/${encodeURIComponent(roasts[0].slug)}`
-		: "#live-roasts";
+		: "#live-reports";
 
 	return (
 		<div className="landing">
@@ -64,8 +81,8 @@ function LandingPage() {
 				<div className="landing-nav__inner">
 					<Logo inverse />
 					<nav className="landing-nav__links" aria-label="Main navigation">
-						<a href="#how-it-works">How it works</a>
-						<a href="#live-roasts">Live roasts</a>
+						<a href="#what-flint-catches">What Flint catches</a>
+						<a href="#live-reports">Live reports</a>
 						<a href="/ai-agent-trace-analyzer">Trace analyzer</a>
 					</nav>
 					<div className="landing-nav__actions">
@@ -73,7 +90,7 @@ function LandingPage() {
 							Log in
 						</a>
 						<a className="button button--small" href="/app/new">
-							Roast a trace <ArrowRight aria-hidden="true" />
+							Scan a trace <ArrowRight aria-hidden="true" />
 						</a>
 					</div>
 				</div>
@@ -89,21 +106,22 @@ function LandingPage() {
 								<ArrowRight />
 							</a>
 							<p className="eyebrow reveal reveal--2">
-								Agent trace intelligence
+								Security scanning for AI agent traces
 							</p>
 							<h1 id="hero-title" className="reveal reveal--3">
-								Every trace tells on <em>your agent.</em>
+								Catch what your agents <em>leak.</em>
 							</h1>
 							<p className="hero__lede reveal reveal--4">
-								Upload an agent trace. Get a score, a cost autopsy, and a
-								security flag list on a card built to be shared.
+								Flint scans every agent trace for leaked secrets, unsafe tool
+								calls, and runaway costs, then redacts what it finds before
+								storing anything.
 							</p>
 							<div className="hero__actions reveal reveal--5">
 								<a className="button" href="/app/new">
-									Roast a trace <ArrowRight aria-hidden="true" />
+									Scan a trace <ArrowRight aria-hidden="true" />
 								</a>
 								<a className="button button--ghost" href={liveHref}>
-									See a live roast
+									See a live report
 								</a>
 							</div>
 						</div>
@@ -111,20 +129,38 @@ function LandingPage() {
 					</div>
 				</section>
 
-				<section className="product-shot" aria-label="Roast0 product preview">
+				<section className="product-shot" aria-label="Flint product preview">
 					<RoastProductShot />
 					<p className="product-shot__caption">
-						Real card UI · illustrative redacted demo trace
+						Live report UI · illustrative redacted demo trace
 					</p>
+				</section>
+
+				<section
+					className="findings-list section-shell"
+					id="what-flint-catches"
+				>
+					<div className="section-heading">
+						<p className="eyebrow">Deterministic checks</p>
+						<h2>What Flint catches</h2>
+						<p>
+							Concrete rules for trace data that should never reach production.
+						</p>
+					</div>
+					<ul className="findings-list__items">
+						{catches.map((item) => (
+							<li key={item}>{item}</li>
+						))}
+					</ul>
 				</section>
 
 				<section className="features section-shell" id="how-it-works">
 					<div className="section-heading">
-						<p className="eyebrow">Four cuts. One diagnosis.</p>
-						<h2>From raw trace to hard truth.</h2>
+						<p className="eyebrow">One trace, clear findings</p>
+						<h2>Find what will hurt you.</h2>
 						<p>
-							Built for the five seconds between “it passed” and “why did it do
-							that?”
+							Security first. Reliability and cost next. Shareable evidence
+							last.
 						</p>
 					</div>
 					<div className="feature-grid">
@@ -142,12 +178,12 @@ function LandingPage() {
 					</div>
 				</section>
 
-				<section className="live-wall" id="live-roasts">
+				<section className="live-wall" id="live-reports">
 					<div className="section-shell">
 						<div className="section-heading section-heading--row">
 							<div>
-								<p className="eyebrow">Live wall</p>
-								<h2>Fresh from the fire.</h2>
+								<p className="eyebrow">Live reports</p>
+								<h2>Recent scans.</h2>
 							</div>
 							<span
 								className={`live-status${available ? "" : " live-status--offline"}`}
@@ -158,7 +194,7 @@ function LandingPage() {
 						{roasts.length > 0 ? (
 							<nav
 								className="live-track"
-								aria-label="Eight most recent public roasts"
+								aria-label="Eight most recent public reports"
 							>
 								{roasts.map((roast) => (
 									<a
@@ -168,12 +204,9 @@ function LandingPage() {
 									>
 										<div className="live-roast__score">{roast.score}</div>
 										<div>
-											<span>{roast.tier}</span>
+											<span>Flint score</span>
 											<h3>{roast.title}</h3>
-											<p>
-												{roast.roastLine ??
-													"This trace is waiting for its last word."}
-											</p>
+											<p>Public report ready to review.</p>
 										</div>
 										<ArrowRight aria-hidden="true" />
 									</a>
@@ -182,9 +215,9 @@ function LandingPage() {
 						) : (
 							<div className="live-empty">
 								<DotGlyph />
-								<p>No public roasts yet. First trace gets the hottest seat.</p>
+								<p>No public reports yet. Scan the first trace.</p>
 								<a href="/app/new">
-									Roast the first trace <ArrowRight />
+									Scan a trace <ArrowRight />
 								</a>
 							</div>
 						)}
@@ -195,7 +228,7 @@ function LandingPage() {
 			<footer className="landing-footer">
 				<div className="section-shell landing-footer__inner">
 					<Logo inverse />
-					<p>Built at the OpenAI hackathon.</p>
+					<p>Flint. Security scanning for AI agent traces.</p>
 					<a
 						href="https://github.com/yagyaraj234/roast0"
 						target="_blank"

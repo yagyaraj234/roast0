@@ -75,14 +75,14 @@ function LoginPage() {
 						value={password}
 					/>
 					<Link
-						className="mt-2 block text-right text-sm text-[var(--ember,#ff4d00)]"
+						className="mt-2 block text-right text-sm text-[var(--spark,#ff4d00)]"
 						to="/reset-password"
 					>
 						Forgot password?
 					</Link>
 				</div>
 				{errors.form ? (
-					<p className="text-sm text-[var(--ember,#ff4d00)]" role="alert">
+					<p className="text-sm text-[var(--spark,#ff4d00)]" role="alert">
 						{errors.form}
 					</p>
 				) : null}
@@ -92,7 +92,7 @@ function LoginPage() {
 			</form>
 			<p className="mt-6 text-center text-sm text-[var(--muted,#78716c)]">
 				No account?{" "}
-				<Link className="text-[var(--ember,#ff4d00)]" to="/signup">
+				<Link className="text-[var(--spark,#ff4d00)]" to="/signup">
 					Sign up
 				</Link>
 			</p>
