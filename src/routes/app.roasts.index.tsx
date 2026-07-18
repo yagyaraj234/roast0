@@ -15,9 +15,8 @@ function Roasts() {
 	return (
 		<main className="app-page">
 			<AppPageHeader
-				breadcrumb="Dashboard / Roasts"
 				description="Search by title from the top bar."
-				title="All roasts"
+				title="All scans"
 			/>
 			<div className="mt-7">
 				<RoastTable roasts={roasts} query={query} />

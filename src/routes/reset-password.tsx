@@ -47,7 +47,7 @@ function ResetPasswordPage() {
 				<p className="mb-6 text-sm text-[var(--muted,#78716c)]">
 					Use the link we sent to choose a new password.
 				</p>
-				<Link className="text-[var(--ember,#ff4d00)]" to="/login">
+				<Link className="text-[var(--spark,#ff4d00)]" to="/login">
 					Back to login
 				</Link>
 			</AuthShell>
@@ -71,7 +71,7 @@ function ResetPasswordPage() {
 					value={email}
 				/>
 				{formError ? (
-					<p className="text-sm text-[var(--ember,#ff4d00)]" role="alert">
+					<p className="text-sm text-[var(--spark,#ff4d00)]" role="alert">
 						{formError}
 					</p>
 				) : null}
@@ -80,7 +80,7 @@ function ResetPasswordPage() {
 				</button>
 			</form>
 			<p className="mt-6 text-center text-sm">
-				<Link className="text-[var(--ember,#ff4d00)]" to="/login">
+				<Link className="text-[var(--spark,#ff4d00)]" to="/login">
 					Back to login
 				</Link>
 			</p>

@@ -1,8 +1,8 @@
 :root {
-	--ink: #0c0a09;
-	--ink-2: #1c1917;
-	--ember: #ff4d00;
-	--ember-soft: #ff8a4c;
+	--stone: #0c0a09;
+	--graphite: #1c1917;
+	--spark: #ff4d00;
+	--spark-soft: #ff8a4c;
 	--cream: #faf7f2;
 	--app-bg: #fafaf9;
 	--surface: #ffffff;
@@ -61,7 +61,7 @@ input {
 	display: inline-flex;
 	align-items: center;
 	gap: 10px;
-	color: var(--ink);
+	color: var(--stone);
 }
 
 .brand--cream {
@@ -81,17 +81,19 @@ input {
 	letter-spacing: -0.02em;
 }
 
-.dot-flame--hot {
-	fill: #fff7ed;
+.brand__flake,
+.dot-matrix__flake {
+	fill: var(--spark);
 }
 
-.dot-flame--ember,
-.dot-matrix__ember {
-	fill: var(--ember);
+.brand__facet,
+.dot-matrix__facet {
+	fill: var(--spark-soft);
 }
 
-.dot-flame--soft {
-	fill: var(--ember-soft);
+.brand__spark,
+.dot-matrix__spark {
+	fill: #fff4e8;
 }
 
 .dot-matrix__faint {
@@ -99,8 +101,8 @@ input {
 	opacity: 0.32;
 }
 
-.dot-matrix__hot {
-	fill: #fff7ed;
+.dot-matrix__spark-burst {
+	fill: #fff4e8;
 }
 
 .button {
@@ -171,7 +173,7 @@ input {
 			rgba(255, 181, 133, 0.8),
 			transparent 26%
 		),
-		linear-gradient(145deg, var(--ink) 6%, #7c1d04 55%, var(--ember) 100%);
+		linear-gradient(145deg, var(--stone) 6%, #7c1d04 55%, var(--spark) 100%);
 	color: var(--cream);
 }
 
@@ -281,7 +283,7 @@ input {
 
 .app-sidebar__nav a.is-active {
 	background: #fff1eb;
-	color: var(--ember);
+	color: var(--spark);
 }
 
 .app-sidebar__nav-label {
@@ -335,7 +337,7 @@ input {
 	flex: none;
 	place-items: center;
 	border-radius: 50%;
-	background: var(--ink);
+	background: var(--stone);
 	color: var(--cream);
 	font-family: var(--font-mono);
 	font-size: 12px;
@@ -384,12 +386,12 @@ input {
 .app-sidebar__nav a:focus-visible,
 .avatar:focus-visible,
 .search-field input:focus-visible {
-	outline: 2px solid var(--ember);
+	outline: 2px solid var(--spark);
 	outline-offset: 2px;
 }
 
 .search-field input:focus-visible {
-	border-color: var(--ember-soft);
+	border-color: var(--spark-soft);
 	box-shadow: 0 0 0 3px rgba(255, 77, 0, 0.1);
 }
 
@@ -424,15 +426,6 @@ input {
 
 .app-page__header {
 	margin-bottom: 28px;
-}
-
-.app-page__breadcrumb {
-	margin: 0 0 8px;
-	color: var(--muted);
-	font-family: var(--font-mono);
-	font-size: 12px;
-	letter-spacing: 0.08em;
-	text-transform: uppercase;
 }
 
 .app-page__title-row {

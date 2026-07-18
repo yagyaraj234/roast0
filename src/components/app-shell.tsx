@@ -1,5 +1,10 @@
 import { Link, Outlet } from "@tanstack/react-router";
-import { CirclePlus, Flame, LayoutDashboard, UserRound } from "lucide-react";
+import {
+	CirclePlus,
+	LayoutDashboard,
+	ScanSearch,
+	UserRound,
+} from "lucide-react";
 import { createContext, useContext, useState } from "react";
 
 import { Logo } from "./brand";
@@ -8,8 +13,8 @@ const SearchContext = createContext("");
 
 const navItems = [
 	{ icon: LayoutDashboard, label: "Dashboard", to: "/app" },
-	{ icon: CirclePlus, label: "New roast", to: "/app/new" },
-	{ icon: Flame, label: "Roasts", to: "/app/roasts" },
+	{ icon: CirclePlus, label: "New scan", to: "/app/new" },
+	{ icon: ScanSearch, label: "Scans", to: "/app/roasts" },
 	{ icon: UserRound, label: "Profile", to: "/app/profile" },
 ] as const;
 
@@ -31,7 +36,7 @@ export function AppShell({
 		<SearchContext.Provider value={search}>
 			<div className="app-shell">
 				<aside className="app-sidebar">
-					<Link aria-label="Roast0 home" className="app-sidebar__brand" to="/">
+					<Link aria-label="Flint home" className="app-sidebar__brand" to="/">
 						<Logo />
 					</Link>
 					<nav aria-label="App navigation" className="app-sidebar__nav">
@@ -62,10 +67,10 @@ export function AppShell({
 				<div className="app-column">
 					<header className="app-topbar">
 						<label className="search-field">
-							<span className="sr-only">Search roasts by title</span>
+							<span className="sr-only">Search scans by title</span>
 							<input
 								onChange={(event) => setSearch(event.target.value)}
-								placeholder="Search roasts"
+								placeholder="Search scans"
 								type="search"
 								value={search}
 							/>
@@ -83,17 +88,10 @@ export function AppShell({
 	);
 }
 
-export function AppPage({
-	breadcrumb,
-	title,
-}: {
-	breadcrumb: string;
-	title: string;
-}) {
+export function AppPage({ title }: { title: string }) {
 	return (
 		<div className="app-page">
 			<header className="app-page__header">
-				<p>{breadcrumb}</p>
 				<h1>{title}</h1>
 			</header>
 			<section
