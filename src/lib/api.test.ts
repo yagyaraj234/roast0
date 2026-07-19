@@ -1,6 +1,12 @@
 import { afterEach, describe, expect, test, vi } from "vitest";
 
-import { getMyRoasts, getRoast, ingestBatch, ingestTrace } from "./api";
+import {
+	getMyRoasts,
+	getRecentRoasts,
+	getRoast,
+	ingestBatch,
+	ingestTrace,
+} from "./api";
 
 const fetchMock = vi.fn();
 const originalFetch = globalThis.fetch;
@@ -57,5 +63,18 @@ describe("FastAPI helpers", () => {
 			"http://localhost:8000/roasts/private",
 			{ headers: { authorization: "Bearer access-token" } },
 		);
+
+		fetchMock.mockResolvedValueOnce(Response.json([]));
+		await expect(getRecentRoasts()).resolves.toEqual([]);
+		for (const operation of [
+			() => ingestTrace({ source: "live", trace: {} }),
+			() => ingestBatch({ traces: [] }, "access-token"),
+			() => getRoast("broken"),
+			() => getRecentRoasts(),
+			() => getMyRoasts("access-token"),
+		]) {
+			fetchMock.mockResolvedValueOnce(new Response(null, { status: 500 }));
+			await expect(operation()).rejects.toThrow();
+		}
 	});
 });

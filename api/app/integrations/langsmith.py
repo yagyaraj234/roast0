@@ -52,10 +52,9 @@ def _safe_rows(value: object) -> list[dict[str, Any]]:
     if isinstance(value, list):
         return [item for item in value if isinstance(item, dict)]
     if isinstance(value, dict):
-        for key in ("data", "results", "items"):
-            nested = value.get(key)
-            if isinstance(nested, list):
-                return [item for item in nested if isinstance(item, dict)]
+        nested = value.get("data") or value.get("results") or value.get("items")
+        if isinstance(nested, list):
+            return [item for item in nested if isinstance(item, dict)]
     return []
 
 
@@ -386,7 +385,9 @@ def _pending_roots(
     pending: list[dict[str, Any]] = []
     checkpointed: list[dict[str, Any]] = []
     seen_trace_ids: set[str] = set()
-    while len(pending) < limit:
+    while True:
+        if len(pending) >= limit:
+            return pending, checkpointed
         page = client.completed_runs(
             _cursor_time(connection, now), limit, str(connection["project_name"]), offset
         )

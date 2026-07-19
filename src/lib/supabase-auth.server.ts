@@ -5,16 +5,15 @@ import {
 	setResponseHeader,
 } from "@tanstack/react-start/server";
 
+const missingAuthConfig =
+	"SUPABASE_URL and SUPABASE_PUBLISHABLE_KEY (or SUPABASE_ANON_KEY) must be set";
+
 function getAuthConfig() {
 	const url = process.env.SUPABASE_URL;
 	const key =
 		process.env.SUPABASE_PUBLISHABLE_KEY ?? process.env.SUPABASE_ANON_KEY;
 
-	if (!url || !key) {
-		throw new Error(
-			"SUPABASE_URL and SUPABASE_PUBLISHABLE_KEY (or SUPABASE_ANON_KEY) must be set",
-		);
-	}
+	if (!url || !key) throw new Error(missingAuthConfig);
 
 	return { key, url };
 }

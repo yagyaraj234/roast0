@@ -1,12 +1,30 @@
 import { type FormEvent, useEffect, useRef, useState } from "react";
 import type { SharingPayload, SharingVisibility } from "../lib/shares";
-import {
-	addRoastShare,
-	getRoastSharing,
-	removeRoastShare,
-	updateRoastVisibility,
-} from "../lib/shares.functions";
 import { monoLabel, secondaryButton } from "./ui";
+
+type SharingActions = {
+	addRoastShare: (input: {
+		data: { email: string; slug: string };
+	}) => Promise<SharingPayload>;
+	getRoastSharing: (input: { data: string }) => Promise<SharingPayload>;
+	removeRoastShare: (input: {
+		data: { email: string; slug: string };
+	}) => Promise<SharingPayload>;
+	updateRoastVisibility: (input: {
+		data: { slug: string; visibility: SharingVisibility };
+	}) => Promise<SharingPayload>;
+};
+
+const defaultSharingActions: SharingActions = {
+	addRoastShare: async (input) =>
+		(await import("../lib/shares.functions")).addRoastShare(input),
+	getRoastSharing: async (input) =>
+		(await import("../lib/shares.functions")).getRoastSharing(input),
+	removeRoastShare: async (input) =>
+		(await import("../lib/shares.functions")).removeRoastShare(input),
+	updateRoastVisibility: async (input) =>
+		(await import("../lib/shares.functions")).updateRoastVisibility(input),
+};
 
 function errorMessage(error: unknown): string {
 	return error instanceof Error
@@ -17,9 +35,11 @@ function errorMessage(error: unknown): string {
 export function ShareDialog({
 	slug,
 	isOwner,
+	sharingActions = defaultSharingActions,
 }: {
 	slug: string;
 	isOwner: boolean;
+	sharingActions?: SharingActions;
 }) {
 	const dialogRef = useRef<HTMLDialogElement>(null);
 	const closeTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
@@ -63,7 +83,7 @@ export function ShareDialog({
 		setSharing(null);
 		setReportUrl(window.location.href);
 		dialogRef.current?.showModal();
-		await apply(() => getRoastSharing({ data: slug }));
+		await apply(() => sharingActions.getRoastSharing({ data: slug }));
 	}
 
 	function closeDialog(): void {
@@ -79,18 +99,24 @@ export function ShareDialog({
 	async function changeVisibility(
 		visibility: SharingVisibility,
 	): Promise<void> {
-		await apply(() => updateRoastVisibility({ data: { slug, visibility } }));
+		await apply(() =>
+			sharingActions.updateRoastVisibility({ data: { slug, visibility } }),
+		);
 	}
 
 	async function addEmail(event: FormEvent<HTMLFormElement>): Promise<void> {
 		event.preventDefault();
-		if (await apply(() => addRoastShare({ data: { slug, email } }))) {
+		if (
+			await apply(() => sharingActions.addRoastShare({ data: { slug, email } }))
+		) {
 			setEmail("");
 		}
 	}
 
 	async function removeEmail(shareEmail: string): Promise<void> {
-		await apply(() => removeRoastShare({ data: { slug, email: shareEmail } }));
+		await apply(() =>
+			sharingActions.removeRoastShare({ data: { slug, email: shareEmail } }),
+		);
 	}
 
 	async function copyLink(): Promise<void> {

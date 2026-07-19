@@ -19,6 +19,16 @@ describe("sharing data", () => {
 		expect(() =>
 			validateShareInput({ slug: "report_123", email: "bad" }),
 		).toThrow("valid email");
+		expect(() => validateSharingSlug("bad slug")).toThrow(
+			"Invalid report slug",
+		);
+		expect(() => validateVisibilityInput(null)).toThrow(
+			"Invalid sharing request",
+		);
+		expect(() =>
+			validateVisibilityInput({ slug: "report", visibility: "team" }),
+		).toThrow("Visibility");
+		expect(() => validateShareInput([])).toThrow("Invalid sharing request");
 	});
 
 	test("parses the frozen sharing response", () => {
@@ -37,6 +47,9 @@ describe("sharing data", () => {
 		});
 		expect(() =>
 			parseSharingPayload({ visibility: "public", shares: [{}] }),
+		).toThrow("invalid");
+		expect(() =>
+			parseSharingPayload({ visibility: "team", shares: [] }),
 		).toThrow("invalid");
 	});
 });

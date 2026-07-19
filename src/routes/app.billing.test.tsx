@@ -1,4 +1,7 @@
 // @ts-expect-error jsdom does not publish bundled TypeScript declarations.
+
+// @ts-expect-error Bun provides module mocks in its test runtime; Bun types are not installed.
+import { mock } from "bun:test";
 import { JSDOM } from "jsdom";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
@@ -6,8 +9,13 @@ const state = {
 	createBillingCheckout: vi.fn(),
 	getBillingStatus: vi.fn(),
 };
+let useAppSearch: () => string;
 
-vi.mock("#/lib/billing.functions", () => state);
+function SearchProbe() {
+	return <output aria-label="Current search">{useAppSearch()}</output>;
+}
+
+mock.module("#/lib/billing.functions", () => state);
 vi.mock("@tanstack/react-router", () => ({
 	createFileRoute: (_path: string) => (options: Record<string, unknown>) =>
 		options,
@@ -27,7 +35,7 @@ vi.mock("@tanstack/react-router", () => ({
 			{children}
 		</a>
 	),
-	Outlet: () => null,
+	Outlet: () => <SearchProbe />,
 }));
 
 const dom = new JSDOM("<!doctype html><html><body></body></html>", {
@@ -69,8 +77,11 @@ Object.defineProperty(globalThis, "IS_REACT_ACT_ENVIRONMENT", {
 const { cleanup, fireEvent, render, waitFor } = await import(
 	"@testing-library/react"
 );
-const { AppShell } = await import("#/components/app-shell");
+const appShellModule = await import("#/components/app-shell");
+const { AppShell } = appShellModule;
+useAppSearch = appShellModule.useAppSearch;
 const { BillingPage } = await import("./app.billing");
+mock.restore();
 
 beforeEach(() => {
 	assign.mockReset();
@@ -78,7 +89,15 @@ beforeEach(() => {
 	state.getBillingStatus.mockReset();
 });
 
-afterEach(() => cleanup());
+afterEach(() => {
+	cleanup();
+	state.getBillingStatus.mockResolvedValue({
+		plan: "free",
+		status: "none",
+		scans_used_this_month: 0,
+		scans_included: 5,
+	});
+});
 
 describe("billing page", () => {
 	test("shows free usage and redirects upgrade checkout", async () => {
@@ -113,6 +132,39 @@ describe("billing page", () => {
 		expect(view.getByText(/Aug 18, 2026/)).toBeTruthy();
 		expect(view.queryByRole("button", { name: "Upgrade to Pro" })).toBeNull();
 	});
+
+	test("reports billing load and checkout failures", async () => {
+		state.getBillingStatus.mockRejectedValueOnce(new Error("offline"));
+		const loadView = render(<BillingPage />);
+		await waitFor(() =>
+			expect(loadView.getByRole("alert").textContent).toContain(
+				"Could not load billing.",
+			),
+		);
+		loadView.unmount();
+
+		state.getBillingStatus.mockResolvedValueOnce({
+			plan: "free",
+			status: "none",
+			scans_used_this_month: 0,
+			scans_included: 5,
+		});
+		state.createBillingCheckout.mockRejectedValueOnce(new Error("offline"));
+		const checkoutView = render(<BillingPage />);
+		await waitFor(() =>
+			expect(
+				checkoutView.getByRole("button", { name: "Upgrade to Pro" }).disabled,
+			).toBe(false),
+		);
+		fireEvent.click(
+			checkoutView.getByRole("button", { name: "Upgrade to Pro" }),
+		);
+		await waitFor(() =>
+			expect(checkoutView.getByRole("alert").textContent).toContain(
+				"Could not start checkout.",
+			),
+		);
+	});
 });
 
 test("app nav shows billing link with current plan badge", async () => {
@@ -129,4 +181,14 @@ test("app nav shows billing link with current plan badge", async () => {
 		"/app/billing",
 	);
 	await waitFor(() => expect(view.getByText("Pro")).toBeTruthy());
+	fireEvent.change(view.getByLabelText("Search scans by title"), {
+		target: { value: "production" },
+	});
+	expect(view.getByLabelText("Current search").textContent).toBe("production");
+});
+
+test("keeps navigation usable when billing status is unavailable", async () => {
+	state.getBillingStatus.mockRejectedValueOnce(new Error("offline"));
+	render(<AppShell totalRoasts={0} user={{ email: "" }} />);
+	await waitFor(() => expect(state.getBillingStatus).toHaveBeenCalledTimes(1));
 });

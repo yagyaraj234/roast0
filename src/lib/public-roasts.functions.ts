@@ -32,10 +32,8 @@ export const getPublicRoast = createServerFn({ method: "GET" })
 	.handler(async ({ data: slug }) => {
 		setResponseHeader("Cache-Control", "private, no-store");
 		setResponseHeader("Vary", "Cookie");
-		return getPublicRoastData(
-			slug,
-			slug ? await getAccessToken().catch(() => null) : null,
-		);
+		const accessToken = slug ? await getAccessToken().catch(() => null) : null;
+		return getPublicRoastData(slug, accessToken);
 	});
 
 export async function getPublicRoastData(

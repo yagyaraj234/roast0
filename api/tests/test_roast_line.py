@@ -4,6 +4,7 @@ from pathlib import Path
 from fastapi.testclient import TestClient
 
 from app.main import app
+from app import roast_line
 from app.roast_line import (
     FALLBACK_LINES,
     _PROMPT,
@@ -11,7 +12,7 @@ from app.roast_line import (
     fallback_line,
     generate_luna_assessment,
 )
-from app.types import CostReport, Finding, NormalizedTrace
+from app.types import CostReport, Finding, NormalizedTrace, Span
 from tests.conftest import FakeSupabase
 
 client = TestClient(app)
@@ -57,6 +58,55 @@ def test_fallback_report_explains_existing_findings() -> None:
     )
     assert report.generated is False
     assert report.actions[0].rule == "tool-loop"
+    assert fallback_detailed_report([], empty_cost()).actions == []
+
+
+def test_luna_response_is_filtered_and_bounded(monkeypatch) -> None:
+    class Completions:
+        def create(self, **_: object) -> object:
+            content = json.dumps({
+                "roast_line": '"' + "x" * 130 + '"',
+                "summary": "s" * 610,
+                "actions": [
+                    {"rule": "known", "issue": "i", "impact": "p", "fix": "f", "verification": "v"},
+                    {"rule": "unknown", "issue": "i", "impact": "p", "fix": "f", "verification": "v"},
+                ],
+            })
+            return type("Response", (), {"choices": [type("Choice", (), {"message": type("Message", (), {"content": content})()})()]})()
+
+    class Client:
+        chat = type("Chat", (), {"completions": Completions()})()
+
+    monkeypatch.setattr(roast_line, "get_settings", lambda: type("Settings", (), {"openai_api_key": "key", "roast_model": "model"})())
+    monkeypatch.setattr(roast_line, "OpenAI", lambda **_: Client())
+    trace = NormalizedTrace(
+        trace_id="trace", workflow="workflow", spans=[Span(id="span", parent_id=None, type="llm", name="model", model="model", start_ms=0, duration_ms=1, tokens_in=1, tokens_out=2, token_source="measured", input="in", output="out", meta={"status": "ok"})]
+    )
+    line, report = generate_luna_assessment([Finding(rule="known", category="cost", severity=1, span_ids=["span"], message="message")], empty_cost(), trace, 80, "Rare") or ("", None)
+    assert len(line) == 120
+    assert report and report.summary == "s" * 600
+    assert [action.rule for action in report.actions] == ["known"]
+    assert report.generated and report.model == "model"
+
+
+def test_luna_returns_fallback_line_or_none_for_invalid_responses(monkeypatch) -> None:
+    class Completions:
+        def __init__(self, content: str) -> None: self.content = content
+        def create(self, **_: object) -> object:
+            return type("Response", (), {"choices": [type("Choice", (), {"message": type("Message", (), {"content": self.content})()})()]})()
+
+    class Client:
+        def __init__(self, content: str) -> None:
+            self.chat = type("Chat", (), {"completions": Completions(content)})()
+
+    monkeypatch.setattr(roast_line, "get_settings", lambda: type("Settings", (), {"openai_api_key": "key", "roast_model": "model"})())
+    monkeypatch.setattr(roast_line, "OpenAI", lambda **_: Client(json.dumps({"summary": "summary", "actions": []})))
+    result = generate_luna_assessment([], empty_cost(), empty_trace(), 50, "Medium")
+    assert result and result[0] == FALLBACK_LINES["Medium"]
+    monkeypatch.setattr(roast_line, "OpenAI", lambda **_: Client(json.dumps({"summary": "", "actions": []})))
+    assert generate_luna_assessment([], empty_cost(), empty_trace(), 50, "Medium") is None
+    monkeypatch.setattr(roast_line, "OpenAI", lambda **_: Client("not-json"))
+    assert generate_luna_assessment([], empty_cost(), empty_trace(), 50, "Medium") is None
 
 
 def empty_trace() -> NormalizedTrace:

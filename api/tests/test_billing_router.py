@@ -229,3 +229,53 @@ def test_webhook_rejects_missing_signature(billing_db: FakeDb) -> None:
     response = client.post("/billing/webhook", json={"type": "subscription.active"})
     assert response.status_code == 401
     assert billing_db.rows["subscriptions"] == []
+
+
+def test_billing_error_and_webhook_edge_contracts(
+    billing_db: FakeDb, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from app.billing.dodo_client import DodoError
+
+    assert billing._event_status("subscription.updated", {"status": "expired"}) == "cancelled"
+    assert billing._event_status("subscription.updated", {"status": "pending"}) == "none"
+    assert billing._event_status("subscription.updated", {"status": "unknown"}) is None
+    assert billing._event_status("unknown", {}) is None
+    for code, status_code in (("provider_not_configured", 503), ("provider_timeout", 502)):
+        assert billing._provider_error(DodoError(code)).status_code == status_code
+
+    monkeypatch.setattr(billing, "create_checkout_session", lambda *_args, **_kwargs: (_ for _ in ()).throw(DodoError("provider_timeout")))
+    assert client.post("/billing/checkout", json={}, headers=HEADERS).status_code == 502
+    billing_db.rows["subscriptions"].append({"user_id": "user-1", "plan": "pro", "status": "active", "dodo_customer_id": ""})
+    assert client.get("/billing/status", headers=HEADERS).status_code == 502
+    billing_db.rows["subscriptions"][0]["dodo_customer_id"] = "customer"
+    monkeypatch.setattr(billing, "get_customer_balance", lambda *_args, **_kwargs: (_ for _ in ()).throw(DodoError("provider_timeout")))
+    assert client.get("/billing/status", headers=HEADERS).status_code == 502
+
+    monkeypatch.setattr(billing, "verify_webhook_signature", lambda *_: True)
+    assert client.post("/billing/webhook", content=b"bad").status_code == 400
+    assert client.post("/billing/webhook", content=b"[]").json() == {}
+    assert client.post("/billing/webhook", content=b'{"data":{}}').json() == {}
+
+
+def test_billing_email_and_ignored_webhook_payloads(
+    billing_db: FakeDb, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from fastapi import HTTPException
+
+    class BrokenDb:
+        auth = type("Auth", (), {"admin": type("Admin", (), {"get_user_by_id": lambda *_: (_ for _ in ()).throw(RuntimeError())})()})()
+
+    for db in (BrokenDb(), type("Db", (), {"auth": type("Auth", (), {"admin": type("Admin", (), {"get_user_by_id": lambda *_: type("Response", (), {"user": object()})()})()})()})()):
+        try:
+            billing._user_email(db, "user")
+            assert False, "unavailable email is not a checkout identity"
+        except HTTPException as exc:
+            assert exc.status_code in (422, 502)
+    monkeypatch.setattr(billing, "verify_webhook_signature", lambda *_: True)
+    for payload in (
+        {"type": "unknown", "data": {}},
+        {"type": "subscription.active", "data": {"product_id": "wrong"}},
+        {"type": "subscription.active", "data": {"product_id": "product-1", "metadata": {}, "customer": {}}},
+    ):
+        response = client.post("/billing/webhook", json=payload)
+        assert response.status_code == 200 and response.json() == {}

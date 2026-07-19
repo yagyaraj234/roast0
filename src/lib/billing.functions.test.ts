@@ -1,6 +1,11 @@
+// @ts-expect-error Bun provides module mocks in its test runtime.
+import { mock } from "bun:test";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
 const state = {
+	getAccessToken: vi.fn(),
+	getAuthenticatedUser: vi.fn(),
+	getSupabaseAuthClient: vi.fn(),
 	requireAccessToken: vi.fn(),
 	requireAuthenticatedUser: vi.fn(),
 };
@@ -13,11 +18,12 @@ vi.mock("@tanstack/react-start", () => ({
 	}),
 }));
 
-vi.mock("./supabase-auth.server", () => state);
-
+mock.module("./supabase-auth.server", () => state);
 const { createBillingCheckout, getBillingStatus } = await import(
 	"./billing.functions"
 );
+mock.restore();
+
 const fetchMock = vi.fn();
 const originalFetch = globalThis.fetch;
 
@@ -58,16 +64,26 @@ describe("billing server functions", () => {
 		);
 	});
 
-	test("loads authenticated status without forwarding unknown fields", async () => {
-		fetchMock.mockResolvedValue(
-			Response.json({
-				plan: "free",
-				status: "none",
-				scans_used_this_month: 2,
-				scans_included: 5,
-				secret: "not-forwarded",
-			}),
-		);
+	test("loads free and pro statuses without forwarding unknown fields", async () => {
+		fetchMock
+			.mockResolvedValueOnce(
+				Response.json({
+					plan: "free",
+					status: "none",
+					scans_used_this_month: 2,
+					scans_included: 5,
+					secret: "not-forwarded",
+				}),
+			)
+			.mockResolvedValueOnce(
+				Response.json({
+					plan: "pro",
+					status: "active",
+					credits_remaining: 9,
+					current_period_end: "2026-08-18T00:00:00Z",
+					secret: "not-forwarded",
+				}),
+			);
 
 		await expect(getBillingStatus()).resolves.toEqual({
 			plan: "free",
@@ -75,11 +91,22 @@ describe("billing server functions", () => {
 			scans_used_this_month: 2,
 			scans_included: 5,
 		});
-		expect(fetchMock).toHaveBeenCalledWith(
+		await expect(getBillingStatus()).resolves.toEqual({
+			plan: "pro",
+			status: "active",
+			credits_remaining: 9,
+			current_period_end: "2026-08-18T00:00:00Z",
+		});
+		expect(fetchMock).toHaveBeenLastCalledWith(
 			"http://localhost:8000/billing/status",
-			{
-				headers: { authorization: "Bearer access-token" },
-			},
+			{ headers: { authorization: "Bearer access-token" } },
+		);
+	});
+
+	test("rejects unsuccessful billing responses", async () => {
+		fetchMock.mockResolvedValue(new Response(null, { status: 500 }));
+		await expect(getBillingStatus()).rejects.toThrow(
+			"Billing request could not be completed.",
 		);
 	});
 });

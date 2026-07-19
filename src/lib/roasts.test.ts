@@ -3,6 +3,8 @@ import { describe, expect, test } from "vitest";
 import type { OwnerRoastRow } from "./api";
 import {
 	filterRoasts,
+	findingCounts,
+	mapOwnerRoastToBatchRoast,
 	mapOwnerRoastToListItem,
 	mapOwnerRoastToMetrics,
 	summarizeRoasts,
@@ -136,5 +138,13 @@ describe("dashboard roast helpers", () => {
 			secretCount: 1,
 			wasteUsd: 1.25,
 		});
+		expect(mapOwnerRoastToBatchRoast(row)).toMatchObject({
+			id: row.id,
+			findingCounts: { critical: 1, warning: 0, notice: 0 },
+		});
+		expect(
+			findingCounts([{ severity: 3 }, { severity: 2 }, { severity: 1 }, null]),
+		).toEqual({ critical: 1, warning: 1, notice: 1 });
+		expect(findingCounts({})).toEqual({ critical: 0, warning: 0, notice: 0 });
 	});
 });

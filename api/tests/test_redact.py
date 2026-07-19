@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 
+import pytest
 from app.normalize.openai_agents import parse
 from app.normalize.redact import redact_trace, redact_value
 from app.types import NormalizedTrace, Span
@@ -58,4 +59,11 @@ def test_redact_value_recurses_without_span_attribution() -> None:
     assert redact_value(raw) == {
         "items": ["«REDACTED:openai-key»", {"safe": "hello"}]
     }
+    assert redact_value(42) == 42
 
+
+def test_redact_trace_defends_against_invalid_constructed_metadata() -> None:
+    span = Span.model_construct(id="invalid", parent_id=None, type="tool", name="tool", model=None, start_ms=None, duration_ms=None, tokens_in=None, tokens_out=None, token_source=None, input="", output="", meta=[])
+    trace = NormalizedTrace.model_construct(trace_id="invalid", workflow="invalid", spans=[span])
+    with pytest.raises(TypeError, match="metadata"):
+        redact_trace(trace)

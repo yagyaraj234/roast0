@@ -47,12 +47,35 @@ const { cleanup, fireEvent, render, screen, waitFor } = await import(
 const { DotGlyph, DotMatrix } = await import("./DotMatrix");
 const { Logo: LandingLogo } = await import("./Logo");
 const { ReportView } = await import("./ReportView");
-const { RoastCard } = await import("./RoastCard");
+const { fixForFinding, RoastCard } = await import("./RoastCard");
 const { RoastProductShot } = await import("./RoastProductShot");
 const { ShareButtons } = await import("./ShareButtons");
 const { AuthField } = await import("./auth-form");
 const { DotMatrixSpark, HelixMark, Logo } = await import("./brand");
 const { RoastTable, SeverityCounts } = await import("./roast-table");
+
+it("maps every deterministic finding to a concrete fix", () => {
+	for (const rule of [
+		"pii-in-prompt",
+		"insecure-url",
+		"duplicate-llm-call",
+		"repeated-bloat",
+		"context-stuffing",
+		"tool-loop",
+		"error-tail",
+		"unknown-rule",
+	]) {
+		const fix = fixForFinding({
+			category: rule === "unknown-rule" ? "security" : "cost",
+			estWasteUsd: 2,
+			message: "problem",
+			rule,
+			severity: 2,
+			spanIds: [],
+		});
+		expect(fix.title).not.toBe("");
+	}
+});
 
 const roast: PublicRoast = {
 	slug: "hot-one",
@@ -198,11 +221,32 @@ describe("presentational components", () => {
 
 		rerender(
 			<RoastCard
-				roast={{ ...roast, findings: [], timeline: [], roastLine: "Clean." }}
+				roast={{
+					...roast,
+					findings: [],
+					timeline: [],
+					roastLine: "Clean.",
+					detailedReport: { ...roast.detailedReport, actions: [] },
+				}}
 			/>,
 		);
 		expect(screen.getByText("No material finding in this trace.")).toBeTruthy();
 		expect(screen.getByText("No normalized spans available.")).toBeTruthy();
+		expect(
+			screen.getByText("No repair work identified in this trace."),
+		).toBeTruthy();
+	});
+
+	it("derives fallback fix plans when no generated actions exist", () => {
+		render(
+			<RoastCard
+				roast={{
+					...roast,
+					detailedReport: { ...roast.detailedReport, actions: [] },
+				}}
+			/>,
+		);
+		expect(screen.getByText("Rotate exposed credentials")).toBeTruthy();
 	});
 
 	it("renders the professional report hierarchy and cost caveats", () => {
@@ -257,6 +301,9 @@ describe("presentational components", () => {
 			/>,
 		);
 		expect(screen.getByText("No remediation actions required.")).toBeTruthy();
+
+		rerender(<ReportView roast={{ ...roast, timeline: [] }} />);
+		expect(screen.getByText("No normalized spans available.")).toBeTruthy();
 	});
 
 	it("renders table results, empty states, dates, and all tier colors", () => {
@@ -325,9 +372,10 @@ describe("interactive components", () => {
 
 	it("copies, shares, and reports browser failures", async () => {
 		const writeText = mock(() => Promise.resolve());
+		const write = mock(() => Promise.resolve());
 		Object.defineProperty(navigator, "clipboard", {
 			configurable: true,
-			value: { writeText },
+			value: { write, writeText },
 		});
 		Object.defineProperty(navigator, "share", {
 			configurable: true,
@@ -339,6 +387,37 @@ describe("interactive components", () => {
 		await screen.findByRole("button", { name: "Copied" });
 		expect(writeText).toHaveBeenCalledWith(expect.stringContaining("12/100"));
 		expect(screen.getByRole("button", { name: "Copy image" })).toBeTruthy();
+		const context = {
+			beginPath: mock(),
+			fillRect: mock(),
+			fillText: mock(),
+			lineTo: mock(),
+			measureText: mock(() => ({ width: 1000 })),
+			moveTo: mock(),
+			stroke: mock(),
+		};
+		const createElement = document.createElement.bind(document);
+		const canvas = {
+			height: 0,
+			width: 0,
+			getContext: mock(() => context),
+			toBlob: (callback: (value: Blob | null) => void) =>
+				callback(new Blob(["image"])),
+		};
+		vi.spyOn(document, "createElement").mockImplementation(((
+			tagName: string,
+		) =>
+			tagName === "canvas"
+				? canvas
+				: createElement(tagName)) as typeof document.createElement);
+		Object.defineProperty(globalThis, "ClipboardItem", {
+			configurable: true,
+			value: class {},
+		});
+		fireEvent.click(screen.getByRole("button", { name: "Copy image" }));
+		await screen.findByRole("button", { name: "Image copied" });
+		expect(write).toHaveBeenCalled();
+		vi.restoreAllMocks();
 
 		fireEvent.click(screen.getByRole("button", { name: "Share" }));
 		await waitFor(() => expect(writeText).toHaveBeenCalledTimes(2));
@@ -364,6 +443,13 @@ describe("interactive components", () => {
 		writeText.mockRejectedValueOnce(new Error("copy failed"));
 		rerender(<ShareButtons roast={roast} />);
 		fireEvent.click(screen.getByRole("button", { name: "Copy roast" }));
+		await screen.findByText("Could not copy. Copy the URL instead.");
+
+		Object.defineProperty(globalThis, "ClipboardItem", {
+			configurable: true,
+			value: undefined,
+		});
+		fireEvent.click(screen.getByRole("button", { name: "Copy image" }));
 		await screen.findByText("Could not copy. Copy the URL instead.");
 	});
 });

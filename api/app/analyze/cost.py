@@ -88,8 +88,6 @@ def _repeated_bloat_findings(
             continue
         prefix = _common_prefix([span.input for span in spans])
         prefix_tokens = ceil(len(prefix) / _CHARS_PER_ESTIMATED_TOKEN)
-        if prefix_tokens < _REPEATED_PREFIX_TOKENS:
-            continue
 
         redundant_input_cost = sum(
             prefix_tokens * _price_for(span, pricing)["in_per_m"] / 1_000_000

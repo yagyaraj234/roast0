@@ -1,5 +1,6 @@
 import pytest
 
+from app.analyze import cost
 from app.analyze.cost import analyze_cost
 from app.types import NormalizedTrace, Span, TokenSource
 
@@ -119,3 +120,17 @@ def test_cost_report_discloses_models_without_public_pricing() -> None:
 
     assert unknown_report.unpriced_models == ["unpriced-model"]
     assert priced_report.unpriced_models == []
+
+
+def test_cost_helper_boundaries() -> None:
+    assert cost._common_prefix([]) == ""
+    assert cost._common_prefix(["a" * 8_000, "b" * 8_000]) == ""
+    span = make_span("no-model", "input")
+    span.model = None
+    assert cost._price_for(span, TEST_PRICING) == cost.FALLBACK_PRICE
+    assert cost._token_source(make_trace([])) == "estimated"
+    blank = make_span("blank", "   ")
+    assert cost._duplicate_findings([blank], TEST_PRICING) == []
+    prefix = "x" * 7_997
+    spans = [make_span(str(index), prefix + character) for index, character in enumerate("abc")]
+    assert cost._repeated_bloat_findings(spans, TEST_PRICING)[0].rule == "repeated-bloat"

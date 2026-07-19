@@ -9,8 +9,6 @@ const state = {
 	updateRoastVisibility: vi.fn(),
 };
 
-vi.mock("../lib/shares.functions", () => state);
-
 if (typeof document === "undefined") {
 	const virtualConsole = new VirtualConsole().forwardTo(console, {
 		jsdomErrors: ["css-parsing", "resource-loading", "unhandled-exception"],
@@ -80,6 +78,7 @@ beforeEach(() => {
 	state.updateRoastVisibility.mockResolvedValue({
 		...initial,
 		visibility: "private",
+		shares: [],
 	});
 	state.addRoastShare.mockResolvedValue({
 		...initial,
@@ -98,10 +97,14 @@ afterEach(() => {
 
 describe("ShareDialog", () => {
 	test("is owner-only and reflects add, remove, visibility, and copy responses", async () => {
-		const view = render(<ShareDialog slug="report-1" isOwner={false} />);
+		const view = render(
+			<ShareDialog slug="report-1" isOwner={false} sharingActions={state} />,
+		);
 		expect(view.queryByRole("button", { name: "Share report" })).toBeNull();
 
-		view.rerender(<ShareDialog slug="report-1" isOwner />);
+		view.rerender(
+			<ShareDialog slug="report-1" isOwner sharingActions={state} />,
+		);
 		fireEvent.click(view.getByRole("button", { name: "Share report" }));
 		await view.findByText("one@example.com");
 
@@ -125,11 +128,6 @@ describe("ShareDialog", () => {
 		);
 		await waitFor(() => expect(view.queryByText("one@example.com")).toBeNull());
 
-		state.updateRoastVisibility.mockResolvedValueOnce({
-			...initial,
-			visibility: "private",
-			shares: [],
-		});
 		fireEvent.click(view.getByRole("button", { name: "Private" }));
 		await view.findByText(
 			"Recipients must sign in with an email listed below.",
@@ -141,7 +139,9 @@ describe("ShareDialog", () => {
 		state.addRoastShare.mockRejectedValueOnce(
 			new Error("Enter a valid email address."),
 		);
-		const view = render(<ShareDialog slug="report-1" isOwner />);
+		const view = render(
+			<ShareDialog slug="report-1" isOwner sharingActions={state} />,
+		);
 		fireEvent.click(view.getByRole("button", { name: "Share report" }));
 		await view.findByText("one@example.com");
 		fireEvent.change(view.getByLabelText("Email address"), {
@@ -150,6 +150,32 @@ describe("ShareDialog", () => {
 		fireEvent.click(view.getByRole("button", { name: "Add" }));
 		expect((await view.findByRole("alert")).textContent).toContain(
 			"Enter a valid email address.",
+		);
+	});
+
+	test("handles copy failures and animated dialog closure", async () => {
+		Object.defineProperty(navigator, "clipboard", {
+			configurable: true,
+			value: {
+				writeText: vi.fn(() => Promise.reject(new Error("clipboard denied"))),
+			},
+		});
+		const view = render(
+			<ShareDialog slug="report-1" isOwner sharingActions={state} />,
+		);
+		fireEvent.click(view.getByRole("button", { name: "Share report" }));
+		await view.findByText("one@example.com");
+		fireEvent.click(view.getByRole("button", { name: "Copy" }));
+		await view.findByText("clipboard denied");
+		const dialog = view.getByRole("dialog");
+		fireEvent(dialog, new Event("cancel", { cancelable: true }));
+		await waitFor(() => expect(dialog.hasAttribute("open")).toBe(false), {
+			timeout: 300,
+		});
+		fireEvent.click(
+			view.container.querySelector(
+				"[aria-label='Close sharing dialog']",
+			) as HTMLButtonElement,
 		);
 	});
 });

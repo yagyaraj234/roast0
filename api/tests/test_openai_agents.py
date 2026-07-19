@@ -3,6 +3,7 @@ from pathlib import Path
 
 import pytest
 
+from app.normalize import openai_agents
 from app.normalize.openai_agents import parse
 
 FIXTURES = Path(__file__).parents[2] / "fixtures"
@@ -68,3 +69,16 @@ def test_unrecognizable_or_empty_sdk_trace_raises(raw: object) -> None:
     with pytest.raises(ValueError):
         parse(raw)
 
+
+def test_sdk_normalizer_helper_boundaries() -> None:
+    assert openai_agents._as_dict([]) == {}
+    assert openai_agents._stringify(None) == "" and openai_agents._stringify("x") == "x"
+    assert openai_agents._stringify({object(): "x"}).startswith("{")
+    assert openai_agents._number(True) is None and openai_agents._number("bad") is None
+    assert openai_agents._timestamp_ms("bad") is None and openai_agents._timestamp_ms(None) is None
+    assert openai_agents._span_type("handoff-agent") == "handoff"
+    assert openai_agents._span_type("guardrail") == "guardrail"
+    assert openai_agents._usage({}, {"response": {"usage": {"tokens_in": 2, "tokens_out": 3}}}) == (2, 3)
+    assert openai_agents._timing({"start": 2, "end": 1}) == (2000.0, 0.0)
+    assert openai_agents._parse_span({}, 0) is None
+    assert openai_agents._parse_span({"type": "tool", "data": {"response": {"opaque": True}}}, 0).output == '{"opaque": true}'

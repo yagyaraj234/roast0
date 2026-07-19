@@ -1,13 +1,23 @@
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
+import httpx
 from fastapi.testclient import TestClient
+from fastapi import HTTPException
 
 from app.config import get_settings
 from app.integrations import langsmith
 from app.main import app
-from app.models import IngestRequest
-from app.security.credentials import decrypt_credential, encrypt_credential
+from app.models import (
+    IngestRequest,
+    LangSmithConnectionCreate,
+    LangSmithConnectionResponse,
+    LangSmithConnectionUpdate,
+    LangSmithDiscoverRequest,
+    LangSmithValidateKeyRequest,
+)
+from app.routers import integrations
+from app.security.credentials import CredentialError, decrypt_credential, encrypt_credential
 
 
 class Query:
@@ -307,6 +317,7 @@ def test_discovery_returns_safe_workspace_and_project_metadata(monkeypatch: Any)
             return [{"name": "support-agent", "api_key": "lsv2_secret"}]
 
     monkeypatch.setattr("app.integrations.langsmith.LangSmithClient", Client)
+    monkeypatch.setattr("app.routers.integrations.get_supabase", lambda: object())
     headers = {"x-internal-api-token": "internal", "x-user-id": "user-1"}
     validate = client.post(
         "/integrations/langsmith/validate-key",
@@ -320,3 +331,385 @@ def test_discovery_returns_safe_workspace_and_project_metadata(monkeypatch: Any)
     )
     assert validate.json() == {"workspaces": [{"id": "workspace-1", "name": "Production"}]}
     assert discover.json() == {"projects": [{"name": "support-agent"}]}
+
+
+def test_credentials_reject_invalid_or_unconfigured_values(monkeypatch: Any) -> None:
+    _settings(monkeypatch)
+    for value in ("", "  "):
+        try:
+            encrypt_credential(value)
+            assert False, "empty credentials must be rejected"
+        except CredentialError as exc:
+            assert "required" in str(exc)
+    for value in ("invalid", "v2:token", "v1:"):
+        try:
+            decrypt_credential(value)
+            assert False, "unsupported values must be rejected"
+        except CredentialError:
+            pass
+    monkeypatch.setenv("LANGSMITH_CREDENTIAL_KEY", "")
+    get_settings.cache_clear()
+    try:
+        encrypt_credential("key")
+        assert False, "an absent encryption key must be rejected"
+    except CredentialError as exc:
+        assert "not configured" in str(exc)
+
+
+def test_credentials_reject_invalid_key_and_corrupt_ciphertext(monkeypatch: Any) -> None:
+    _settings(monkeypatch)
+    monkeypatch.setenv("LANGSMITH_CREDENTIAL_KEY", "not-a-fernet-key")
+    get_settings.cache_clear()
+    try:
+        encrypt_credential("key")
+        assert False, "an invalid encryption key must be rejected"
+    except CredentialError as exc:
+        assert "invalid" in str(exc)
+    _settings(monkeypatch)
+    try:
+        decrypt_credential("v1:not-a-token")
+        assert False, "corrupt ciphertext must be rejected"
+    except CredentialError as exc:
+        assert "cannot be decrypted" in str(exc)
+
+
+def test_integration_router_maps_provider_and_validation_errors(monkeypatch: Any) -> None:
+    _settings(monkeypatch)
+
+    class Connections:
+        def __init__(self, _: Any) -> None: pass
+        def workspaces(self, *_: Any) -> list[dict[str, str]]: raise langsmith.LangSmithError("invalid_key")
+        def projects(self, *_: Any) -> list[dict[str, str]]: raise ValueError("bad workspace")
+        def create(self, *_: Any) -> LangSmithConnectionResponse: raise langsmith.LangSmithError("provider_unavailable")
+
+    monkeypatch.setattr(integrations, "get_supabase", lambda: object())
+    monkeypatch.setattr(integrations, "LangSmithConnections", Connections)
+    for call, code, detail in (
+        (lambda: integrations.validate_key(LangSmithValidateKeyRequest(endpoint="https://api.smith.langchain.com", api_key="key"), "user"), 401, "invalid_key"),
+        (lambda: integrations.discover(LangSmithDiscoverRequest(endpoint="https://api.smith.langchain.com", api_key="key", workspace_id="ws"), "user"), 422, "bad workspace"),
+        (lambda: integrations.connect(LangSmithConnectionCreate(label="Prod", endpoint="https://api.smith.langchain.com", api_key="key", workspace_id="ws", project_name="project"), "user"), 502, "provider_unavailable"),
+    ):
+        try:
+            call()
+            assert False, "provider failures must become HTTP responses"
+        except HTTPException as exc:
+            assert (exc.status_code, exc.detail) == (code, detail)
+
+
+def test_integration_router_connection_lifecycle(monkeypatch: Any) -> None:
+    _settings(monkeypatch)
+    connection = LangSmithConnectionResponse(
+        id="connection-1", label="Prod", endpoint="https://api.smith.langchain.com", workspace_id="ws", project_name="project", status="active"
+    )
+
+    class SyncResult:
+        scanned = 2
+        scan_slugs = ("one", "two")
+
+    class Connections:
+        exists = True
+        update_result: LangSmithConnectionResponse | None = connection
+        delete_result = True
+        def __init__(self, _: Any) -> None: pass
+        def workspaces(self, *_: Any) -> list[dict[str, str]]: return [{"id": "ws", "name": "fallback"}, {"display_name": "missing"}]
+        def projects(self, *_: Any) -> list[dict[str, str]]: return [{"project_name": "project"}, {"name": ""}]
+        def create(self, *_: Any) -> LangSmithConnectionResponse: return connection
+        def list(self, _: str) -> list[LangSmithConnectionResponse]: return [connection]
+        def update(self, *_: Any) -> LangSmithConnectionResponse | None: return self.update_result
+        def get(self, *_: Any) -> LangSmithConnectionResponse | None: return connection if self.exists else None
+        def sync(self, _: str) -> SyncResult: return SyncResult()
+        def delete(self, *_: Any) -> bool: return self.delete_result
+
+    class Entitlement:
+        is_pro = True
+
+    monkeypatch.setattr(integrations, "get_supabase", lambda: object())
+    monkeypatch.setattr(integrations, "LangSmithConnections", Connections)
+    monkeypatch.setattr(integrations, "scan_entitlement", lambda *_: Entitlement())
+    queued: list[tuple[Any, ...]] = []
+    monkeypatch.setattr(integrations, "queue_completed_scans", lambda *args: queued.append(args))
+    assert integrations.validate_key(LangSmithValidateKeyRequest(endpoint="https://api.smith.langchain.com", api_key="key"), "user") == {"workspaces": [{"id": "ws", "name": "fallback"}]}
+    assert integrations.discover(LangSmithDiscoverRequest(endpoint="https://api.smith.langchain.com", api_key="key", workspace_id="ws"), "user") == {"projects": [{"name": "project"}]}
+    assert integrations.connect(LangSmithConnectionCreate(label="Prod", endpoint="https://api.smith.langchain.com", api_key="key", workspace_id="ws", project_name="project"), "user") == connection
+    assert integrations.connections("user") == [connection]
+    assert integrations.patch_connection("connection-1", LangSmithConnectionUpdate(label="New"), "user") == connection
+    assert integrations.sync("connection-1", "user") == {"scanned": 2, "connection": connection.model_dump()}
+    assert len(queued) == 1
+    assert integrations.disconnect("connection-1", "user") is None
+
+
+def test_integration_router_handles_absent_connections_and_free_sync(monkeypatch: Any) -> None:
+    _settings(monkeypatch)
+    connection = LangSmithConnectionResponse(
+        id="connection-1", label="Prod", endpoint="https://api.smith.langchain.com", workspace_id="ws", project_name="project", status="paused"
+    )
+
+    class Connections:
+        exists = False
+        update_result: LangSmithConnectionResponse | None = None
+        delete_result = False
+        def __init__(self, _: Any) -> None: pass
+        def update(self, *_: Any) -> LangSmithConnectionResponse | None: return self.update_result
+        def get(self, *_: Any) -> LangSmithConnectionResponse | None: return connection if self.exists else None
+        def delete(self, *_: Any) -> bool: return self.delete_result
+
+    class Entitlement:
+        is_pro = False
+
+    monkeypatch.setattr(integrations, "get_supabase", lambda: object())
+    monkeypatch.setattr(integrations, "LangSmithConnections", Connections)
+    for call in (
+        lambda: integrations.patch_connection("connection-1", LangSmithConnectionUpdate(label="New"), "user"),
+        lambda: integrations.sync("connection-1", "user"),
+        lambda: integrations.disconnect("connection-1", "user"),
+    ):
+        try:
+            call()
+            assert False, "missing connections must return 404"
+        except HTTPException as exc:
+            assert exc.status_code == 404
+    Connections.exists = True
+    monkeypatch.setattr(integrations, "scan_entitlement", lambda *_: Entitlement())
+    paused: list[tuple[Any, ...]] = []
+    monkeypatch.setattr(integrations, "pause_connection_for_entitlement", lambda *args: paused.append(args))
+    assert integrations.sync("connection-1", "user") == {"scanned": 0, "connection": connection.model_dump()}
+    assert len(paused) == 1
+
+
+def test_integration_router_exposes_all_error_contracts(monkeypatch: Any) -> None:
+    _settings(monkeypatch)
+
+    class Connections:
+        failure: Exception | None = None
+        def __init__(self, _: Any) -> None: pass
+        def workspaces(self, *_: Any) -> list[dict[str, str]]: raise self.failure or ValueError("workspace failed")
+        def projects(self, *_: Any) -> list[dict[str, str]]: raise self.failure or ValueError("project failed")
+        def create(self, *_: Any) -> LangSmithConnectionResponse: raise self.failure or ValueError("create failed")
+        def update(self, *_: Any) -> LangSmithConnectionResponse: raise self.failure or ValueError("update failed")
+
+    monkeypatch.setattr(integrations, "get_supabase", lambda: object())
+    monkeypatch.setattr(integrations, "LangSmithConnections", Connections)
+    create = LangSmithConnectionCreate(label="Prod", endpoint="https://api.smith.langchain.com", api_key="key", workspace_id="ws", project_name="project")
+    discover = LangSmithDiscoverRequest(endpoint="https://api.smith.langchain.com", api_key="key", workspace_id="ws")
+    update = LangSmithConnectionUpdate(label="New")
+    calls = (
+        lambda: integrations.require_internal_user("internal", None),
+        lambda: integrations.validate_key(LangSmithValidateKeyRequest(endpoint="https://api.smith.langchain.com", api_key="key"), "user"),
+        lambda: integrations.discover(discover, "user"),
+        lambda: integrations.connect(create, "user"),
+    )
+    for call in calls:
+        try:
+            call()
+            assert False, "invalid request state must be an HTTP response"
+        except HTTPException as exc:
+            assert exc.status_code in (400, 422)
+    Connections.failure = langsmith.LangSmithError("rate_limited")
+    try:
+        integrations.discover(discover, "user")
+        assert False, "provider errors must preserve their code"
+    except HTTPException as exc:
+        assert (exc.status_code, exc.detail) == (502, "rate_limited")
+    for failure, code, detail in (
+        (langsmith.LangSmithError("rate_limited"), 502, "rate_limited"),
+        (CredentialError("bad credential"), 422, "Stored credential cannot be used. Reconnect with a new key."),
+        (HTTPException(status_code=409, detail="conflict"), 409, "conflict"),
+        (ValueError("update failed"), 422, "update failed"),
+    ):
+        Connections.failure = failure
+        try:
+            integrations.patch_connection("connection-1", update, "user")
+            assert False, "updates must preserve their documented error response"
+        except HTTPException as exc:
+            assert (exc.status_code, exc.detail) == (code, detail)
+
+
+def test_langsmith_client_and_adapter_boundary_cases(monkeypatch: Any) -> None:
+    assert langsmith._endpoint("https://api.smith.langchain.com/") == "https://api.smith.langchain.com"
+    for endpoint in ("http://api.smith.langchain.com", "https://example.com", "https://u:p@api.smith.langchain.com", "https://api.smith.langchain.com/path"):
+        try:
+            langsmith._endpoint(endpoint)
+            assert False, "only approved root HTTPS endpoints are valid"
+        except ValueError:
+            pass
+    assert langsmith._safe_rows([{}, "skip"]) == [{}]
+    assert langsmith._safe_rows({"results": [{}, "skip"]}) == [{}]
+    assert langsmith._safe_rows({"unknown": []}) == []
+    assert langsmith._headers("key") == {"X-Api-Key": "key"}
+    assert langsmith._headers("key", "workspace")["X-Tenant-Id"] == "workspace"
+
+    class Response:
+        def __init__(self, status: int, payload: object = {}) -> None:
+            self.status_code, self.payload = status, payload
+            self.is_error = status >= 400
+        def json(self) -> object:
+            if self.payload == "invalid": raise ValueError("bad JSON")
+            return self.payload
+
+    class Client:
+        response: Response | Exception = Response(200, {"items": [{"id": "one"}]})
+        def __init__(self, **_: Any) -> None: pass
+        def __enter__(self) -> "Client": return self
+        def __exit__(self, *_: Any) -> None: pass
+        def request(self, *_: Any, **__: Any) -> Response:
+            if isinstance(self.response, Exception): raise self.response
+            return self.response
+
+    monkeypatch.setattr(langsmith.httpx, "Client", Client)
+    client = langsmith.LangSmithClient("https://api.smith.langchain.com", "key", "workspace")
+    assert client.list_workspaces() == [{"id": "one"}]
+    assert client.list_projects() == [{"id": "one"}]
+    assert client.completed_runs(datetime(2026, 1, 1, tzinfo=UTC), 2, "project") == []
+    assert client.trace_runs([], 2, "project") == []
+    for response, code in ((Response(401), "invalid_key"), (Response(429), "rate_limited"), (Response(500), "provider_unavailable"), (Response(400), "provider_request_failed"), (Response(200, "invalid"), "provider_response_invalid"), (httpx.TimeoutException("slow"), "provider_timeout"), (httpx.ConnectError("down"), "provider_unavailable")):
+        Client.response = response
+        try:
+            client._request("GET", "/path")
+            assert False, "provider errors must be stable codes"
+        except langsmith.LangSmithError as exc:
+            assert exc.code == code
+
+    root = {"id": "root", "trace_id": "trace", "run_type": "llm", "name": "root", "inputs": {"x": 1}, "outputs": {"y": 2}, "start_time": "2026-01-01T00:00:00Z", "end_time": "2026-01-01T00:00:01Z", "usage_metadata": {"prompt_tokens": 2, "completion_tokens": 3}}
+    child = {"id": "child", "trace_id": "trace", "parent_run_id": "root", "run_type": "custom", "error": "failed", "extra": {"metadata": {"ls_model_name": "model"}}}
+    trace = langsmith.to_generic_trace(root, [root, child])
+    assert trace["trace_id"] == "trace" and len(trace["spans"]) == 2
+    assert trace["spans"][0]["usage"] == {"input_tokens": 2, "output_tokens": 3}
+    assert trace["spans"][1]["output"]["error"] == "failed"
+    assert langsmith._time_ms("bad") is None and langsmith._duration_ms({"start_time": "bad", "end_time": "bad"}) is None
+
+
+def test_langsmith_lifecycle_helpers_and_facade(monkeypatch: Any) -> None:
+    _settings(monkeypatch)
+    db = FakeDb()
+    row = {"id": "connection-1", "user_id": "user", "label": "Prod", "endpoint": "https://api.smith.langchain.com", "workspace_id": "workspace", "project_name": "project", "status": "active", "api_key_encrypted": encrypt_credential("key"), "last_scan_count": 0}
+    db.rows["langsmith_connections"].append(row)
+
+    class Client:
+        def __init__(self, *_: Any) -> None: pass
+        def list_workspaces(self) -> list[dict[str, str]]: return [{"id": "workspace"}]
+        def list_projects(self) -> list[dict[str, str]]: return [{"name": "project"}]
+
+    monkeypatch.setattr(langsmith, "LangSmithClient", Client)
+    langsmith.validate_connection_scope(row["endpoint"], "key", "workspace", "project")
+    for workspace, project in (("missing", "project"), ("workspace", "missing")):
+        try:
+            langsmith.validate_connection_scope(row["endpoint"], "key", workspace, project)
+            assert False, "provider scope must be verified"
+        except ValueError:
+            pass
+    assert langsmith.list_connections(db, "user")[0].id == "connection-1"
+    assert langsmith.get_connection_record(db, "user", "connection-1") == row
+    assert langsmith.get_connection_record(db, "user", "missing") is None
+    assert langsmith.update_connection(db, "user", "connection-1", LangSmithConnectionUpdate())
+    try:
+        langsmith.update_connection(db, "user", "connection-1", LangSmithConnectionUpdate(label=" "))
+        assert False, "blank lifecycle fields are invalid"
+    except ValueError:
+        pass
+    monkeypatch.setattr(langsmith, "validate_connection_scope", lambda *_: None)
+    assert langsmith.update_connection(db, "user", "connection-1", LangSmithConnectionUpdate(api_key="new"))
+    assert langsmith.update_connection(db, "user", "connection-1", LangSmithConnectionUpdate(project_name="new"))
+    calls: list[str] = []
+    monkeypatch.setattr(langsmith, "create_connection", lambda *_: calls.append("create") or langsmith.connection_response(row))
+    monkeypatch.setattr(langsmith, "list_connections", lambda *_: calls.append("list") or [langsmith.connection_response(row)])
+    monkeypatch.setattr(langsmith, "get_connection", lambda *_: calls.append("get") or langsmith.connection_response(row))
+    monkeypatch.setattr(langsmith, "sync_connection", lambda *_: calls.append("sync") or langsmith.SyncResult(1, ("slug",)))
+    monkeypatch.setattr(langsmith, "delete_connection", lambda *_: calls.append("delete") or True)
+    facade = langsmith.LangSmithConnections(db)
+    assert facade.workspaces(row["endpoint"], "key") == [{"id": "workspace"}]
+    assert facade.projects(row["endpoint"], "key", "workspace") == [{"name": "project"}]
+    assert facade.create("user", LangSmithConnectionCreate(label="Prod", endpoint=row["endpoint"], api_key="key", workspace_id="workspace", project_name="project"))
+    assert facade.list("user") and facade.get("user", "connection-1") and facade.sync("connection-1").scanned == 1 and facade.delete("user", "connection-1")
+    assert {"create", "list", "get", "sync", "delete"} <= set(calls)
+
+
+def test_langsmith_facade_update_missing_and_active_syncs(monkeypatch: Any) -> None:
+    _settings(monkeypatch)
+    db = FakeDb()
+    facade = langsmith.LangSmithConnections(db)
+    assert facade.update("user", "missing", LangSmithConnectionUpdate(label="new")) is None
+    db.rows["langsmith_connections"].extend([
+        {"id": "one", "user_id": "user", "label": "one", "endpoint": "https://api.smith.langchain.com", "workspace_id": "workspace", "project_name": "project", "status": "active", "api_key_encrypted": encrypt_credential("key")},
+        {"id": "two", "user_id": "user", "label": "two", "endpoint": "https://api.smith.langchain.com", "workspace_id": "workspace", "project_name": "project", "status": "paused", "api_key_encrypted": encrypt_credential("key")},
+    ])
+    monkeypatch.setattr(langsmith, "validate_connection_scope", lambda *_: None)
+    assert facade.update("user", "one", LangSmithConnectionUpdate(project_name="next"))
+    monkeypatch.setattr(langsmith, "sync_connection", lambda _, connection_id: langsmith.SyncResult(1 if connection_id == "one" else 0))
+    assert langsmith.sync_active_connections(db) == 1
+
+
+def test_langsmith_remaining_helper_edges(monkeypatch: Any) -> None:
+    _settings(monkeypatch)
+    try:
+        langsmith._endpoint("https://api.smith.langchain.com:bad")
+        assert False, "invalid ports are invalid endpoints"
+    except ValueError:
+        pass
+
+
+def test_langsmith_pagination_and_sync_failure_edges(monkeypatch: Any) -> None:
+    _settings(monkeypatch)
+    monkeypatch.setenv("LANGSMITH_SYNC_BATCH_SIZE", "1")
+    get_settings.cache_clear()
+    db = FakeDb()
+    connection = {"id": "connection", "project_name": "project", "cursor_time": None}
+
+    class Client:
+        completed_calls = 0
+        trace_calls = 0
+        def completed_runs(self, *_: Any) -> list[dict[str, Any]]:
+            self.completed_calls += 1
+            return [{"id": "one", "trace_id": "one"}, {"id": "duplicate", "trace_id": "one"}, {"id": "two", "trace_id": "two"}] if self.completed_calls == 1 else []
+        def trace_runs(self, *_: Any) -> list[dict[str, Any]]:
+            self.trace_calls += 1
+            return [{"trace_id": "one"}] if self.trace_calls == 1 else []
+
+    client = Client()
+    pending, checkpointed = langsmith._pending_roots(db, client, connection, datetime(2026, 1, 1, tzinfo=UTC))
+    assert [root["id"] for root in pending] == ["duplicate"] and [root["id"] for root in checkpointed] == ["duplicate"]
+    assert langsmith._children_by_trace(client, ["one"], "project") == {"one": [{"trace_id": "one"}]}
+    assert langsmith._pending_roots(db, type("OnePage", (), {"completed_runs": lambda *_: [{"id": "only", "trace_id": "only"}]})(), connection, datetime(2026, 1, 1, tzinfo=UTC))[0] == [{"id": "only", "trace_id": "only"}]
+    db.rows["langsmith_connections"].append({"id": "bad", "user_id": "user", "status": "active", "api_key_encrypted": "v1:bad", "endpoint": "https://api.smith.langchain.com", "workspace_id": "workspace", "project_name": "project", "sync_locked_until": None})
+    assert langsmith.sync_connection(db, "bad") == langsmith.SyncResult()
+    assert db.rows["langsmith_connections"][0]["last_error"] == "sync_failed"
+    db.rows["langsmith_connections"].append({"id": "unexpected", "user_id": "user", "status": "active", "api_key_encrypted": encrypt_credential("key"), "endpoint": "https://api.smith.langchain.com", "workspace_id": "workspace", "project_name": "project", "sync_locked_until": None})
+    client_class = langsmith.LangSmithClient
+    monkeypatch.setattr(langsmith, "LangSmithClient", lambda *_: (_ for _ in ()).throw(RuntimeError("unexpected")))
+    assert langsmith.sync_connection(db, "unexpected") == langsmith.SyncResult()
+    assert db.rows["langsmith_connections"][1]["last_error"] == "sync_failed"
+    monkeypatch.setattr(langsmith, "LangSmithClient", client_class)
+    assert langsmith._safe_rows({"data": "bad", "results": "bad", "items": "bad"}) == []
+    assert langsmith._safe_rows("bad") == []
+    client = langsmith.LangSmithClient("https://api.smith.langchain.com", "key")
+    monkeypatch.setattr(client, "_request", lambda *_args, **_kwargs: [{"id": "open"}, {"id": "done", "end_time": "now"}])
+    assert client.trace_runs(["trace"], 2, "project") == [{"id": "open"}, {"id": "done", "end_time": "now"}]
+    assert client.completed_runs(datetime(2026, 1, 1, tzinfo=UTC), 2, "project") == [{"id": "done", "end_time": "now"}]
+    assert langsmith._usage({"usage_metadata": {"input_tokens": "bad"}, "extra": {"metadata": {"usage_metadata": {"completion_tokens": 2}}}}) == {"output_tokens": 2}
+    assert langsmith._cursor_time({"cursor_time": "bad"}, datetime(2026, 1, 1, tzinfo=UTC)).year == 2025
+    db = FakeDb()
+    try:
+        langsmith.create_connection(db, "user", LangSmithConnectionCreate(label=" ", endpoint="https://api.smith.langchain.com", api_key="key", workspace_id="workspace", project_name="project"))
+        assert False, "blank connection labels are invalid"
+    except ValueError:
+        pass
+
+
+def test_langsmith_skips_roots_without_identifiers_and_updates_label(monkeypatch: Any) -> None:
+    _settings(monkeypatch)
+    db = FakeDb()
+    row = {"id": "connection", "user_id": "user", "label": "old", "endpoint": "https://api.smith.langchain.com", "workspace_id": "workspace", "project_name": "project", "status": "active", "api_key_encrypted": encrypt_credential("key"), "sync_locked_until": None}
+    db.rows["langsmith_connections"].append(row)
+
+    class Client:
+        def __init__(self, *_: Any) -> None: pass
+
+    monkeypatch.setattr(langsmith, "LangSmithClient", Client)
+    monkeypatch.setattr(langsmith, "_pending_roots", lambda *_: ([{}], [{}]))
+    monkeypatch.setattr(langsmith, "_children_by_trace", lambda *_: {})
+    assert langsmith.sync_connection(db, "connection") == langsmith.SyncResult()
+    assert langsmith.LangSmithConnections(db).update("user", "connection", LangSmithConnectionUpdate(label="new"))
+    try:
+        langsmith.update_connection(db, "user", "missing", LangSmithConnectionUpdate(endpoint="https://example.com"))
+        assert False, "updated endpoints are also constrained"
+    except ValueError:
+        pass
