@@ -1,4 +1,9 @@
-import { createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
+import {
+	createRootRoute,
+	HeadContent,
+	Link,
+	Scripts,
+} from "@tanstack/react-router";
 import appCss from "../styles.css?url";
 
 export const Route = createRootRoute({
@@ -57,12 +62,12 @@ function RootNotFound() {
 				Nothing here.
 			</h1>
 			<div>
-				<a
+				<Link
 					className="inline-flex items-center justify-center rounded-full bg-ink px-5 py-2.5 text-sm font-medium text-white transition duration-150 ease-out hover:bg-neutral-800 active:scale-[0.97]"
-					href="/"
+					to="/"
 				>
 					Back to Helix
-				</a>
+				</Link>
 			</div>
 		</main>
 	);

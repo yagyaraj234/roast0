@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import {
 	ArrowUpRight,
 	CheckCircle2,
@@ -115,12 +115,13 @@ function StatusRow({ row }: { row: BatchRoast }) {
 						Helix score {row.score}
 					</span>
 					<SeverityCounts counts={row.findingCounts} />
-					<a
-						href={`/r/${row.slug}`}
+					<Link
 						className="inline-flex items-center gap-1 text-sm font-medium text-accent transition-colors duration-150 hover:text-blue-700"
+						params={{ slug: row.slug }}
+						to="/r/$slug"
 					>
 						Report <ArrowUpRight size={14} aria-hidden="true" />
-					</a>
+					</Link>
 				</>
 			)}
 		</li>

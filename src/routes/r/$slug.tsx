@@ -1,4 +1,4 @@
-import { createFileRoute, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 
 import { Logo } from "../../components/Logo";
@@ -39,12 +39,12 @@ function PublicTopbar() {
 		<header className="border-b border-line bg-white/85 backdrop-blur print:hidden">
 			<div className="mx-auto flex h-16 w-full max-w-[1100px] items-center justify-between px-6">
 				<Logo />
-				<a
+				<Link
 					className="inline-flex items-center gap-1.5 text-sm font-medium text-neutral-600 transition-colors duration-150 hover:text-accent"
-					href="/app/new"
+					to="/app/new"
 				>
 					Scan yours <ArrowRight size={15} aria-hidden="true" />
-				</a>
+				</Link>
 			</div>
 		</header>
 	);
@@ -77,9 +77,9 @@ function PublicRoastNotFound() {
 				<p className="mb-7 text-muted">
 					Check the public URL, or scan a fresh trace.
 				</p>
-				<a className={primaryButton} href="/app/new">
+				<Link className={primaryButton} to="/app/new">
 					Scan a trace <ArrowRight size={15} aria-hidden="true" />
-				</a>
+				</Link>
 			</main>
 		</div>
 	);

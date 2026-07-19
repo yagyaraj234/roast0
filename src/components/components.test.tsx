@@ -1,5 +1,6 @@
 // @ts-expect-error jsdom does not publish bundled TypeScript declarations.
 import { JSDOM, VirtualConsole } from "jsdom";
+import type { ReactNode } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { PublicRoast } from "../lib/public-roasts";
 
@@ -41,8 +42,15 @@ Object.defineProperty(globalThis, "scrollTo", {
 	value: mock(),
 });
 
-const { cleanup, fireEvent, render, screen, waitFor } = await import(
-	"@testing-library/react"
+const {
+	cleanup,
+	fireEvent,
+	render: renderReact,
+	screen,
+	waitFor,
+} = await import("@testing-library/react");
+const { createRootRoute, createRouter, RouterContextProvider } = await import(
+	"@tanstack/react-router"
 );
 const { DotGlyph, DotMatrix } = await import("./DotMatrix");
 const { Logo: LandingLogo } = await import("./Logo");
@@ -53,6 +61,26 @@ const { ShareButtons } = await import("./ShareButtons");
 const { AuthField } = await import("./auth-form");
 const { DotMatrixSpark, HelixMark, Logo } = await import("./brand");
 const { RoastTable, SeverityCounts } = await import("./roast-table");
+
+const componentTestRouter = createRouter({ routeTree: createRootRoute() });
+
+function render(ui: ReactNode) {
+	const view = renderReact(
+		<RouterContextProvider router={componentTestRouter}>
+			{ui}
+		</RouterContextProvider>,
+	);
+	return {
+		...view,
+		rerender(nextUi: ReactNode) {
+			view.rerender(
+				<RouterContextProvider router={componentTestRouter}>
+					{nextUi}
+				</RouterContextProvider>,
+			);
+		},
+	};
+}
 
 it("maps every deterministic finding to a concrete fix", () => {
 	for (const rule of [

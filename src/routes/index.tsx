@@ -1,4 +1,4 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 
 import { Logo } from "../components/Logo";
@@ -56,12 +56,12 @@ function LandingPage() {
 						>
 							What it finds
 						</a>
-						<a
+						<Link
 							className="transition-colors duration-150 hover:text-ink"
-							href="/ai-agent-trace-analyzer"
+							to="/ai-agent-trace-analyzer"
 						>
 							Trace analyzer
-						</a>
+						</Link>
 						<a
 							className="transition-colors duration-150 hover:text-ink"
 							href="https://github.com/yagyaraj234/Helix"
@@ -72,18 +72,18 @@ function LandingPage() {
 						</a>
 					</nav>
 					<div className="flex items-center gap-5">
-						<a
+						<Link
 							className="hidden text-[15px] text-neutral-600 transition-colors duration-150 hover:text-ink sm:block"
-							href="/login"
+							to="/login"
 						>
 							Log in
-						</a>
-						<a
+						</Link>
+						<Link
 							className="inline-flex items-center gap-2 rounded-full bg-ink px-4 py-2 text-sm font-medium text-white transition duration-150 ease-out hover:bg-neutral-800 active:scale-[0.97]"
-							href="/app/new"
+							to="/app/new"
 						>
 							Analyze a trace
-						</a>
+						</Link>
 					</div>
 				</div>
 			</header>
@@ -110,12 +110,12 @@ function LandingPage() {
 						tool loops, failed steps, and exposed credentials. Then it shows
 						what to fix.
 					</p>
-					<a
+					<Link
 						className="mt-8 inline-flex items-center gap-2.5 rounded-full border border-line bg-white px-6 py-3 text-lg font-medium text-ink shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition duration-150 ease-out hover:border-neutral-300 hover:bg-surface-alt active:scale-[0.97] opacity-0 animate-reveal [animation-delay:180ms]"
-						href="/app/new"
+						to="/app/new"
 					>
 						Analyze a trace <ArrowRight size={18} aria-hidden="true" />
-					</a>
+					</Link>
 				</section>
 
 				<section
@@ -174,12 +174,12 @@ function LandingPage() {
 						Find the waste in your first trace.
 					</p>
 					<div className="mt-6">
-						<a
+						<Link
 							className="inline-flex items-center gap-2 rounded-full bg-ink px-5 py-2.5 text-sm font-medium text-white transition duration-150 ease-out hover:bg-neutral-800 active:scale-[0.97]"
-							href="/app/new"
+							to="/app/new"
 						>
 							Analyze a trace <ArrowRight size={15} aria-hidden="true" />
-						</a>
+						</Link>
 					</div>
 				</div>
 			</footer>

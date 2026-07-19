@@ -1,4 +1,4 @@
-import { createFileRoute, getRouteApi } from "@tanstack/react-router";
+import { createFileRoute, getRouteApi, Link } from "@tanstack/react-router";
 
 import { AppPageHeader } from "#/components/app-page-header";
 import { useAppSearch } from "#/components/app-shell";
@@ -17,9 +17,9 @@ function Dashboard() {
 		<main>
 			<AppPageHeader
 				action={
-					<a href="/app/new" className={primaryButton}>
+					<Link className={primaryButton} to="/app/new">
 						New scan
-					</a>
+					</Link>
 				}
 				description="Real traces, findings, and cost waste."
 				title="Dashboard"
@@ -49,9 +49,12 @@ function Dashboard() {
 			<section className="mt-8">
 				<div className="mb-3 flex items-center justify-between">
 					<h2 className="text-lg font-semibold text-ink">Recent scans</h2>
-					<a href="/app/roasts" className={`text-sm font-medium ${accentLink}`}>
+					<Link
+						className={`text-sm font-medium ${accentLink}`}
+						to="/app/roasts"
+					>
 						View all
-					</a>
+					</Link>
 				</div>
 				<RoastTable roasts={recent} query={query} />
 			</section>

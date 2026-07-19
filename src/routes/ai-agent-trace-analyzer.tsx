@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 
 import { Logo } from "../components/Logo";
@@ -79,12 +79,12 @@ function AgentTraceAnalyzerPage() {
 			<header className="border-b border-line bg-white/85 backdrop-blur">
 				<div className="mx-auto flex h-16 max-w-[850px] items-center justify-between px-6">
 					<Logo />
-					<a
+					<Link
 						className="inline-flex items-center gap-1.5 text-sm font-medium text-neutral-600 transition-colors duration-150 hover:text-accent"
-						href="/"
+						to="/"
 					>
 						Home <ArrowRight size={15} aria-hidden="true" />
-					</a>
+					</Link>
 				</div>
 			</header>
 			<main className="mx-auto max-w-[850px] px-6 py-10 sm:py-16">
@@ -189,9 +189,9 @@ function AgentTraceAnalyzerPage() {
 						</ul>
 					</section>
 
-					<a className={`${primaryButton} mt-8`} href="/app/new">
+					<Link className={`${primaryButton} mt-8`} to="/app/new">
 						Analyze an agent trace <ArrowRight size={16} aria-hidden="true" />
-					</a>
+					</Link>
 				</article>
 			</main>
 		</div>

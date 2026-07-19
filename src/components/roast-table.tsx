@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { ArrowUpRight, ScanSearch } from "lucide-react";
 
 import {
@@ -62,12 +63,13 @@ export function RoastTable({
 								{formatDate(roast.createdAt)}
 							</td>
 							<td className="px-5 py-4 text-right">
-								<a
-									href={`/r/${roast.slug}`}
+								<Link
 									className="inline-flex items-center gap-1 font-medium text-accent transition-colors duration-150 hover:text-blue-700"
+									params={{ slug: roast.slug }}
+									to="/r/$slug"
 								>
 									Card <ArrowUpRight size={14} aria-hidden="true" />
-								</a>
+								</Link>
 							</td>
 						</tr>
 					))}
@@ -111,9 +113,9 @@ function EmptyRoasts() {
 			<p className="mt-1 text-sm text-muted">
 				Upload a trace to get your first score.
 			</p>
-			<a href="/app/new" className={`${primaryButton} mt-5`}>
+			<Link className={`${primaryButton} mt-5`} to="/app/new">
 				Scan a trace
-			</a>
+			</Link>
 		</div>
 	);
 }
