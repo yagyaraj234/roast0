@@ -1,5 +1,5 @@
 {
-	"name": "flint",
+	"name": "helix",
 	"main": "worker.mjs",
 	"compatibility_date": "2026-07-18",
 	"compatibility_flags": ["nodejs_compat"],
@@ -7,7 +7,7 @@
 	"preview_urls": true,
 	"routes": [
 		{
-			"pattern": "flint.trevyn.dev",
+			"pattern": "helix.trevyn.dev",
 			"custom_domain": true
 		}
 	],
@@ -29,7 +29,7 @@
 	},
 	"env": {
 		"stage": {
-			"name": "flint-stage",
+			"name": "helix-stage",
 			"workers_dev": true,
 			"preview_urls": true,
 			"routes": [],

@@ -284,7 +284,7 @@ export function publicRoastMeta(roast: PublicRoast): {
 } {
 	const line = roast.roastLine ?? fallbackRoastLine(roast.tier);
 	return {
-		title: `${line} · Flint`,
+		title: `${line} · Helix`,
 		description: `${roast.score}/100 · ${roast.tier} · $${roast.cost.wasteUsd.toFixed(2)} waste found. ${roast.title}`,
 	};
 }

@@ -1,4 +1,4 @@
-# Flint domain glossary
+# Helix domain glossary
 
 ## Scan
 

@@ -2,6 +2,7 @@ import type { CSSProperties } from "react";
 
 import { fallbackRoastLine, type PublicRoast } from "../lib/public-roasts";
 import { ShareButtons } from "./ShareButtons";
+import { monoLabel } from "./ui";
 
 type ScoreStyle = CSSProperties & { "--score-target": `${number}deg` };
 type FindingGroup = {
@@ -25,6 +26,13 @@ function tierSlug(tier: string): string {
 	return tier.toLowerCase().replaceAll(" ", "-");
 }
 
+const tierChipStyles: Record<string, string> = {
+	rare: "border-tier-rare/40 text-tier-rare",
+	medium: "border-tier-medium/40 text-tier-medium",
+	"well-done": "border-tier-welldone/40 text-tier-welldone",
+	charcoal: "border-ink/40 text-ink",
+};
+
 function groupFindings(findings: PublicRoast["findings"]): FindingGroup[] {
 	const groups = new Map<string, FindingGroup>();
 	for (const finding of findings) {
@@ -33,7 +41,7 @@ function groupFindings(findings: PublicRoast["findings"]): FindingGroup[] {
 			finding.category,
 			finding.severity,
 			finding.message,
-		].join("\u0000");
+		].join(" ");
 		const group = groups.get(key);
 		if (group) group.count += 1;
 		else groups.set(key, { count: 1, finding, key });
@@ -102,7 +110,7 @@ export function fixForFinding(finding: PublicRoast["findings"][number]): {
 				detail:
 					"Hash tool arguments, stop duplicates, and require a changed input before retrying the same call.",
 				impact:
-					"Reliability: prevents runaway execution and compounding tool cost.",
+					"Reliability: prevents runaway execution and repeated tool work.",
 			};
 		case "error-tail":
 			return {
@@ -181,38 +189,76 @@ export function RoastCard({
 				}));
 	const scoreStyle: ScoreStyle = {
 		"--score-target": `${roast.score * 3.6}deg`,
+		background:
+			"conic-gradient(var(--color-accent) 0deg, var(--color-accent) var(--score-angle), var(--color-line) var(--score-angle), var(--color-line) 360deg)",
 	};
+	const tierChip =
+		tierChipStyles[tierSlug(roast.tier)] ?? "border-ink/40 text-ink";
 
 	return (
-		<article className={`public-card${preview ? " public-card--preview" : ""}`}>
-			<div className="public-card__topline">
+		<article
+			className={
+				preview
+					? "bg-white p-6 sm:p-8"
+					: "rounded-2xl border border-line bg-white p-6 shadow-[0_32px_80px_rgba(10,10,10,0.08)] sm:p-10"
+			}
+		>
+			<div className="flex flex-wrap items-start justify-between gap-4 border-b border-line pb-6">
 				<div>
-					<p className="mono-label">
-						{preview ? "DEMO TRACE · LIVE CARD MARKUP" : "PUBLIC TRACE REPORT"}
+					<p className={`${monoLabel} text-accent`}>
+						{preview
+							? "Demo trace · cost and risk report"
+							: "Public trace report"}
 					</p>
-					<p className="public-card__title">{roast.title}</p>
+					<p className="mt-2.5 text-2xl font-semibold tracking-[-0.02em] text-ink sm:text-3xl">
+						{roast.title}
+					</p>
 				</div>
-				<span className="source-chip">{roast.source}</span>
+				<span className="rounded-md border border-line px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.1em] text-muted">
+					{roast.source}
+				</span>
 			</div>
 
-			<div className="public-verdict">
+			<div
+				className={`grid items-center gap-7 ${preview ? "grid-cols-[auto_1fr] py-7" : "py-9 sm:grid-cols-[auto_1fr] sm:gap-10"}`}
+			>
 				<div
-					className="score-ring"
+					className={`relative grid flex-none place-items-center rounded-full animate-score-fill ${preview ? "size-28" : "size-36 sm:size-44"}`}
 					style={scoreStyle}
 					role="img"
-					aria-label={`Flint score: ${roast.score} out of 100`}
+					aria-label={`Helix score: ${roast.score} out of 100`}
 				>
-					<div>
-						<strong>{roast.score}</strong>
-						<span>/100</span>
+					<div className="absolute inset-2 grid place-items-center rounded-full border border-line bg-white">
+						<div className="flex items-baseline">
+							<strong
+								className={`font-mono font-medium tracking-[-0.08em] ${preview ? "text-4xl" : "text-5xl sm:text-6xl"}`}
+							>
+								{roast.score}
+							</strong>
+							<span
+								className={`font-mono text-neutral-400 ${preview ? "text-[10px]" : "text-xs"}`}
+							>
+								/100
+							</span>
+						</div>
 					</div>
 				</div>
-				<div className="public-verdict__copy">
-					<span className="tier-chip" data-tier={tierSlug(roast.tier)}>
+				<div className="min-w-0">
+					<span
+						className={`inline-flex rounded border px-1.5 py-1 font-mono text-[9px] uppercase tracking-[0.13em] ${tierChip}`}
+					>
 						{roast.tier}
 					</span>
-					{preview ? <h2>“{line}”</h2> : <h1>“{line}”</h1>}
-					<p className="mono-label">
+					{preview ? (
+						<h2 className="mt-3.5 font-serif text-2xl italic leading-[1.08] tracking-[-0.02em] text-ink">
+							“{line}”
+						</h2>
+					) : (
+						<h1 className="mt-4 max-w-[690px] font-serif text-3xl italic leading-[1.08] tracking-[-0.02em] text-ink sm:text-[44px]">
+							“{line}”
+						</h1>
+					)}
+					<p className={`${monoLabel} mt-4 text-muted`}>
 						{findingCounts.critical} critical · {findingCounts.warning} warning
 						· {findingCounts.notice} notice
 					</p>
@@ -222,55 +268,82 @@ export function RoastCard({
 
 			{!preview && (
 				<section
-					className="public-assessment"
+					className="border-t border-line py-9"
 					aria-labelledby="assessment-heading"
 				>
-					<div className="card-section-heading">
-						<h2 id="assessment-heading">Detailed assessment</h2>
-						<span>
-							{roast.detailedReport.generated
+					<SectionHeading
+						id="assessment-heading"
+						meta={
+							roast.detailedReport.generated
 								? (roast.detailedReport.model ?? "Luna")
-								: "rule-based fallback"}
-						</span>
-					</div>
-					<p>{roast.detailedReport.summary}</p>
+								: "rule-based fallback"
+						}
+						title="Detailed assessment"
+					/>
+					<p className="max-w-[780px] text-[17px] leading-relaxed text-neutral-800">
+						{roast.detailedReport.summary}
+					</p>
 				</section>
 			)}
 
 			<section
-				className="public-findings"
+				className={
+					preview ? "border-t border-line pt-6" : "border-t border-line py-9"
+				}
 				aria-labelledby={preview ? undefined : "findings-heading"}
 			>
-				<div className="card-section-heading">
-					<h2 id={preview ? undefined : "findings-heading"}>Findings</h2>
-					<span>
-						{roast.findings.length} signals · {findingGroups.length} categories
-					</span>
-				</div>
+				{preview ? null : (
+					<SectionHeading
+						id={preview ? undefined : "findings-heading"}
+						meta={`${roast.findings.length} signals · ${findingGroups.length} categories`}
+						title="Findings"
+					/>
+				)}
 				{findings.length > 0 ? (
-					<ol>
+					<ol className="divide-y divide-line border-y border-line">
 						{findings.map(({ count, finding }) => (
-							<li key={`${finding.rule}-${finding.message}`}>
-								<div className="finding-tags">
-									<span>SEV {finding.severity}</span>
-									<span>{finding.category}</span>
-									{count > 1 && <span>seen {count}×</span>}
+							<li
+								className={`grid gap-2.5 ${preview ? "py-3.5" : "py-5"} sm:grid-cols-[130px_minmax(0,1fr)_auto] sm:gap-6`}
+								key={`${finding.rule}-${finding.message}`}
+							>
+								<div className="flex flex-wrap items-start gap-1.5">
+									<span className="rounded border border-accent/40 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.08em] text-accent">
+										SEV {finding.severity}
+									</span>
+									<span className="rounded border border-accent/40 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.08em] text-accent">
+										{finding.category}
+									</span>
+									{count > 1 && (
+										<span className="rounded border border-accent/40 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.08em] text-accent">
+											seen {count}×
+										</span>
+									)}
 								</div>
-								<div>
-									<strong>{finding.rule.replaceAll("-", " ")}</strong>
-									<p>{finding.message}</p>
+								<div className="min-w-0">
+									<strong className="block text-sm font-semibold capitalize text-ink">
+										{finding.rule.replaceAll("-", " ")}
+									</strong>
+									{preview ? null : (
+										<p className="mt-1.5 text-sm leading-relaxed text-neutral-600">
+											{finding.message}
+										</p>
+									)}
 								</div>
 								{finding.estWasteUsd !== null && (
-									<small>{money(finding.estWasteUsd)} waste</small>
+									<small className="font-mono text-[11px] text-muted">
+										{money(finding.estWasteUsd)} waste
+									</small>
 								)}
 							</li>
 						))}
 					</ol>
 				) : (
-					<p className="card-empty-row">No material finding in this trace.</p>
+					<p className="text-sm text-muted">
+						No material finding in this trace.
+					</p>
 				)}
 				{!preview && findingGroups.length > 3 && (
-					<p className="finding-overflow">
+					<p className="mt-3.5 text-xs text-muted">
 						+ {findingGroups.length - 3} lower-priority categories
 					</p>
 				)}
@@ -278,20 +351,33 @@ export function RoastCard({
 
 			{!preview && (
 				<>
-					<section className="public-fixes" aria-labelledby="fixes-heading">
-						<div className="card-section-heading">
-							<h2 id="fixes-heading">Fix plan</h2>
-							<span>{fixes.length} highest-impact changes</span>
-						</div>
+					<section
+						className="border-t border-line py-9"
+						aria-labelledby="fixes-heading"
+					>
+						<SectionHeading
+							id="fixes-heading"
+							meta={`${fixes.length} highest-impact changes`}
+							title="Fix plan"
+						/>
 						{fixes.length > 0 ? (
-							<ol>
+							<ol className="grid gap-2.5 sm:grid-cols-2">
 								{fixes.map((fix, index) => (
-									<li key={fix.key}>
-										<span>{String(index + 1).padStart(2, "0")}</span>
-										<div>
-											<strong>{fix.title}</strong>
-											<p>{fix.detail}</p>
-											<small>
+									<li
+										className="grid grid-cols-[auto_minmax(0,1fr)] gap-3.5 rounded-lg border border-line bg-surface-alt/60 p-4.5"
+										key={fix.key}
+									>
+										<span className="font-mono text-[10px] text-accent">
+											{String(index + 1).padStart(2, "0")}
+										</span>
+										<div className="min-w-0">
+											<strong className="block text-sm font-semibold text-ink">
+												{fix.title}
+											</strong>
+											<p className="mt-1.5 mb-2 text-xs leading-relaxed text-neutral-600">
+												{fix.detail}
+											</p>
+											<small className="font-mono text-[10px] leading-relaxed text-muted">
 												{fix.count > 1 ? `${fix.count} occurrences · ` : ""}
 												{fix.impact}
 											</small>
@@ -300,68 +386,130 @@ export function RoastCard({
 								))}
 							</ol>
 						) : (
-							<p className="card-empty-row">
+							<p className="text-sm text-muted">
 								No repair work identified in this trace.
 							</p>
 						)}
 					</section>
 
-					<section className="public-cost" aria-labelledby="cost-heading">
-						<div className="card-section-heading">
-							<h2 id="cost-heading">Cost autopsy</h2>
-							<span>{roast.cost.tokenSource} usage</span>
+					<section
+						className="border-t border-line py-9"
+						aria-labelledby="cost-heading"
+					>
+						<SectionHeading
+							id="cost-heading"
+							meta={`${roast.cost.tokenSource} usage`}
+							title="Cost autopsy"
+						/>
+						<div className="grid border-t border-l border-line sm:grid-cols-4">
+							<CostCell
+								label="Total spend"
+								value={money(roast.cost.totalUsd)}
+							/>
+							<CostCell
+								hot
+								label="Waste found"
+								value={money(roast.cost.wasteUsd)}
+							/>
+							<CostCell
+								label="Monthly waste"
+								value={money(roast.cost.monthlyProjectionUsd)}
+							/>
+							<CostCell
+								label="Tokens"
+								value={(
+									roast.cost.totalTokensIn + roast.cost.totalTokensOut
+								).toLocaleString("en-US")}
+							/>
 						</div>
-						<div className="cost-grid">
-							<div>
-								<span>Total spend</span>
-								<strong>{money(roast.cost.totalUsd)}</strong>
-							</div>
-							<div className="cost-grid__hot">
-								<span>Waste found</span>
-								<strong>{money(roast.cost.wasteUsd)}</strong>
-							</div>
-							<div>
-								<span>Monthly waste</span>
-								<strong>{money(roast.cost.monthlyProjectionUsd)}</strong>
-							</div>
-							<div>
-								<span>Tokens</span>
-								<strong>
-									{(
-										roast.cost.totalTokensIn + roast.cost.totalTokensOut
-									).toLocaleString("en-US")}
-								</strong>
-							</div>
-						</div>
-						<p>{roast.cost.projectionAssumption}</p>
+						<p className="mt-3 text-right font-mono text-[10px] text-neutral-400">
+							{roast.cost.projectionAssumption}
+						</p>
 					</section>
 
-					<details className="public-timeline">
-						<summary>
-							<span>Trace timeline</span>
-							<small>{roast.timeline.length} spans · expand</small>
+					<details className="border-t border-line">
+						<summary className="flex cursor-pointer list-none items-center justify-between gap-5 py-6 [&::-webkit-details-marker]:hidden">
+							<span className="text-xl font-semibold tracking-[-0.02em] text-ink">
+								Trace timeline
+							</span>
+							<small className={`${monoLabel} text-muted`}>
+								{roast.timeline.length} spans · expand
+							</small>
 						</summary>
 						{roast.timeline.length > 0 ? (
-							<ol>
+							<ol className="pb-2">
 								{roast.timeline.map((span, index) => (
-									<li key={span.id}>
-										<span>{String(index + 1).padStart(2, "0")}</span>
-										<div>
-											<strong>{span.name}</strong>
-											<small>{span.model ?? span.type}</small>
+									<li
+										className="grid grid-cols-[26px_minmax(0,1fr)] items-center gap-3.5 border-t border-line py-3.5 sm:grid-cols-[34px_minmax(0,1fr)_auto]"
+										key={span.id}
+									>
+										<span className="font-mono text-[10px] text-neutral-400">
+											{String(index + 1).padStart(2, "0")}
+										</span>
+										<div className="min-w-0">
+											<strong className="block truncate text-sm font-medium text-ink">
+												{span.name}
+											</strong>
+											<small className="mt-0.5 block font-mono text-[10px] text-muted">
+												{span.model ?? span.type}
+											</small>
 										</div>
-										<code>
+										<code className="col-start-2 font-mono text-[10px] text-muted sm:col-start-auto">
 											{spanMeta(span.tokensIn, span.tokensOut, span.durationMs)}
 										</code>
 									</li>
 								))}
 							</ol>
 						) : (
-							<p className="card-empty-row">No normalized spans available.</p>
+							<p className="pb-6 text-sm text-muted">
+								No normalized spans available.
+							</p>
 						)}
 					</details>
 				</>
 			)}
 		</article>
+	);
+}
+
+function SectionHeading({
+	id,
+	meta,
+	title,
+}: {
+	id?: string;
+	meta: string;
+	title: string;
+}) {
+	return (
+		<div className="mb-5 flex flex-wrap items-baseline justify-between gap-3">
+			<h2 className="text-xl font-semibold tracking-[-0.02em] text-ink" id={id}>
+				{title}
+			</h2>
+			<span className={`${monoLabel} text-neutral-400`}>{meta}</span>
+		</div>
+	);
+}
+
+function CostCell({
+	hot = false,
+	label,
+	value,
+}: {
+	hot?: boolean;
+	label: string;
+	value: string;
+}) {
+	return (
+		<div
+			className={`min-w-0 border-r border-b border-line p-5 ${hot ? "bg-accent-soft" : ""}`}
+		>
+			<span className={`${monoLabel} block text-muted`}>{label}</span>
+			<strong
+				className={`mt-2.5 block truncate font-mono text-2xl font-medium tracking-[-0.04em] sm:text-3xl ${hot ? "text-accent" : "text-ink"}`}
+			>
+				{value}
+			</strong>
+		</div>
 	);
 }

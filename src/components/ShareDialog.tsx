@@ -6,6 +6,7 @@ import {
 	removeRoastShare,
 	updateRoastVisibility,
 } from "../lib/shares.functions";
+import { monoLabel, secondaryButton } from "./ui";
 
 function errorMessage(error: unknown): string {
 	return error instanceof Error
@@ -106,7 +107,7 @@ export function ShareDialog({
 	return (
 		<>
 			<button
-				className="report-share__trigger"
+				className={`${secondaryButton} mt-4 px-3.5 py-2 text-xs`}
 				type="button"
 				onClick={openDialog}
 			>
@@ -114,7 +115,7 @@ export function ShareDialog({
 			</button>
 			<dialog
 				aria-labelledby="share-dialog-title"
-				className="share-dialog"
+				className="m-auto max-h-[min(720px,calc(100vh-32px))] w-[min(520px,calc(100%-32px))] overflow-auto rounded-xl border border-line bg-white p-0 text-ink shadow-[0_28px_80px_rgba(10,10,10,0.22)] backdrop:bg-black/50 open:animate-dialog-in data-[closing=true]:animate-dialog-out"
 				data-closing={closing || undefined}
 				onCancel={(event) => {
 					event.preventDefault();
@@ -122,13 +123,19 @@ export function ShareDialog({
 				}}
 				ref={dialogRef}
 			>
-				<header className="share-dialog__header">
+				<header className="flex items-start justify-between gap-6 border-b border-line px-6 pt-6 pb-5">
 					<div>
-						<p className="mono-label">Report access</p>
-						<h2 id="share-dialog-title">Share report</h2>
+						<p className={`${monoLabel} text-muted`}>Report access</p>
+						<h2
+							className="mt-1.5 text-2xl font-semibold tracking-[-0.02em]"
+							id="share-dialog-title"
+						>
+							Share report
+						</h2>
 					</div>
 					<button
 						aria-label="Close sharing dialog"
+						className="grid size-8 flex-none place-items-center rounded-md border border-line bg-white text-lg text-muted transition duration-150 ease-out hover:bg-surface-alt active:scale-[0.97]"
 						type="button"
 						onClick={closeDialog}
 					>
@@ -139,15 +146,25 @@ export function ShareDialog({
 				{sharing ? (
 					<>
 						<section
-							className="share-dialog__section"
+							className="px-6 py-5.5"
 							aria-labelledby="link-access-heading"
 						>
-							<h3 id="link-access-heading">Link access</h3>
-							<fieldset className="share-dialog__segments">
-								<legend>Link visibility</legend>
+							<h3
+								className="mb-3.5 text-sm font-semibold"
+								id="link-access-heading"
+							>
+								Link access
+							</h3>
+							<fieldset className="relative grid grid-cols-2 rounded-lg border border-line bg-surface-alt p-1">
+								<legend className="sr-only">Link visibility</legend>
 								{(["public", "private"] as const).map((visibility) => (
 									<button
 										aria-pressed={sharing.visibility === visibility}
+										className={`min-h-9 rounded-md text-xs font-semibold transition duration-150 ease-out active:scale-[0.97] disabled:opacity-50 ${
+											sharing.visibility === visibility
+												? "bg-white text-ink shadow-[0_1px_4px_rgba(10,10,10,0.09)]"
+												: "text-muted"
+										}`}
 										disabled={pending}
 										key={visibility}
 										type="button"
@@ -157,29 +174,47 @@ export function ShareDialog({
 									</button>
 								))}
 							</fieldset>
-							<div className="share-dialog__link">
-								<input aria-label="Report URL" readOnly value={reportUrl} />
-								<button disabled={pending} type="button" onClick={copyLink}>
+							<div className="mt-3 grid grid-cols-[minmax(0,1fr)_auto] gap-2">
+								<input
+									aria-label="Report URL"
+									className="h-10 min-w-0 rounded-md border border-line bg-white px-3 font-mono text-[11px] text-muted"
+									readOnly
+									value={reportUrl}
+								/>
+								<button
+									className="min-w-16 rounded-md bg-ink px-3.5 text-xs font-semibold text-white transition duration-150 ease-out hover:bg-neutral-800 active:scale-[0.97] disabled:opacity-50"
+									disabled={pending}
+									type="button"
+									onClick={copyLink}
+								>
 									{copied ? "Copied" : "Copy"}
 								</button>
 							</div>
 							{sharing.visibility === "private" && (
-								<p className="share-dialog__empty">
+								<p className="mt-3.5 text-xs text-muted">
 									Recipients must sign in with an email listed below.
 								</p>
 							)}
 						</section>
 
 						<section
-							className="share-dialog__section"
+							className="border-t border-line px-6 py-5.5"
 							aria-labelledby="people-access-heading"
 						>
-							<h3 id="people-access-heading">People with access</h3>
-							<form className="share-dialog__add" onSubmit={addEmail}>
-								<label htmlFor="share-email">Email address</label>
-								<div>
+							<h3
+								className="mb-3.5 text-sm font-semibold"
+								id="people-access-heading"
+							>
+								People with access
+							</h3>
+							<form onSubmit={addEmail}>
+								<label className="text-[11px] text-muted" htmlFor="share-email">
+									Email address
+								</label>
+								<div className="mt-2 grid grid-cols-[minmax(0,1fr)_auto] gap-2">
 									<input
 										autoComplete="email"
+										className="h-10 min-w-0 rounded-md border border-line bg-white px-3 text-xs text-ink"
 										disabled={pending}
 										id="share-email"
 										placeholder="person@company.com"
@@ -188,18 +223,26 @@ export function ShareDialog({
 										value={email}
 										onChange={(event) => setEmail(event.target.value)}
 									/>
-									<button disabled={pending} type="submit">
+									<button
+										className="min-w-16 rounded-md bg-ink px-3.5 text-xs font-semibold text-white transition duration-150 ease-out hover:bg-neutral-800 active:scale-[0.97] disabled:opacity-50"
+										disabled={pending}
+										type="submit"
+									>
 										Add
 									</button>
 								</div>
 							</form>
 							{sharing.shares.length > 0 ? (
-								<ul className="share-dialog__people">
+								<ul className="mt-4 border-t border-line">
 									{sharing.shares.map((share) => (
-										<li key={share.email}>
+										<li
+											className="flex items-center justify-between gap-4 border-b border-line py-2.5 text-xs"
+											key={share.email}
+										>
 											<span>{share.email}</span>
 											<button
 												aria-label={`Remove ${share.email}`}
+												className="grid size-7 place-items-center rounded-md border border-line bg-white text-base text-muted transition duration-150 ease-out hover:bg-surface-alt active:scale-[0.97] disabled:opacity-50"
 												disabled={pending}
 												type="button"
 												onClick={() => removeEmail(share.email)}
@@ -210,16 +253,21 @@ export function ShareDialog({
 									))}
 								</ul>
 							) : (
-								<p className="share-dialog__empty">No people added.</p>
+								<p className="mt-3.5 text-xs text-muted">No people added.</p>
 							)}
 						</section>
 					</>
 				) : (
-					<p className="share-dialog__loading">Loading sharing settings…</p>
+					<p className="px-6 py-7 text-xs text-muted">
+						Loading sharing settings…
+					</p>
 				)}
 
 				{error && (
-					<p className="share-dialog__error" role="alert">
+					<p
+						className="border-t border-line px-6 py-3 text-xs text-danger"
+						role="alert"
+					>
 						{error}
 					</p>
 				)}

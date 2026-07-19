@@ -52,7 +52,7 @@ function BatchStatus() {
 	}, [navigate, rows]);
 
 	return (
-		<main className="app-page">
+		<main>
 			<AppPageHeader
 				description={
 					settled
@@ -64,14 +64,14 @@ function BatchStatus() {
 
 			{error && (
 				<p
-					className="mt-4 rounded-lg bg-orange-50 px-4 py-3 text-sm text-orange-700"
+					className="mt-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-danger"
 					role="alert"
 				>
 					{error}
 				</p>
 			)}
 			{rows.length === 0 ? (
-				<div className="mt-7 rounded-xl border border-stone-200 bg-white p-10 text-center text-stone-500">
+				<div className="mt-7 rounded-xl border border-line bg-white p-10 text-center text-muted">
 					Batch not found.
 				</div>
 			) : (
@@ -87,37 +87,37 @@ function BatchStatus() {
 
 function StatusRow({ row }: { row: BatchRoast }) {
 	return (
-		<li className="flex flex-wrap items-center gap-4 rounded-xl border border-stone-200 bg-white px-5 py-4">
+		<li className="flex flex-wrap items-center gap-4 rounded-xl border border-line bg-white px-5 py-4">
 			{row.status === "processing" ? (
 				<LoaderCircle
-					className="size-5 animate-spin text-orange-600"
+					className="size-5 animate-spin text-accent"
 					aria-label="Processing"
 				/>
 			) : row.status === "done" ? (
-				<CheckCircle2 className="size-5 text-green-600" aria-label="Done" />
+				<CheckCircle2 className="size-5 text-tier-rare" aria-label="Done" />
 			) : (
-				<CircleX className="size-5 text-orange-700" aria-label="Failed" />
+				<CircleX className="size-5 text-danger" aria-label="Failed" />
 			)}
 			<div className="min-w-0 flex-1">
-				<p className="truncate font-medium">{row.title}</p>
+				<p className="truncate font-medium text-ink">{row.title}</p>
 				{row.status === "processing" && (
-					<p className="text-sm text-stone-500">processing</p>
+					<p className="text-sm text-muted">processing</p>
 				)}
 				{row.status === "failed" && (
-					<p className="text-sm text-orange-700">
+					<p className="text-sm text-danger">
 						{row.error || "Processing failed."}
 					</p>
 				)}
 			</div>
 			{row.status === "done" && (
 				<>
-					<span className="font-mono text-lg font-semibold">
-						Flint score {row.score}
+					<span className="font-mono text-lg font-semibold text-ink">
+						Helix score {row.score}
 					</span>
 					<SeverityCounts counts={row.findingCounts} />
 					<a
 						href={`/r/${row.slug}`}
-						className="inline-flex items-center gap-1 text-sm font-medium text-orange-700 hover:text-orange-900"
+						className="inline-flex items-center gap-1 text-sm font-medium text-accent transition-colors duration-150 hover:text-blue-700"
 					>
 						Report <ArrowUpRight size={14} aria-hidden="true" />
 					</a>

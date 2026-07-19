@@ -1,3 +1,5 @@
+import { primaryButton } from "./ui";
+
 interface AuthFieldProps {
 	autoComplete: string;
 	error?: string | null;
@@ -25,14 +27,14 @@ export function AuthField({
 
 	return (
 		<div>
-			<label className="mb-2 block text-sm font-medium" htmlFor={id}>
+			<label className="mb-2 block text-sm font-medium text-ink" htmlFor={id}>
 				{label}
 			</label>
 			<input
 				aria-describedby={error ? errorId : undefined}
 				aria-invalid={Boolean(error)}
 				autoComplete={autoComplete}
-				className="w-full rounded-xl border border-[var(--border,#e7e5e4)] bg-[var(--surface,#fff)] px-4 py-3 outline-none focus:border-[var(--spark,#ff4d00)]"
+				className="w-full rounded-xl border border-line bg-white px-4 py-3 text-sm text-ink outline-none transition duration-150 placeholder:text-neutral-400 focus:border-accent focus:ring-4 focus:ring-accent/10"
 				id={id}
 				maxLength={maxLength}
 				minLength={minLength}
@@ -42,7 +44,7 @@ export function AuthField({
 				value={value}
 			/>
 			{error ? (
-				<p className="mt-1 text-sm text-[var(--spark,#ff4d00)]" id={errorId}>
+				<p className="mt-1.5 text-sm text-danger" id={errorId}>
 					{error}
 				</p>
 			) : null}
@@ -50,5 +52,4 @@ export function AuthField({
 	);
 }
 
-export const authButtonClass =
-	"w-full rounded-full bg-[var(--spark,#ff4d00)] px-4 py-3 font-medium text-white disabled:cursor-not-allowed disabled:opacity-60";
+export const authButtonClass = `${primaryButton} w-full py-3`;

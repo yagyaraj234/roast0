@@ -13,7 +13,7 @@ function Roasts() {
 	const query = useAppSearch();
 
 	return (
-		<main className="app-page">
+		<main>
 			<AppPageHeader
 				description="Search by title from the top bar."
 				title="All scans"

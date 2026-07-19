@@ -1,14 +1,16 @@
-import { FlintMark } from "./brand";
+import { HelixMark } from "./brand";
 
 export function Logo({ inverse = false }: { inverse?: boolean }) {
 	return (
 		<a
-			className={`brand${inverse ? " brand--inverse" : ""}`}
+			className={`inline-flex w-max items-center gap-2.5 ${inverse ? "text-white" : "text-ink"}`}
 			href="/"
-			aria-label="Flint home"
+			aria-label="Helix home"
 		>
-			<FlintMark className="brand__mark" />
-			<span className="brand__wordmark">flint</span>
+			<HelixMark className="size-7 flex-none" />
+			<span className="font-serif text-[25px] leading-none italic tracking-[-0.02em]">
+				helix
+			</span>
 		</a>
 	);
 }

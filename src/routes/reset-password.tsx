@@ -44,10 +44,10 @@ function ResetPasswordPage() {
 	if (sent) {
 		return (
 			<AuthShell title="Check your email">
-				<p className="mb-6 text-sm text-[var(--muted,#78716c)]">
+				<p className="mb-6 text-sm text-muted">
 					Use the link we sent to choose a new password.
 				</p>
-				<Link className="text-[var(--spark,#ff4d00)]" to="/login">
+				<Link className="text-accent" to="/login">
 					Back to login
 				</Link>
 			</AuthShell>
@@ -56,7 +56,7 @@ function ResetPasswordPage() {
 
 	return (
 		<AuthShell title="Reset password">
-			<p className="text-sm text-[var(--muted,#78716c)]">
+			<p className="text-sm text-muted">
 				We’ll send you a secure password reset link.
 			</p>
 			<form className="mt-6 space-y-5" onSubmit={handleSubmit}>
@@ -71,7 +71,7 @@ function ResetPasswordPage() {
 					value={email}
 				/>
 				{formError ? (
-					<p className="text-sm text-[var(--spark,#ff4d00)]" role="alert">
+					<p className="text-sm text-danger" role="alert">
 						{formError}
 					</p>
 				) : null}
@@ -80,7 +80,7 @@ function ResetPasswordPage() {
 				</button>
 			</form>
 			<p className="mt-6 text-center text-sm">
-				<Link className="text-[var(--spark,#ff4d00)]" to="/login">
+				<Link className="text-accent" to="/login">
 					Back to login
 				</Link>
 			</p>

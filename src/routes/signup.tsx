@@ -62,10 +62,10 @@ function SignupPage() {
 	if (confirmationSent) {
 		return (
 			<AuthShell title="Check your email">
-				<p className="mb-6 text-sm text-[var(--muted,#78716c)]">
+				<p className="mb-6 text-sm text-muted">
 					Open the confirmation link, then log in.
 				</p>
-				<Link className="text-[var(--spark,#ff4d00)]" to="/login">
+				<Link className="text-accent" to="/login">
 					Back to login
 				</Link>
 			</AuthShell>
@@ -74,7 +74,7 @@ function SignupPage() {
 
 	return (
 		<AuthShell title="Start scanning">
-			<p className="text-sm text-[var(--muted,#78716c)]">
+			<p className="text-sm text-muted">
 				Create an account to scan your first trace.
 			</p>
 			<form className="mt-6 space-y-5" onSubmit={handleSubmit}>
@@ -111,7 +111,7 @@ function SignupPage() {
 					value={confirmation}
 				/>
 				{errors.form ? (
-					<p className="text-sm text-[var(--spark,#ff4d00)]" role="alert">
+					<p className="text-sm text-danger" role="alert">
 						{errors.form}
 					</p>
 				) : null}
@@ -119,9 +119,9 @@ function SignupPage() {
 					{pending ? "Creating account…" : "Start scanning"}
 				</button>
 			</form>
-			<p className="mt-6 text-center text-sm text-[var(--muted,#78716c)]">
+			<p className="mt-6 text-center text-sm text-muted">
 				Already have an account?{" "}
-				<Link className="text-[var(--spark,#ff4d00)]" to="/login">
+				<Link className="text-accent" to="/login">
 					Log in
 				</Link>
 			</p>

@@ -5,6 +5,7 @@ import {
 	discoverLangSmithProjects,
 	validateLangSmithKey,
 } from "#/lib/langsmith.functions";
+import { fieldClass, monoLabel } from "./ui";
 
 const defaultEndpoint = "https://api.smith.langchain.com";
 
@@ -105,10 +106,10 @@ export function LangSmithConnectionForm({
 	return (
 		<form
 			aria-label="LangSmith connection"
-			className="langsmith-form"
+			className="max-w-2xl"
 			onSubmit={connect}
 		>
-			<div className="langsmith-form__fields">
+			<div className="grid gap-4 sm:grid-cols-2">
 				<Field id="langsmith-label" label="Connection label">
 					<input
 						id="langsmith-label"
@@ -116,7 +117,7 @@ export function LangSmithConnectionForm({
 						onChange={(event) => setLabel(event.target.value)}
 						maxLength={120}
 						required
-						className="field"
+						className={fieldClass}
 						placeholder="Production support"
 					/>
 				</Field>
@@ -129,7 +130,7 @@ export function LangSmithConnectionForm({
 							clearValidation();
 						}}
 						required
-						className="field"
+						className={fieldClass}
 						type="url"
 						list="langsmith-endpoints"
 					/>
@@ -139,7 +140,7 @@ export function LangSmithConnectionForm({
 					</datalist>
 				</Field>
 			</div>
-			<div className="langsmith-form__key-row">
+			<div className="mt-4 flex flex-col items-stretch gap-3 sm:flex-row sm:items-end">
 				<Field
 					id="langsmith-api-key"
 					label="LangSmith API key"
@@ -154,7 +155,7 @@ export function LangSmithConnectionForm({
 						}}
 						autoComplete="off"
 						required
-						className="field"
+						className={fieldClass}
 						type="password"
 					/>
 				</Field>
@@ -162,18 +163,20 @@ export function LangSmithConnectionForm({
 					type="button"
 					disabled={busy || !apiKey}
 					onClick={validateKey}
-					className="langsmith-form__validate"
+					className="min-h-12 rounded-[10px] bg-surface-alt px-4.5 text-sm font-semibold text-neutral-700 transition duration-150 ease-out hover:bg-line active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-45 sm:flex-none"
 				>
 					Validate key
 				</button>
 			</div>
 			{workspaces.length ? (
-				<div className="langsmith-form__scope">
-					<p className="settings-eyebrow">Project scope</p>
+				<div className="mt-6 grid gap-4 border-t border-line pt-6 sm:grid-cols-2">
+					<p className={`${monoLabel} text-accent sm:col-span-2`}>
+						Project scope
+					</p>
 					<Field id="langsmith-workspace" label="Workspace">
 						<select
 							id="langsmith-workspace"
-							className="field"
+							className={fieldClass}
 							value={workspaceId}
 							onChange={(event) => void loadProjects(event.target.value)}
 							required
@@ -189,7 +192,7 @@ export function LangSmithConnectionForm({
 					<Field id="langsmith-project" label="Project">
 						<select
 							id="langsmith-project"
-							className="field"
+							className={fieldClass}
 							value={projectName}
 							onChange={(event) => setProjectName(event.target.value)}
 							required
@@ -206,20 +209,20 @@ export function LangSmithConnectionForm({
 				</div>
 			) : null}
 			{validated && workspaceId && projectName ? (
-				<p className="langsmith-form__confirmation">
+				<p className="mt-6 border-t border-line pt-4 text-[13px] leading-relaxed text-muted">
 					{projectName} will be scanned hourly. The first pass covers the last
 					24 hours, up to 50 completed traces.
 				</p>
 			) : null}
 			{error ? (
-				<p className="mt-4 text-sm text-orange-700" role="alert">
+				<p className="mt-4 text-sm text-danger" role="alert">
 					{error}
 				</p>
 			) : null}
 			<button
 				type="submit"
 				disabled={busy || !validated || !workspaceId || !projectName}
-				className="langsmith-form__submit"
+				className="mt-8 min-h-12 w-full rounded-[10px] bg-ink text-sm font-semibold text-white transition duration-150 ease-out hover:bg-neutral-800 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-45"
 			>
 				{busy ? "Connecting…" : "Connect LangSmith"}
 			</button>
@@ -239,7 +242,7 @@ function Field({
 	label: string;
 }) {
 	return (
-		<div className={`block text-sm font-medium text-stone-800 ${className}`}>
+		<div className={`block text-sm font-medium text-ink ${className}`}>
 			<label htmlFor={id}>{label}</label>
 			<span className="mt-1.5 block">{children}</span>
 		</div>

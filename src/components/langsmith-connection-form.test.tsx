@@ -5,7 +5,7 @@ import { JSDOM } from "jsdom";
 
 if (typeof document === "undefined") {
 	const dom = new JSDOM("<!doctype html><html><body></body></html>", {
-		url: "https://flint.test/app/integrations/langsmith/new",
+		url: "https://helix.test/app/integrations/langsmith/new",
 	});
 	for (const key of [
 		"window",

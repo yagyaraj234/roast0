@@ -31,7 +31,7 @@ vi.mock("@tanstack/react-router", () => ({
 }));
 
 const dom = new JSDOM("<!doctype html><html><body></body></html>", {
-	url: "https://flint.test/app/billing",
+	url: "https://helix.test/app/billing",
 });
 const assign = vi.fn();
 const browserWindow = new Proxy(dom.window, {

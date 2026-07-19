@@ -1,4 +1,4 @@
--- Flint schema. Safe to run against a fresh project or the older base schema.
+-- Helix schema. Safe to run against a fresh project or the older base schema.
 create extension if not exists pgcrypto;
 
 create table if not exists public.roasts (

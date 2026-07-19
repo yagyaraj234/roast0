@@ -74,7 +74,7 @@ function UpdatePasswordPage() {
 
 	return (
 		<AuthShell title="Choose a new password">
-			<p className="text-sm text-[var(--muted,#78716c)]">
+			<p className="text-sm text-muted">
 				Choose a new password for your account.
 			</p>
 			<form className="mt-6 space-y-5" onSubmit={handleSubmit}>
@@ -101,7 +101,7 @@ function UpdatePasswordPage() {
 					value={confirmation}
 				/>
 				{errors.form ? (
-					<p className="text-sm text-[var(--spark,#ff4d00)]" role="alert">
+					<p className="text-sm text-danger" role="alert">
 						{errors.form}
 					</p>
 				) : null}

@@ -10,7 +10,7 @@ if (typeof document === "undefined") {
 		jsdomErrors: ["css-parsing", "resource-loading", "unhandled-exception"],
 	});
 	const dom = new JSDOM("<!doctype html><html><body></body></html>", {
-		url: "https://Flint.test/r/hot-one",
+		url: "https://helix.test/r/hot-one",
 		virtualConsole,
 	});
 	for (const key of [
@@ -51,7 +51,7 @@ const { RoastCard } = await import("./RoastCard");
 const { RoastProductShot } = await import("./RoastProductShot");
 const { ShareButtons } = await import("./ShareButtons");
 const { AuthField } = await import("./auth-form");
-const { DotMatrixSpark, FlintMark, Logo } = await import("./brand");
+const { DotMatrixSpark, HelixMark, Logo } = await import("./brand");
 const { RoastTable, SeverityCounts } = await import("./roast-table");
 
 const roast: PublicRoast = {
@@ -160,16 +160,16 @@ describe("presentational components", () => {
 				<DotGlyph />
 				<LandingLogo />
 				<LandingLogo inverse />
-				<FlintMark />
+				<HelixMark />
 				<Logo className="custom" />
 				<DotMatrixSpark className="custom" />
 				<RoastProductShot />
 			</>,
 		);
 
-		expect(screen.getAllByText("flint")).toHaveLength(3);
+		expect(screen.getAllByText("helix")).toHaveLength(3);
 		expect(container.querySelectorAll("svg").length).toBeGreaterThan(5);
-		expect(screen.getByText("Leaky support agent")).toBeTruthy();
+		expect(screen.getByText("Wasteful support agent")).toBeTruthy();
 	});
 
 	it("renders full and empty public trace reports", () => {

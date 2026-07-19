@@ -16,7 +16,7 @@ if (typeof document === "undefined") {
 		jsdomErrors: ["css-parsing", "resource-loading", "unhandled-exception"],
 	});
 	const dom = new JSDOM("<!doctype html><html><body></body></html>", {
-		url: "https://Flint.test/r/report-1",
+		url: "https://helix.test/r/report-1",
 		virtualConsole,
 	});
 	for (const key of [

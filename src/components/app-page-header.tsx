@@ -12,12 +12,14 @@ export function AppPageHeader({
 	title,
 }: AppPageHeaderProps) {
 	return (
-		<header className="app-page__header">
-			<div className="app-page__title-row">
+		<header className="mb-7">
+			<div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
 				<div>
-					<h1>{title}</h1>
+					<h1 className="text-2xl font-semibold tracking-[-0.025em] text-ink">
+						{title}
+					</h1>
 					{description ? (
-						<p className="app-page__description">{description}</p>
+						<p className="mt-1 text-sm text-muted">{description}</p>
 					) : null}
 				</div>
 				{action}

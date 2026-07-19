@@ -1,4 +1,4 @@
-# Flint
+# Helix
 
 AI-agent trace assessment tool. Read `PLAN.md` before changing its frozen request/response contract.
 

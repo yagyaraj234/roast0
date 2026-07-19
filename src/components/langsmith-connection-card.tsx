@@ -7,6 +7,7 @@ import {
 	syncLangSmithConnection,
 	updateLangSmithStatus,
 } from "#/lib/langsmith.functions";
+import { fieldClass } from "./ui";
 
 export function LangSmithConnectionCard({
 	connection,
@@ -35,11 +36,11 @@ export function LangSmithConnectionCard({
 	}
 
 	return (
-		<article className="rounded-xl border border-stone-200 bg-white p-5">
+		<article className="rounded-xl border border-line bg-white p-5">
 			<div className="flex flex-wrap items-start justify-between gap-3">
 				<div>
-					<h2 className="font-semibold text-stone-950">{connection.label}</h2>
-					<p className="mt-1 text-sm text-stone-500">
+					<h2 className="font-semibold text-ink">{connection.label}</h2>
+					<p className="mt-1 text-sm text-muted">
 						{connection.project_name} · {connection.workspace_id}
 					</p>
 				</div>
@@ -50,35 +51,35 @@ export function LangSmithConnectionCard({
 				</span>
 			</div>
 			<div className="mt-5 grid gap-3 text-sm sm:grid-cols-2">
-				<p className="text-stone-500">
+				<p className="text-muted">
 					Last success{" "}
-					<span className="block font-medium text-stone-800">
+					<span className="block font-medium text-ink">
 						{formatSyncTime(connection.last_success_at)}
 					</span>
 				</p>
-				<p className="text-stone-500">
+				<p className="text-muted">
 					Last scan{" "}
-					<span className="block font-medium text-stone-800">
+					<span className="block font-medium text-ink">
 						{connection.last_scan_count} traces
 					</span>
 				</p>
 			</div>
 			{connection.last_error ? (
-				<p className="mt-4 text-sm text-orange-700" role="alert">
+				<p className="mt-4 text-sm text-danger" role="alert">
 					{safeError(connection.last_error)}
 				</p>
 			) : null}
 			{error ? (
-				<p className="mt-4 text-sm text-orange-700" role="alert">
+				<p className="mt-4 text-sm text-danger" role="alert">
 					{error}
 				</p>
 			) : null}
 			{connection.status === "invalid" ? (
 				<div className="mt-5 flex flex-wrap items-end gap-2">
-					<label className="text-sm font-medium text-stone-700">
+					<label className="text-sm font-medium text-neutral-700">
 						<span className="sr-only">Replacement LangSmith API key</span>
 						<input
-							className="field min-w-64"
+							className={`${fieldClass} min-w-64`}
 							type="password"
 							autoComplete="off"
 							value={reconnectKey}
@@ -98,7 +99,7 @@ export function LangSmithConnectionCard({
 								return result;
 							})
 						}
-						className="rounded-full border border-stone-200 px-3.5 py-2 text-sm font-medium text-stone-700 hover:bg-stone-50 disabled:opacity-50"
+						className="rounded-full border border-line px-3.5 py-2 text-sm font-medium text-neutral-700 hover:bg-surface-alt disabled:opacity-50"
 					>
 						Reconnect
 					</button>
@@ -115,7 +116,7 @@ export function LangSmithConnectionCard({
 									.connection,
 						)
 					}
-					className="inline-flex items-center gap-2 rounded-full bg-orange-600 px-3.5 py-2 text-sm font-medium text-white hover:bg-orange-700 disabled:opacity-50"
+					className="inline-flex items-center gap-2 rounded-full bg-ink px-3.5 py-2 text-sm font-medium text-white hover:bg-neutral-800 disabled:opacity-50"
 				>
 					<RefreshCw size={14} aria-hidden="true" /> Scan now
 				</button>
@@ -134,7 +135,7 @@ export function LangSmithConnectionCard({
 								}),
 							)
 						}
-						className="inline-flex items-center gap-2 rounded-full border border-stone-200 px-3.5 py-2 text-sm font-medium text-stone-700 hover:bg-stone-50 disabled:opacity-50"
+						className="inline-flex items-center gap-2 rounded-full border border-line px-3.5 py-2 text-sm font-medium text-neutral-700 hover:bg-surface-alt disabled:opacity-50"
 					>
 						{connection.status === "active" ? (
 							<Pause size={14} aria-hidden="true" />
@@ -154,7 +155,7 @@ export function LangSmithConnectionCard({
 							return null;
 						})
 					}
-					className="inline-flex items-center gap-2 rounded-full border border-stone-200 px-3.5 py-2 text-sm font-medium text-stone-700 hover:bg-stone-50 disabled:opacity-50"
+					className="inline-flex items-center gap-2 rounded-full border border-line px-3.5 py-2 text-sm font-medium text-neutral-700 hover:bg-surface-alt disabled:opacity-50"
 				>
 					<Trash2 size={14} aria-hidden="true" /> Disconnect
 				</button>
@@ -167,12 +168,12 @@ function safeError(value: string): string {
 	if (value === "invalid_key")
 		return "Key rejected. Reconnect with a valid LangSmith key.";
 	if (value === "rate_limited")
-		return "LangSmith rate limited the last scan. Flint will retry hourly.";
-	return "Last scan did not complete. Flint will retry hourly.";
+		return "LangSmith rate limited the last scan. Helix will retry hourly.";
+	return "Last scan did not complete. Helix will retry hourly.";
 }
 
 function badgeClass(status: LangSmithConnection["status"]): string {
-	if (status === "active") return "bg-green-50 text-green-700";
-	if (status === "paused") return "bg-stone-100 text-stone-600";
-	return "bg-orange-50 text-orange-700";
+	if (status === "active") return "bg-green-50 text-tier-rare";
+	if (status === "paused") return "bg-surface-alt text-muted";
+	return "bg-red-50 text-danger";
 }

@@ -10,7 +10,7 @@ export const Route = createFileRoute("/app/integrations/langsmith/new")({
 function ConnectLangSmith() {
 	const navigate = useNavigate();
 	return (
-		<div className="app-page langsmith-setup-page">
+		<div className="max-w-2xl">
 			<AppPageHeader
 				description="Use a workspace-scoped service key when possible. The first scan checks the last 24 hours, up to 50 completed traces; your key is encrypted and never shown again."
 				title="Connect LangSmith"

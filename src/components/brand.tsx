@@ -22,26 +22,30 @@ const sparkDots = [
 	[282, 28, 3],
 ] as const;
 
-export function FlintMark({ className = "" }: { className?: string }) {
+export function HelixMark({ className = "" }: { className?: string }) {
 	return (
 		<svg
 			aria-hidden="true"
 			className={className}
-			viewBox="0 0 34 34"
+			viewBox="0 0 64 64"
 			xmlns="http://www.w3.org/2000/svg"
 		>
-			<path className="brand__flake" d="M4 26 13 4l14 8-7 18-8-4-5 4Z" />
-			<path className="brand__facet" d="m13 4 1 15 13-7-7 18-8-4-5 4Z" />
-			<circle className="brand__spark" cx="29" cy="7" r="2.5" />
+			<path d="M5 13 28 23 24 41 5 51 12 32Z" fill="currentColor" />
+			<path d="M59 13 36 23 40 41 59 51 52 32Z" fill="currentColor" />
+			<rect x="29" y="18" width="6" height="28" rx="3" fill="#4a7fd6" />
 		</svg>
 	);
 }
 
 export function Logo({ className = "" }: { className?: string }) {
 	return (
-		<span className={`brand ${className}`.trim()}>
-			<FlintMark className="brand__mark" />
-			<span className="brand__wordmark">flint</span>
+		<span
+			className={`inline-flex items-center gap-2.5 text-ink ${className}`.trim()}
+		>
+			<HelixMark className="size-7 flex-none" />
+			<span className="font-serif text-[25px] leading-none italic tracking-[-0.02em]">
+				helix
+			</span>
 		</span>
 	);
 }
@@ -50,31 +54,23 @@ export function DotMatrixSpark({ className = "" }: { className?: string }) {
 	return (
 		<svg
 			aria-hidden="true"
-			className={`dot-matrix ${className}`.trim()}
+			className={className}
 			viewBox="0 0 368 152"
 			xmlns="http://www.w3.org/2000/svg"
 		>
 			{faintDots.map(([cx, cy, r]) => (
 				<circle
-					className="dot-matrix__faint"
 					cx={cx}
 					cy={cy}
+					fill="#a8a29e"
 					key={`${cx}-${cy}`}
+					opacity="0.32"
 					r={r}
 				/>
 			))}
-			<path
-				className="dot-matrix__flake"
-				d="m154 122 31-78 40 23-20 56-25-13-15 12Z"
-			/>
+			<path d="m154 122 31-78 40 23-20 56-25-13-15 12Z" fill="#4a7fd6" />
 			{sparkDots.map(([cx, cy, r]) => (
-				<circle
-					className="dot-matrix__spark"
-					cx={cx}
-					cy={cy}
-					key={`${cx}-${cy}`}
-					r={r}
-				/>
+				<circle cx={cx} cy={cy} fill="#e4eafc" key={`${cx}-${cy}`} r={r} />
 			))}
 		</svg>
 	);

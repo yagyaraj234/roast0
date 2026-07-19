@@ -3,6 +3,7 @@ import { FileJson, Upload } from "lucide-react";
 import { type FormEvent, useState } from "react";
 
 import { AppPageHeader } from "#/components/app-page-header";
+import { fieldClass, primaryButton } from "#/components/ui";
 import { createUpload } from "#/lib/roast-functions";
 
 export { createUpload } from "#/lib/roast-functions";
@@ -40,7 +41,7 @@ function NewRoast() {
 	}
 
 	return (
-		<main className="app-page">
+		<main>
 			<AppPageHeader
 				description="Single object, array, or JSONL. Maximum 20 traces per upload."
 				title="Scan traces"
@@ -48,10 +49,10 @@ function NewRoast() {
 
 			<form
 				onSubmit={submit}
-				className="mt-7 rounded-xl border border-stone-200 bg-white p-5 sm:p-7"
+				className="mt-7 rounded-xl border border-line bg-white p-5 sm:p-7"
 			>
-				<label className="block text-sm font-medium" htmlFor="title">
-					Title <span className="font-normal text-stone-400">optional</span>
+				<label className="block text-sm font-medium text-ink" htmlFor="title">
+					Title <span className="font-normal text-neutral-400">optional</span>
 				</label>
 				<input
 					id="title"
@@ -59,11 +60,11 @@ function NewRoast() {
 					onChange={(event) => setTitle(event.target.value)}
 					maxLength={120}
 					placeholder="Production support agent"
-					className="mt-2 w-full rounded-lg border border-stone-200 px-3 py-2.5 text-sm outline-none focus:border-orange-500"
+					className={`${fieldClass} mt-2`}
 				/>
 
 				<div
-					className="mt-6 flex gap-1 border-b border-stone-200"
+					className="mt-6 flex gap-1 border-b border-line"
 					role="tablist"
 					aria-label="Trace input method"
 				>
@@ -87,19 +88,19 @@ function NewRoast() {
 							rows={13}
 							spellCheck={false}
 							placeholder={'{"spans":[...]}'}
-							className="w-full resize-y rounded-lg border border-stone-200 bg-stone-950 p-4 font-mono text-sm text-stone-100 outline-none placeholder:text-stone-600 focus:border-orange-500"
+							className="w-full resize-y rounded-lg border border-ink bg-ink p-4 font-mono text-sm text-neutral-100 outline-none transition duration-150 placeholder:text-neutral-500 focus:border-accent focus:ring-4 focus:ring-accent/20"
 						/>
 					</div>
 				) : (
 					<label
-						className="mt-4 flex min-h-64 cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-stone-300 bg-stone-50 text-center hover:border-orange-400"
+						className="mt-4 flex min-h-64 cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-neutral-300 bg-paper text-center transition-colors duration-150 hover:border-accent"
 						role="tabpanel"
 					>
-						<Upload className="text-orange-600" aria-hidden="true" />
-						<span className="mt-3 text-sm font-medium">
+						<Upload className="text-accent" aria-hidden="true" />
+						<span className="mt-3 text-sm font-medium text-ink">
 							{fileName || "Choose JSON or JSONL file"}
 						</span>
-						<span className="mt-1 text-xs text-stone-500">
+						<span className="mt-1 text-xs text-muted">
 							Source and format detected automatically.
 						</span>
 						<input
@@ -117,18 +118,18 @@ function NewRoast() {
 				)}
 
 				{error && (
-					<p className="mt-4 text-sm text-orange-700" role="alert">
+					<p className="mt-4 text-sm text-danger" role="alert">
 						{error}
 					</p>
 				)}
 				<div className="mt-5 flex flex-col-reverse items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between">
-					<p className="text-xs text-stone-500">
-						Flint redacts supported secrets before any row is stored.
+					<p className="text-xs text-muted">
+						Helix redacts supported secrets before any row is stored.
 					</p>
 					<button
 						type="submit"
 						disabled={submitting}
-						className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-orange-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-orange-700 disabled:cursor-wait disabled:opacity-60 sm:w-auto"
+						className={`${primaryButton} w-full disabled:cursor-wait sm:w-auto`}
 					>
 						<FileJson size={16} aria-hidden="true" />
 						{submitting ? "Staging…" : "Scan traces"}
@@ -154,7 +155,7 @@ function Tab({
 			role="tab"
 			aria-selected={active}
 			onClick={onClick}
-			className={`border-b-2 px-4 py-2.5 text-sm font-medium ${active ? "border-orange-600 text-orange-700" : "border-transparent text-stone-500 hover:text-stone-900"}`}
+			className={`-mb-px border-b-2 px-4 py-2.5 text-sm font-medium transition-colors duration-150 ${active ? "border-accent text-accent" : "border-transparent text-muted hover:text-ink"}`}
 		>
 			{children}
 		</button>

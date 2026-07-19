@@ -1,7 +1,7 @@
 export function DotMatrix() {
 	return (
 		<svg
-			className="dot-matrix"
+			className="text-line"
 			viewBox="0 0 720 620"
 			aria-hidden="true"
 			preserveAspectRatio="xMidYMid meet"
@@ -21,7 +21,7 @@ export function DotMatrix() {
 					height="24"
 					patternUnits="userSpaceOnUse"
 				>
-					<circle cx="3" cy="3" r="3" fill="#ff5310" />
+					<circle cx="3" cy="3" r="3" fill="#4a7fd6" />
 				</pattern>
 				<pattern
 					id="dot-soft"
@@ -29,7 +29,7 @@ export function DotMatrix() {
 					height="24"
 					patternUnits="userSpaceOnUse"
 				>
-					<circle cx="3" cy="3" r="3.5" fill="#ff9b62" />
+					<circle cx="3" cy="3" r="3.5" fill="#8fb0e8" />
 				</pattern>
 				<pattern
 					id="dot-white"
@@ -37,7 +37,7 @@ export function DotMatrix() {
 					height="24"
 					patternUnits="userSpaceOnUse"
 				>
-					<circle cx="3" cy="3" r="4" fill="#fff4e8" />
+					<circle cx="3" cy="3" r="4" fill="#e4eafc" />
 				</pattern>
 				<radialGradient id="field-fade" cx="62%" cy="52%" r="56%">
 					<stop offset="0" stopColor="white" />
@@ -50,23 +50,21 @@ export function DotMatrix() {
 			</defs>
 
 			<rect
-				className="dot-matrix__field"
 				width="720"
 				height="620"
 				fill="url(#dot-field)"
 				mask="url(#field-mask)"
+				opacity="0.42"
 			/>
 			<path
-				className="dot-matrix__flake"
 				d="m228 526 139-360 205 119-97 284-120-62-71 60Z"
 				fill="url(#dot-spark)"
 			/>
 			<path
-				className="dot-matrix__facet"
 				d="m367 166 1 244 204-125-97 284-120-62-71 60Z"
 				fill="url(#dot-soft)"
 			/>
-			<g className="dot-matrix__spark-burst" fill="url(#dot-white)">
+			<g fill="url(#dot-white)">
 				<circle cx="454" cy="144" r="12" />
 				<circle cx="526" cy="92" r="8" />
 				<circle cx="579" cy="166" r="6" />
@@ -78,13 +76,18 @@ export function DotMatrix() {
 
 export function DotGlyph() {
 	return (
-		<svg className="dot-glyph" viewBox="0 0 40 40" aria-hidden="true">
+		<svg
+			className="h-10 w-10 text-accent"
+			viewBox="0 0 40 40"
+			aria-hidden="true"
+			fill="currentColor"
+		>
 			<circle cx="8" cy="30" r="3" />
-			<circle cx="17" cy="27" r="4" />
+			<circle cx="17" cy="27" r="4" opacity="0.6" />
 			<circle cx="27" cy="29" r="2.5" />
-			<circle cx="13" cy="17" r="2.5" />
+			<circle cx="13" cy="17" r="2.5" opacity="0.6" />
 			<circle cx="23" cy="16" r="3.5" />
-			<circle cx="30" cy="11" r="2" />
+			<circle cx="30" cy="11" r="2" opacity="0.6" />
 			<circle cx="20" cy="6" r="2.5" />
 		</svg>
 	);

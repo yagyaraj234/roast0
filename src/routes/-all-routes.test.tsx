@@ -278,7 +278,7 @@ describe("public and ingest route boundaries", () => {
 			}
 		).options.server.handlers.POST;
 		const response = await handler({
-			request: new Request("https://Flint.test/api/ingest", {
+			request: new Request("https://helix.test/api/ingest", {
 				body: JSON.stringify({
 					format: "generic",
 					source: "live",

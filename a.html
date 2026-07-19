@@ -1,0 +1,938 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="theme-color" content="#ffffff" />
+		<title>Helix — 20 logo directions</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			rel="stylesheet"
+			href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap"
+		/>
+		<link
+			rel="stylesheet"
+			href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&amp;display=swap"
+		/>
+		<style>
+			:root {
+				--ink: #0a0a0a;
+				--muted: #7a7a7a;
+				--accent: #4a7fd6;
+				--accent-soft: #e4eafc;
+				--line: #e5e5e5;
+				--surface: #f4f4f5;
+				--paper: #fafaf9;
+				--serif: "Instrument Serif", Georgia, serif;
+				--sans: "General Sans", ui-sans-serif, system-ui, sans-serif;
+				--mono: "JetBrains Mono", ui-monospace, monospace;
+			}
+
+			* {
+				box-sizing: border-box;
+			}
+
+			html {
+				scroll-behavior: smooth;
+			}
+
+			body {
+				margin: 0;
+				background: #fff;
+				color: var(--ink);
+				font-family: var(--sans);
+				-webkit-font-smoothing: antialiased;
+			}
+
+			button,
+			input {
+				font: inherit;
+			}
+
+			::selection {
+				background: var(--accent);
+				color: #fff;
+			}
+
+			.topbar {
+				position: relative;
+				z-index: 2;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				width: min(1160px, calc(100% - 48px));
+				height: 82px;
+				margin: 0 auto;
+				border-bottom: 1px solid var(--line);
+			}
+
+			.brand {
+				display: inline-flex;
+				align-items: center;
+				gap: 10px;
+				color: inherit;
+				text-decoration: none;
+			}
+
+			.brand-mark {
+				width: 23px;
+				height: 25px;
+			}
+
+			.brand-name {
+				font-family: var(--serif);
+				font-size: 25px;
+				letter-spacing: -0.02em;
+				line-height: 1;
+			}
+
+			.topbar-note,
+			.eyebrow,
+			.section-count,
+			.card-index,
+			.card-type,
+			.mode-label,
+			.selection-kicker,
+			.palette-item {
+				font-family: var(--mono);
+				font-size: 10px;
+				font-weight: 500;
+				letter-spacing: 0.12em;
+				text-transform: uppercase;
+			}
+
+			.topbar-note {
+				color: var(--muted);
+			}
+
+			.hero {
+				position: relative;
+				display: grid;
+				min-height: 540px;
+				place-items: center;
+				overflow: hidden;
+				padding: 88px 24px 96px;
+				text-align: center;
+			}
+
+			.hero::before {
+				position: absolute;
+				inset: 0;
+				background-image: radial-gradient(circle, #cfd9ec 1.2px, transparent 1.4px);
+				background-position: center;
+				background-size: 26px 26px;
+				content: "";
+				mask-image: radial-gradient(circle at center, black 0%, transparent 67%);
+				opacity: 0.62;
+			}
+
+			.hero::after {
+				position: absolute;
+				top: 82px;
+				left: 50%;
+				width: 300px;
+				height: 300px;
+				border-radius: 50%;
+				background: var(--accent-soft);
+				content: "";
+				filter: blur(90px);
+				opacity: 0.52;
+				transform: translateX(-50%);
+			}
+
+			.hero-copy {
+				position: relative;
+				z-index: 1;
+				max-width: 880px;
+			}
+
+			.eyebrow {
+				margin: 0 0 25px;
+				color: var(--accent);
+			}
+
+			h1 {
+				margin: 0;
+				font-size: clamp(54px, 8vw, 102px);
+				font-weight: 700;
+				letter-spacing: -0.055em;
+				line-height: 0.97;
+			}
+
+			h1 span {
+				color: var(--accent);
+			}
+
+			.hero-text {
+				max-width: 620px;
+				margin: 30px auto 0;
+				color: var(--muted);
+				font-size: 19px;
+				line-height: 1.62;
+			}
+
+			.palette {
+				display: flex;
+				flex-wrap: wrap;
+				justify-content: center;
+				gap: 10px;
+				margin-top: 34px;
+			}
+
+			.palette-item {
+				display: inline-flex;
+				align-items: center;
+				gap: 8px;
+				padding: 8px 11px;
+				border: 1px solid var(--line);
+				border-radius: 999px;
+				background: rgb(255 255 255 / 0.72);
+				color: #5e5e5e;
+				backdrop-filter: blur(10px);
+			}
+
+			.swatch {
+				width: 8px;
+				height: 8px;
+				border: 1px solid rgb(0 0 0 / 0.08);
+				border-radius: 50%;
+			}
+
+			.gallery {
+				padding: 72px 24px 140px;
+				border-top: 1px solid var(--line);
+				background: var(--paper);
+			}
+
+			.gallery-inner {
+				width: min(1160px, 100%);
+				margin: 0 auto;
+			}
+
+			.section-head {
+				display: flex;
+				align-items: end;
+				justify-content: space-between;
+				gap: 28px;
+				margin-bottom: 32px;
+			}
+
+			.section-head h2 {
+				margin: 0;
+				font-size: clamp(34px, 4vw, 52px);
+				font-weight: 600;
+				letter-spacing: -0.04em;
+			}
+
+			.section-head p {
+				max-width: 480px;
+				margin: 10px 0 0;
+				color: var(--muted);
+				font-size: 15px;
+				line-height: 1.6;
+			}
+
+			.gallery-tools {
+				display: flex;
+				align-items: center;
+				gap: 16px;
+			}
+
+			.section-count {
+				color: var(--muted);
+				white-space: nowrap;
+			}
+
+			.mode-toggle {
+				position: relative;
+				display: inline-flex;
+				align-items: center;
+				gap: 9px;
+				padding: 8px 11px;
+				border: 1px solid var(--line);
+				border-radius: 999px;
+				background: #fff;
+				cursor: pointer;
+			}
+
+			.mode-toggle input {
+				position: absolute;
+				opacity: 0;
+				pointer-events: none;
+			}
+
+			.mode-dot {
+				width: 16px;
+				height: 16px;
+				border: 5px solid var(--accent);
+				border-radius: 50%;
+				background: var(--ink);
+				transition: border-color 160ms ease;
+			}
+
+			.mode-toggle:has(input:checked) .mode-dot {
+				border-color: var(--ink);
+			}
+
+			.mode-toggle:has(input:focus-visible) {
+				outline: 2px solid var(--accent);
+				outline-offset: 2px;
+			}
+
+			.logo-grid {
+				display: grid;
+				grid-template-columns: repeat(4, minmax(0, 1fr));
+				border-top: 1px solid var(--line);
+				border-left: 1px solid var(--line);
+			}
+
+			.logo-card {
+				position: relative;
+				display: block;
+				min-width: 0;
+				border-right: 1px solid var(--line);
+				border-bottom: 1px solid var(--line);
+				background: #fff;
+				cursor: pointer;
+				transition:
+					background 180ms ease,
+					box-shadow 180ms ease,
+					transform 180ms ease;
+			}
+
+			.logo-card > input {
+				position: absolute;
+				width: 1px;
+				height: 1px;
+				opacity: 0;
+			}
+
+			.logo-card:hover {
+				z-index: 1;
+				box-shadow: 0 18px 50px rgb(10 10 10 / 0.08);
+				transform: translateY(-3px);
+			}
+
+			.logo-card:has(input:checked) {
+				z-index: 2;
+				background: #f7f9fd;
+				box-shadow: inset 0 0 0 2px var(--accent);
+			}
+
+			.logo-card:has(input:focus-visible) {
+				z-index: 3;
+				outline: 2px solid var(--accent);
+				outline-offset: -3px;
+			}
+
+			.card-inner {
+				display: flex;
+				min-height: 340px;
+				flex-direction: column;
+				padding: 18px;
+			}
+
+			.card-top,
+			.card-foot {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 12px;
+			}
+
+			.card-index,
+			.card-type {
+				color: var(--muted);
+			}
+
+			.selected-label {
+				display: inline-flex;
+				align-items: center;
+				gap: 6px;
+				color: var(--accent);
+				font-family: var(--mono);
+				font-size: 9px;
+				font-weight: 600;
+				letter-spacing: 0.12em;
+				opacity: 0;
+				text-transform: uppercase;
+				transform: translateY(3px);
+				transition: 160ms ease;
+			}
+
+			.selected-label::before {
+				width: 6px;
+				height: 6px;
+				border-radius: 50%;
+				background: var(--accent);
+				content: "";
+			}
+
+			.logo-card:has(input:checked) .selected-label {
+				opacity: 1;
+				transform: translateY(0);
+			}
+
+			.logo-stage {
+				position: relative;
+				display: grid;
+				min-height: 208px;
+				flex: 1;
+				place-items: center;
+				padding: 36px 0 24px;
+			}
+
+			.lockup {
+				display: flex;
+				align-items: center;
+				gap: 13px;
+				min-width: 0;
+			}
+
+			.logo-mark {
+				width: 58px;
+				height: 58px;
+				overflow: visible;
+				--mark-ink: var(--ink);
+				--mark-accent: var(--accent);
+				--mark-soft: var(--accent-soft);
+				--mark-line: var(--line);
+				transition: transform 220ms cubic-bezier(0.23, 1, 0.32, 1);
+			}
+
+			.logo-card:hover .logo-mark {
+				transform: rotate(-2deg) scale(1.04);
+			}
+
+			.wordmark {
+				font-family: var(--serif);
+				font-size: 34px;
+				letter-spacing: -0.025em;
+				line-height: 1;
+			}
+
+			.wordmark.sans {
+				font-family: var(--sans);
+				font-size: 29px;
+				font-weight: 600;
+				letter-spacing: -0.045em;
+			}
+
+			.wordmark.mono {
+				font-family: var(--mono);
+				font-size: 23px;
+				font-weight: 500;
+				letter-spacing: -0.04em;
+			}
+
+			.wordmark.italic {
+				font-style: italic;
+			}
+
+			.wordmark-suffix {
+				margin-left: -8px;
+				color: var(--accent);
+				font-family: var(--mono);
+				font-size: 9px;
+				font-weight: 600;
+				letter-spacing: 0.04em;
+			}
+
+			.micro-preview {
+				position: absolute;
+				right: 0;
+				bottom: 17px;
+				display: grid;
+				width: 34px;
+				height: 34px;
+				place-items: center;
+				border-radius: 8px;
+				background: var(--ink);
+			}
+
+			.micro-preview svg {
+				width: 22px;
+				height: 22px;
+				--mark-ink: #fff;
+				--mark-accent: var(--accent);
+				--mark-soft: var(--accent-soft);
+				--mark-line: #505050;
+			}
+
+			.card-foot {
+				align-items: end;
+				padding-top: 15px;
+				border-top: 1px solid var(--line);
+			}
+
+			.card-name {
+				margin: 0;
+				font-size: 14px;
+				font-weight: 600;
+				letter-spacing: -0.01em;
+			}
+
+			.card-idea {
+				max-width: 160px;
+				margin: 4px 0 0;
+				color: var(--muted);
+				font-size: 11px;
+				line-height: 1.45;
+			}
+
+			body.mono .logo-mark,
+			body.mono .micro-preview svg {
+				--mark-accent: var(--mark-ink);
+				--mark-soft: var(--mark-ink);
+				--mark-line: var(--mark-ink);
+			}
+
+			body.mono .wordmark-suffix {
+				color: var(--ink);
+			}
+
+			.selection-bar {
+				position: fixed;
+				z-index: 10;
+				right: 20px;
+				bottom: 20px;
+				left: 20px;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				width: min(620px, calc(100% - 40px));
+				margin: 0 auto;
+				padding: 12px 12px 12px 18px;
+				border: 1px solid rgb(255 255 255 / 0.14);
+				border-radius: 16px;
+				background: var(--ink);
+				box-shadow: 0 18px 60px rgb(0 0 0 / 0.25);
+				color: #fff;
+				opacity: 0;
+				pointer-events: none;
+				transform: translateY(24px);
+				transition: 220ms cubic-bezier(0.23, 1, 0.32, 1);
+			}
+
+			.selection-bar.visible {
+				opacity: 1;
+				pointer-events: auto;
+				transform: translateY(0);
+			}
+
+			.selection-kicker {
+				display: block;
+				margin-bottom: 4px;
+				color: #a8a8a8;
+				font-size: 8px;
+			}
+
+			.selection-name {
+				font-size: 14px;
+				font-weight: 500;
+			}
+
+			.copy-button {
+				padding: 9px 14px;
+				border: 0;
+				border-radius: 999px;
+				background: #fff;
+				color: var(--ink);
+				cursor: pointer;
+				font-size: 12px;
+				font-weight: 600;
+				transition: transform 120ms ease;
+			}
+
+			.copy-button:active {
+				transform: scale(0.96);
+			}
+
+			.copy-button:focus-visible {
+				outline: 2px solid var(--accent);
+				outline-offset: 2px;
+			}
+
+			.footer {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 24px;
+				width: min(1160px, calc(100% - 48px));
+				margin: 0 auto;
+				padding: 36px 0 48px;
+				color: var(--muted);
+				font-size: 12px;
+			}
+
+			.footer strong {
+				color: var(--ink);
+				font-weight: 500;
+			}
+
+			@media (max-width: 1050px) {
+				.logo-grid {
+					grid-template-columns: repeat(3, minmax(0, 1fr));
+				}
+			}
+
+			@media (max-width: 780px) {
+				.logo-grid {
+					grid-template-columns: repeat(2, minmax(0, 1fr));
+				}
+
+				.section-head {
+					align-items: start;
+					flex-direction: column;
+				}
+			}
+
+			@media (max-width: 540px) {
+				.topbar {
+					width: calc(100% - 32px);
+				}
+
+				.topbar-note {
+					display: none;
+				}
+
+				.hero {
+					min-height: 500px;
+					padding: 78px 20px 82px;
+				}
+
+				h1 {
+					font-size: clamp(48px, 16vw, 68px);
+				}
+
+				.hero-text {
+					font-size: 17px;
+				}
+
+				.gallery {
+					padding: 56px 16px 128px;
+				}
+
+				.gallery-tools {
+					width: 100%;
+					justify-content: space-between;
+				}
+
+				.logo-grid {
+					grid-template-columns: 1fr;
+				}
+
+				.card-inner {
+					min-height: 320px;
+					padding: 20px;
+				}
+
+				.footer {
+					align-items: start;
+					width: calc(100% - 32px);
+					flex-direction: column;
+				}
+
+				.selection-bar {
+					right: 12px;
+					bottom: 12px;
+					left: 12px;
+					width: calc(100% - 24px);
+				}
+			}
+
+			@media (prefers-reduced-motion: reduce) {
+				html {
+					scroll-behavior: auto;
+				}
+
+				*,
+				*::before,
+				*::after {
+					animation-duration: 0.01ms !important;
+					transition-duration: 0.01ms !important;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<svg aria-hidden="true" width="0" height="0" style="position: absolute">
+			<defs>
+				<symbol id="mark-01" viewBox="0 0 64 64">
+					<path d="M9 48 22 7l32 16-12 34-17-8-11 7Z" fill="none" stroke="var(--mark-ink)" stroke-width="4" stroke-linejoin="bevel" />
+					<path d="m15 43 11-10 9 6 13-15" fill="none" stroke="var(--mark-accent)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+					<circle cx="48" cy="24" r="4" fill="var(--mark-accent)" />
+				</symbol>
+				<symbol id="mark-02" viewBox="0 0 64 64">
+					<circle cx="20" cy="10" r="3" fill="var(--mark-ink)" />
+					<rect x="29" y="7" width="6" height="6" rx="1" fill="var(--mark-ink)" />
+					<circle cx="44" cy="14" r="3" fill="var(--mark-ink)" />
+					<path d="M12 23h40L42 37v13l-10 7-10-7V37Z" fill="none" stroke="var(--mark-ink)" stroke-width="4" stroke-linejoin="bevel" />
+					<path d="M22 37h20" stroke="var(--mark-accent)" stroke-width="4" />
+					<rect x="28" y="43" width="8" height="8" rx="2" fill="var(--mark-accent)" />
+				</symbol>
+				<symbol id="mark-03" viewBox="0 0 64 64">
+					<g fill="none" stroke="var(--mark-ink)" stroke-width="4" stroke-linecap="round">
+						<path d="M14 15h40" />
+						<path d="M14 32h40" />
+						<path d="M14 49h32" />
+					</g>
+					<g fill="var(--mark-ink)">
+						<circle cx="10" cy="15" r="4" />
+						<circle cx="10" cy="32" r="4" />
+						<circle cx="10" cy="49" r="4" />
+					</g>
+					<rect x="23" y="26" width="24" height="12" rx="2" fill="var(--mark-accent)" />
+				</symbol>
+				<symbol id="mark-04" viewBox="0 0 64 64">
+					<path d="M21 10h30v14M51 40v14H13V10h8" fill="none" stroke="var(--mark-ink)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+					<path d="m45 39 12-14" fill="none" stroke="var(--mark-accent)" stroke-width="5" stroke-linecap="round" />
+				</symbol>
+				<symbol id="mark-05" viewBox="0 0 64 64">
+					<path d="M22 9H10v12M42 9h12v12M10 43v12h12M54 43v12H42" fill="none" stroke="var(--mark-ink)" stroke-width="4" />
+					<path d="m14 40 11-10 10 6 15-16" fill="none" stroke="var(--mark-ink)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+					<path d="M35 9v46" stroke="var(--mark-accent)" stroke-width="3" />
+					<circle cx="35" cy="36" r="4" fill="var(--mark-accent)" />
+				</symbol>
+				<symbol id="mark-06" viewBox="0 0 64 64">
+					<g fill="none" stroke="var(--mark-ink)" stroke-width="3.5">
+						<rect x="10" y="8" width="44" height="13" rx="3" />
+						<rect x="15" y="26" width="39" height="13" rx="3" />
+						<rect x="20" y="44" width="34" height="12" rx="3" />
+					</g>
+					<rect x="36" y="29" width="15" height="7" rx="1.5" fill="var(--mark-accent)" />
+				</symbol>
+				<symbol id="mark-07" viewBox="0 0 64 64">
+					<path d="M10 45a22 22 0 0 1 44 0" fill="none" stroke="var(--mark-ink)" stroke-width="5" stroke-linecap="round" />
+					<path d="m32 45 15-21" fill="none" stroke="var(--mark-accent)" stroke-width="5" stroke-linecap="round" />
+					<circle cx="32" cy="45" r="5" fill="var(--mark-ink)" />
+					<path d="M17 51h30" stroke="var(--mark-ink)" stroke-width="4" stroke-linecap="round" />
+				</symbol>
+				<symbol id="mark-08" viewBox="0 0 64 64">
+					<path d="M15 18h13l15 14h13" fill="none" stroke="var(--mark-ink)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+					<path d="M15 46h13l15-14" fill="none" stroke="var(--mark-accent)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+					<rect x="7" y="14" width="8" height="8" rx="2" fill="var(--mark-ink)" />
+					<rect x="7" y="42" width="8" height="8" rx="2" fill="var(--mark-accent)" />
+					<circle cx="56" cy="32" r="4" fill="var(--mark-ink)" />
+				</symbol>
+				<symbol id="mark-09" viewBox="0 0 64 64">
+					<g fill="var(--mark-ink)">
+						<circle cx="14" cy="14" r="3" /><circle cx="30" cy="14" r="3" /><circle cx="46" cy="14" r="3" />
+						<circle cx="14" cy="30" r="3" /><circle cx="30" cy="30" r="3" /><circle cx="46" cy="30" r="3" />
+						<circle cx="14" cy="46" r="3" /><circle cx="30" cy="46" r="3" />
+					</g>
+					<rect x="40" y="40" width="18" height="18" rx="4" fill="none" stroke="var(--mark-accent)" stroke-width="3" />
+					<rect x="44.5" y="44.5" width="9" height="9" transform="rotate(45 49 49)" fill="var(--mark-accent)" />
+				</symbol>
+				<symbol id="mark-10" viewBox="0 0 64 64">
+					<path d="M14 55V11h38M14 32h29" fill="none" stroke="var(--mark-ink)" stroke-width="7" stroke-linejoin="round" />
+					<circle cx="52" cy="11" r="5" fill="var(--mark-accent)" />
+					<circle cx="43" cy="32" r="4" fill="var(--mark-ink)" />
+				</symbol>
+				<symbol id="mark-11" viewBox="0 0 64 64">
+					<path d="M13 8H54V19H27V27H48V38H27V56H13Z" fill="var(--mark-ink)" />
+					<path d="M9 38 55 25V34L9 47Z" fill="var(--mark-accent)" />
+				</symbol>
+				<symbol id="mark-12" viewBox="0 0 64 64">
+					<path d="M49 13A25 25 0 1 0 49 51" fill="none" stroke="var(--mark-ink)" stroke-width="5" stroke-linecap="round" />
+					<path d="M44 21A16 16 0 1 0 44 43" fill="none" stroke="var(--mark-ink)" stroke-width="5" stroke-linecap="round" />
+					<path d="M39 29A7 7 0 1 0 39 37" fill="none" stroke="var(--mark-ink)" stroke-width="5" stroke-linecap="round" />
+					<rect x="46" y="25" width="12" height="14" rx="6" fill="var(--mark-accent)" />
+				</symbol>
+				<symbol id="mark-13" viewBox="0 0 64 64">
+					<path d="M5 43H16L23 21H33L41 43H59" fill="none" stroke="var(--mark-ink)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+					<rect x="29" y="13" width="10" height="38" rx="5" fill="var(--mark-accent)" />
+				</symbol>
+				<symbol id="mark-14" viewBox="0 0 64 64">
+					<circle cx="32" cy="32" r="22" fill="none" stroke="var(--mark-line)" stroke-width="8" />
+					<circle cx="32" cy="32" r="22" fill="none" stroke="var(--mark-ink)" stroke-width="8" stroke-linecap="round" stroke-dasharray="103 36" transform="rotate(132 32 32)" />
+					<path d="M32 32 45 21" stroke="var(--mark-accent)" stroke-width="6" stroke-linecap="round" />
+					<circle cx="32" cy="32" r="4" fill="var(--mark-ink)" />
+				</symbol>
+				<symbol id="mark-15" viewBox="0 0 64 64">
+					<rect x="6" y="8" width="52" height="11" rx="5.5" fill="var(--mark-ink)" />
+					<rect x="6" y="26" width="20" height="11" rx="5.5" fill="var(--mark-ink)" />
+					<rect x="30" y="26" width="28" height="11" rx="5.5" fill="var(--mark-accent)" />
+					<rect x="6" y="44" width="52" height="11" rx="5.5" fill="var(--mark-ink)" />
+				</symbol>
+				<symbol id="mark-16" viewBox="0 0 64 64">
+					<path d="M24 8H10V22M40 8H54V22M54 42V56H40M24 56H10V42" fill="none" stroke="var(--mark-ink)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+					<path d="M32 18 46 32 32 46 18 32Z" fill="var(--mark-accent)" />
+				</symbol>
+				<symbol id="mark-17" viewBox="0 0 64 64">
+					<path d="M7 32H23C33 32 33 16 44 16H57" fill="none" stroke="var(--mark-ink)" stroke-width="6" stroke-linecap="round" />
+					<path d="M23 32C33 32 33 48 44 48H57" fill="none" stroke="var(--mark-accent)" stroke-width="6" stroke-linecap="round" />
+					<circle cx="7" cy="32" r="5" fill="var(--mark-ink)" />
+					<circle cx="57" cy="16" r="5" fill="var(--mark-ink)" />
+					<circle cx="57" cy="48" r="5" fill="var(--mark-accent)" />
+				</symbol>
+				<symbol id="mark-18" viewBox="0 0 64 64">
+					<path d="M29 7C16.5 8.5 8 18.9 8 32S16.5 55.5 29 57V44C23.7 42.6 20 37.8 20 32S23.7 21.4 29 20Z" fill="var(--mark-ink)" />
+					<path d="M35 7C47.5 8.5 56 18.9 56 32S47.5 55.5 35 57V44C40.3 42.6 44 37.8 44 32S40.3 21.4 35 20Z" fill="var(--mark-ink)" />
+					<rect x="29" y="18" width="6" height="28" rx="3" fill="var(--mark-accent)" />
+				</symbol>
+				<symbol id="mark-19" viewBox="0 0 64 64">
+					<path d="M20 16 8 32 20 48" fill="none" stroke="var(--mark-ink)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" />
+					<rect x="24" y="24" width="16" height="16" rx="4" fill="var(--mark-accent)" />
+					<path d="M44 16 56 32 44 48" fill="none" stroke="var(--mark-ink)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" />
+				</symbol>
+				<symbol id="mark-20" viewBox="0 0 64 64">
+					<path d="M5 13 28 23 24 41 5 51 12 32Z" fill="var(--mark-ink)" />
+					<path d="M59 13 36 23 40 41 59 51 52 32Z" fill="var(--mark-ink)" />
+					<rect x="29" y="18" width="6" height="28" rx="3" fill="var(--mark-accent)" />
+				</symbol>
+			</defs>
+		</svg>
+
+		<header class="topbar">
+			<a class="brand" href="#top" aria-label="Helix logo study home">
+				<svg class="brand-mark" viewBox="0 0 34 34" aria-hidden="true">
+					<path d="M4 26 13 4l14 8-7 18-8-4-5 4Z" fill="#0a0a0a" />
+					<path d="m13 4 1 15 13-7-7 18-8-4-5 4Z" fill="#4a7fd6" />
+					<circle cx="29" cy="7" r="2.5" fill="#e4eafc" />
+				</svg>
+				<span class="brand-name">helix</span>
+			</a>
+			<span class="topbar-note">Identity study · 20 directions</span>
+		</header>
+
+		<main id="top">
+			<section class="hero" aria-labelledby="page-title">
+				<div class="hero-copy">
+					<p class="eyebrow">Helix identity exploration / 2026</p>
+					<h1 id="page-title">Twenty marks.<br /><span>One Helix.</span></h1>
+					<p class="hero-text">
+						Original vector directions built from Helix’s real product language:
+						traces, redaction, spans, loop detection, scoring, and provenance.
+						Select one direction below.
+					</p>
+					<div class="palette" aria-label="Helix color palette">
+						<span class="palette-item"><span class="swatch" style="background: #0a0a0a"></span>Ink · 0a0a0a</span>
+						<span class="palette-item"><span class="swatch" style="background: #4a7fd6"></span>Signal · 4a7fd6</span>
+						<span class="palette-item"><span class="swatch" style="background: #e4eafc"></span>Soft · e4eafc</span>
+					</div>
+				</div>
+			</section>
+
+			<section class="gallery" aria-labelledby="gallery-title">
+				<div class="gallery-inner">
+					<div class="section-head">
+						<div>
+							<h2 id="gallery-title">Logo directions</h2>
+							<p>Click any card to select it. Each includes a full lockup and a small app-icon test.</p>
+						</div>
+						<div class="gallery-tools">
+							<span class="section-count">20 / 20 marks</span>
+							<label class="mode-toggle">
+								<input id="mono-toggle" type="checkbox" />
+								<span class="mode-dot" aria-hidden="true"></span>
+								<span class="mode-label">Mono test</span>
+							</label>
+						</div>
+					</div>
+					<div class="logo-grid" id="logo-grid"></div>
+				</div>
+			</section>
+		</main>
+
+		<footer class="footer">
+			<span><strong>Helix</strong> · Security scanning for AI agent traces</span>
+			<span>Editable SVG · no image dependencies</span>
+		</footer>
+
+		<div class="selection-bar" id="selection-bar" aria-live="polite">
+			<div>
+				<span class="selection-kicker">Current selection</span>
+				<span class="selection-name" id="selection-name"></span>
+			</div>
+			<button class="copy-button" id="copy-button" type="button">Copy choice</button>
+		</div>
+
+		<script>
+			const designs = [
+				["01", "Trace Cleave", "Trace + finding", "serif"],
+				["02", "Leak Catcher", "Filter + safe storage", "serif"],
+				["03", "Redaction Rail", "Timeline + redaction", "mono"],
+				["04", "Loop Breaker", "Reliability + interrupt", "sans"],
+				["05", "Scan Plane", "Assessment + anomaly", "serif"],
+				["06", "Span Stack", "Nested spans + finding", "mono"],
+				["07", "Score Needle", "Health score + signal", "serif"],
+				["08", "Duplicate Collapse", "Cost waste + dedupe", "sans"],
+				["09", "Anomaly Matrix", "Dot field + detection", "serif"],
+				["10", "Trace F", "Monogram + endpoints", "serif"],
+				["11", "Crosscut F", "Monogram + scan pass", "serif"],
+				["12", "Traceprint", "Identity + provenance", "serif"],
+				["13", "Trace Break", "Timeline + redaction", "italic"],
+				["14", "Assessment Dial", "Score + reporting", "serif", "/100"],
+				["15", "Redaction Ledger", "Records + scrubbed span", "sans"],
+				["16", "Scan Frame", "Scan + trace payload", "serif"],
+				["17", "Provenance Fork", "Trace + flagged branch", "sans"],
+				["18", "Airlock", "Containment + gate", "serif"],
+				["19", "Terminal Censor", "Code + redaction", "serif"],
+				["20", "Striker", "Helix + inspection seam", "italic"],
+			];
+			if (designs.length !== 20) throw new Error("Helix logo study must contain 20 directions");
+
+			const grid = document.querySelector("#logo-grid");
+			const selectionBar = document.querySelector("#selection-bar");
+			const selectionName = document.querySelector("#selection-name");
+			const copyButton = document.querySelector("#copy-button");
+			let selectedChoice = "";
+
+			grid.innerHTML = designs
+				.map(([number, name, idea, type, suffix]) => `
+					<label class="logo-card" for="logo-${number}">
+						<input id="logo-${number}" name="helix-logo" type="radio" value="${number} — ${name}" />
+						<span class="card-inner">
+							<span class="card-top">
+								<span class="card-index">Helix / ${number}</span>
+								<span class="selected-label" aria-hidden="true">Selected</span>
+							</span>
+							<span class="logo-stage">
+								<span class="lockup">
+									<svg class="logo-mark" viewBox="0 0 64 64" role="img" aria-label="${name} mark">
+										<use href="#mark-${number}"></use>
+									</svg>
+									<span class="wordmark ${type}">helix</span>
+									${suffix ? `<span class="wordmark-suffix">${suffix}</span>` : ""}
+								</span>
+								<span class="micro-preview" aria-hidden="true">
+									<svg viewBox="0 0 64 64"><use href="#mark-${number}"></use></svg>
+								</span>
+							</span>
+							<span class="card-foot">
+								<span>
+									<span class="card-name">${name}</span>
+									<span class="card-idea">${idea}</span>
+								</span>
+								<span class="card-type">${type === "italic" ? "Serif italic" : type}</span>
+							</span>
+						</span>
+					</label>
+				`)
+				.join("");
+
+			grid.addEventListener("change", (event) => {
+				if (event.target.name !== "helix-logo") return;
+				selectedChoice = `Helix logo ${event.target.value}`;
+				selectionName.textContent = event.target.value;
+				copyButton.textContent = "Copy choice";
+				selectionBar.classList.add("visible");
+			});
+
+			document.querySelector("#mono-toggle").addEventListener("change", (event) => {
+				document.body.classList.toggle("mono", event.target.checked);
+			});
+
+			copyButton.addEventListener("click", async () => {
+				try {
+					await navigator.clipboard.writeText(selectedChoice);
+					copyButton.textContent = "Copied";
+				} catch {
+					copyButton.textContent = selectedChoice;
+				}
+			});
+		</script>
+	</body>
+</html>

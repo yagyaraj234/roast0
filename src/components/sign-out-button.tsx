@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { logOut } from "#/lib/auth.functions";
+import { secondaryButton } from "./ui";
 
 export function SignOutButton() {
 	const [error, setError] = useState<string | null>(null);
@@ -25,7 +26,7 @@ export function SignOutButton() {
 	return (
 		<div>
 			<button
-				className="rounded-full border border-[var(--border,#e7e5e4)] px-4 py-2 text-sm"
+				className={secondaryButton}
 				disabled={pending}
 				onClick={handleSignOut}
 				type="button"
@@ -33,7 +34,7 @@ export function SignOutButton() {
 				{pending ? "Signing out…" : "Sign out"}
 			</button>
 			{error ? (
-				<p className="mt-1 text-sm text-[var(--spark,#ff4d00)]" role="alert">
+				<p className="mt-1.5 text-sm text-danger" role="alert">
 					{error}
 				</p>
 			) : null}

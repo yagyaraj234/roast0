@@ -14,7 +14,7 @@ bad()  { echo "  ❌ $1"; FAIL=$((FAIL+1)); }
 echo "── preflight ─────────────────────────────────────"
 if ! curl -sf "$API/health" >/dev/null; then
   echo "  starting api server..."
-  (cd "$ROOT/api" && nohup .venv/bin/uvicorn app.main:app --port 8000 >/tmp/Flint-api.log 2>&1 &)
+  (cd "$ROOT/api" && nohup .venv/bin/uvicorn app.main:app --port 8000 >/tmp/helix-api.log 2>&1 &)
   for _ in $(seq 1 20); do curl -sf "$API/health" >/dev/null && break; sleep 0.5; done
 fi
 curl -sf "$API/health" >/dev/null && ok "api healthy" || { bad "api unreachable"; exit 1; }

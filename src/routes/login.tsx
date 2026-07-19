@@ -47,10 +47,8 @@ function LoginPage() {
 	}
 
 	return (
-		<AuthShell title="Welcome back">
-			<p className="text-sm text-[var(--muted,#78716c)]">
-				Your traces missed you.
-			</p>
+		<AuthShell imageSrc="/login-panel.jpeg" title="Welcome back">
+			<p className="text-sm text-muted">Your traces missed you.</p>
 			<form className="mt-6 space-y-5" onSubmit={handleSubmit}>
 				<AuthField
 					autoComplete="email"
@@ -75,14 +73,14 @@ function LoginPage() {
 						value={password}
 					/>
 					<Link
-						className="mt-2 block text-right text-sm text-[var(--spark,#ff4d00)]"
+						className="mt-2 block text-right text-sm text-accent"
 						to="/reset-password"
 					>
 						Forgot password?
 					</Link>
 				</div>
 				{errors.form ? (
-					<p className="text-sm text-[var(--spark,#ff4d00)]" role="alert">
+					<p className="text-sm text-danger" role="alert">
 						{errors.form}
 					</p>
 				) : null}
@@ -90,9 +88,9 @@ function LoginPage() {
 					{pending ? "Logging in…" : "Log in"}
 				</button>
 			</form>
-			<p className="mt-6 text-center text-sm text-[var(--muted,#78716c)]">
+			<p className="mt-6 text-center text-sm text-muted">
 				No account?{" "}
-				<Link className="text-[var(--spark,#ff4d00)]" to="/signup">
+				<Link className="text-accent" to="/signup">
 					Sign up
 				</Link>
 			</p>

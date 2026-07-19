@@ -60,7 +60,7 @@ async function copyRoastImage(roast: PublicRoast): Promise<void> {
 	context.fillRect(70, 72, 10, 10);
 	context.fillStyle = "#2a241f";
 	context.font = "600 22px sans-serif";
-	context.fillText("FLINT / TRACE REPORT", 98, 82);
+	context.fillText("HELIX / TRACE REPORT", 98, 82);
 	context.fillStyle = "#7a6c62";
 	context.font = "500 18px monospace";
 	context.fillText(
@@ -153,7 +153,7 @@ export function ShareButtons({ roast }: { roast: PublicRoast }) {
 		if (!navigator.share) return copyRoast();
 		try {
 			await navigator.share({
-				title: `${roast.score}/100 · ${roast.tier} · Flint`,
+				title: `${roast.score}/100 · ${roast.tier} · Helix`,
 				text: roast.roastLine ?? fallbackRoastLine(roast.tier),
 				url: window.location.href,
 			});
@@ -163,9 +163,12 @@ export function ShareButtons({ roast }: { roast: PublicRoast }) {
 		}
 	}
 
+	const buttonClass =
+		"inline-flex min-h-9 items-center gap-2 rounded-lg border border-line bg-white px-3.5 text-xs font-medium text-neutral-600 transition duration-150 ease-out hover:border-accent/60 hover:text-ink active:scale-[0.97] [&_svg]:size-3.5";
+
 	return (
-		<div className="share-actions">
-			<button type="button" onClick={copyRoast}>
+		<div className="mt-6 flex flex-wrap items-center gap-2">
+			<button className={buttonClass} type="button" onClick={copyRoast}>
 				{copyState === "copied" ? (
 					<Check aria-hidden="true" />
 				) : (
@@ -173,7 +176,7 @@ export function ShareButtons({ roast }: { roast: PublicRoast }) {
 				)}
 				{copyState === "copied" ? "Copied" : "Copy roast"}
 			</button>
-			<button type="button" onClick={copyImage}>
+			<button className={buttonClass} type="button" onClick={copyImage}>
 				{copyState === "imageCopied" ? (
 					<Check aria-hidden="true" />
 				) : (
@@ -181,10 +184,10 @@ export function ShareButtons({ roast }: { roast: PublicRoast }) {
 				)}
 				{copyState === "imageCopied" ? "Image copied" : "Copy image"}
 			</button>
-			<button type="button" onClick={shareRoast}>
+			<button className={buttonClass} type="button" onClick={shareRoast}>
 				<Share2 aria-hidden="true" /> Share
 			</button>
-			<span aria-live="polite">
+			<span aria-live="polite" className="text-xs text-accent">
 				{copyState === "failed" ? "Could not copy. Copy the URL instead." : ""}
 			</span>
 		</div>

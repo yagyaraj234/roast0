@@ -1,7 +1,7 @@
-# Flint API
+# Helix API
 
-FastAPI backend for Flint, security scanning for AI agent traces. Owns the whole
-pipeline: normalize → redact → analyze → score → Supabase. Flint redacts
+FastAPI backend for Helix, security scanning for AI agent traces. Owns the whole
+pipeline: normalize → redact → analyze → score → Supabase. Helix redacts
 supported secrets before storage. See PLAN.md at the repo root for the contract
 and stage plan.
 

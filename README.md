@@ -1,17 +1,18 @@
-# Flint
+# Helix
 
-Security scanning for AI agent traces.
+AI agent cost and risk scanner.
 
-Flint scans agent traces for leaked secrets, unsafe tool calls, loops, failures,
-and cost waste. It redacts supported secrets before storing a trace, then returns
-a report with findings, a Flint score, and a shareable roast card.
+Helix scans agent traces for duplicate model calls, bloated prompts, tool loops,
+failed steps, and exposed credentials. It estimates avoidable LLM spend, redacts
+supported secrets before storage, and returns a report with findings, a Helix
+score, and a shareable roast card.
 
-## What Flint catches
+## What Helix finds
 
-- OpenAI, AWS, GitHub, Slack, and Google API keys in trace data
-- JWTs, bearer tokens, private keys, emails, and phone numbers
-- Plain-http tool URLs, repeated tool calls, and error tails
 - Duplicate LLM calls, repeated prompt bloat, and oversized context
+- Repeated tool calls, failed tools without retry, slow spans, and error tails
+- OpenAI, AWS, GitHub, Slack, and Google API keys in trace data
+- JWTs, bearer tokens, private keys, emails, phone numbers, and plain-http URLs
 
 ## Run
 

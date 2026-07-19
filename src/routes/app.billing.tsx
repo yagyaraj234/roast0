@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
 import { AppPageHeader } from "#/components/app-page-header";
+import { primaryButton } from "#/components/ui";
 import {
 	type BillingStatus,
 	createBillingCheckout,
@@ -37,38 +38,38 @@ export function BillingPage() {
 	}
 
 	return (
-		<main className="app-page">
+		<main>
 			<AppPageHeader
 				title="Billing"
 				description="Manage your plan and monthly usage."
 			/>
 			{error ? (
-				<p className="mt-6 text-sm text-orange-700" role="alert">
+				<p className="mt-6 text-sm text-danger" role="alert">
 					{error}
 				</p>
 			) : null}
 			{loading ? (
-				<p className="mt-7 text-sm text-stone-500">Loading billing…</p>
+				<p className="mt-7 text-sm text-muted">Loading billing…</p>
 			) : null}
 			{billing ? (
 				<section
 					aria-label="Billing plan"
-					className="mt-7 rounded-xl border border-stone-200 bg-white p-5 sm:p-7"
+					className="mt-7 max-w-xl rounded-xl border border-line bg-white p-5 sm:p-7"
 				>
-					<p className="text-sm text-stone-500">Current plan</p>
-					<h2 className="mt-1 text-2xl font-semibold capitalize">
+					<p className="text-sm text-muted">Current plan</p>
+					<h2 className="mt-1 text-2xl font-semibold capitalize text-ink">
 						{billing.plan}
 					</h2>
 					{billing.plan === "free" ? (
 						<>
-							<p className="mt-5 text-sm text-stone-600">
-								<span className="font-mono text-lg font-semibold text-stone-950">
+							<p className="mt-5 text-sm text-neutral-600">
+								<span className="font-mono text-lg font-semibold text-ink">
 									{billing.scans_used_this_month} / {billing.scans_included}
 								</span>{" "}
 								scans used this month
 							</p>
 							<button
-								className="mt-6 inline-flex rounded-full bg-orange-600 px-4 py-2 text-sm font-medium text-white hover:bg-orange-700 disabled:cursor-not-allowed disabled:opacity-60"
+								className={`${primaryButton} mt-6`}
 								disabled={upgrading}
 								onClick={() => void upgrade()}
 								type="button"
@@ -77,9 +78,9 @@ export function BillingPage() {
 							</button>
 						</>
 					) : (
-						<div className="mt-5 grid gap-2 text-sm text-stone-600">
+						<div className="mt-5 grid gap-2 text-sm text-neutral-600">
 							<p>
-								<span className="font-mono text-lg font-semibold text-stone-950">
+								<span className="font-mono text-lg font-semibold text-ink">
 									{billing.credits_remaining ?? "—"}
 								</span>{" "}
 								credits remaining

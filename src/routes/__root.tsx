@@ -1,5 +1,4 @@
 import { createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
-import shellCss from "../shells.css?url";
 import appCss from "../styles.css?url";
 
 export const Route = createRootRoute({
@@ -8,12 +7,11 @@ export const Route = createRootRoute({
 		meta: [
 			{ charSet: "utf-8" },
 			{ name: "viewport", content: "width=device-width, initial-scale=1" },
-			{ name: "theme-color", content: "#0C0A09" },
-			{ title: "Flint — Security scanning for AI agent traces" },
+			{ name: "theme-color", content: "#ffffff" },
+			{ title: "Helix — AI Agent Cost & Risk Scanner" },
 		],
 		links: [
 			{ rel: "stylesheet", href: appCss },
-			{ rel: "stylesheet", href: shellCss },
 			{ rel: "preconnect", href: "https://fonts.googleapis.com" },
 			{
 				rel: "preconnect",
@@ -26,7 +24,7 @@ export const Route = createRootRoute({
 			},
 			{
 				rel: "stylesheet",
-				href: "https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600&display=swap",
+				href: "https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap",
 			},
 			{ rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
 			{ rel: "manifest", href: "/manifest.json" },
@@ -51,12 +49,21 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 
 function RootNotFound() {
 	return (
-		<main className="root-not-found">
-			<p className="mono-label">404 · PAGE NOT FOUND</p>
-			<h1>Nothing here.</h1>
-			<a className="button" href="/">
-				Back to Flint
-			</a>
+		<main className="grid min-h-svh place-content-center gap-6 bg-white px-8">
+			<p className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted">
+				404 · Page not found
+			</p>
+			<h1 className="text-5xl font-semibold tracking-tight text-ink">
+				Nothing here.
+			</h1>
+			<div>
+				<a
+					className="inline-flex items-center justify-center rounded-full bg-ink px-5 py-2.5 text-sm font-medium text-white transition duration-150 ease-out hover:bg-neutral-800 active:scale-[0.97]"
+					href="/"
+				>
+					Back to Helix
+				</a>
+			</div>
 		</main>
 	);
 }

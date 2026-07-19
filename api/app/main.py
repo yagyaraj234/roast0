@@ -6,7 +6,7 @@ from app.routers import billing, health, ingest, integrations, jobs, me, roasts
 
 settings = get_settings()
 
-app = FastAPI(title="Flint API")
+app = FastAPI(title="Helix API")
 
 app.add_middleware(
     CORSMiddleware,

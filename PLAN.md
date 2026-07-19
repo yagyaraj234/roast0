@@ -1,8 +1,8 @@
-# Flint: build plan (v2 — FastAPI backend)
+# Helix: build plan (v2 — FastAPI backend)
 
 TanStack Start (UI only) + FastAPI (backend) + Supabase. 5 hours. One repo, one table, one demo.
 
-Working name is Flint. Do not spend hackathon time renaming it. You can bikeshed the name after you win.
+Working name is Helix. Do not spend hackathon time renaming it. You can bikeshed the name after you win.
 
 How to use this file: it lives at the repo root as PLAN.md, CLAUDE.md/AGENTS.md point at it. Tell your agent "execute stage N" — one stage per prompt, check the acceptance line before moving on. Don't dump all stages in one go, agents drift when you do that.
 
