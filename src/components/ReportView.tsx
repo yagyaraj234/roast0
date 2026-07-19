@@ -142,6 +142,54 @@ export function ReportView({ roast }: { roast: PublicRoast }) {
 
 			<section
 				className="border-t border-line py-9 opacity-0 animate-enter [animation-delay:40ms]"
+				aria-labelledby="report-cost-heading"
+			>
+				<p className={`${monoLabel} text-muted`}>
+					Usage and waste · {roast.cost.tokenSource} usage
+				</p>
+				<h2
+					className="mt-2 mb-5 text-2xl font-semibold tracking-[-0.02em]"
+					id="report-cost-heading"
+				>
+					Cost
+				</h2>
+				<dl className="grid border-t border-l border-line sm:grid-cols-2">
+					<ReportCostCell
+						label="Tokens in"
+						value={formatNumber(roast.cost.totalTokensIn)}
+					/>
+					<ReportCostCell
+						label="Tokens out"
+						value={formatNumber(roast.cost.totalTokensOut)}
+					/>
+					<ReportCostCell
+						label="Total cost"
+						value={formatUsd(roast.cost.totalUsd)}
+					/>
+					<ReportCostCell
+						label="Estimated waste"
+						value={formatUsd(roast.cost.wasteUsd)}
+					/>
+					<div className="border-r border-b border-line bg-paper p-4.5 sm:col-span-2">
+						<dt className={`${monoLabel} text-muted`}>Monthly projection</dt>
+						<dd className="mt-2 font-mono text-xl font-semibold">
+							{formatUsd(roast.cost.monthlyProjectionUsd)}
+						</dd>
+						<small className="mt-1.5 block text-[11px] text-muted">
+							{roast.cost.projectionAssumption}
+						</small>
+					</div>
+				</dl>
+				{roast.cost.unpricedModels.length > 0 && (
+					<p className="mt-3 text-xs leading-relaxed text-muted" role="note">
+						Dollar totals exclude unpriced models:{" "}
+						{roast.cost.unpricedModels.join(", ")}.
+					</p>
+				)}
+			</section>
+
+			<section
+				className="border-t border-line py-9 opacity-0 animate-enter [animation-delay:80ms]"
 				aria-labelledby="report-summary-heading"
 			>
 				<p className={`${monoLabel} text-muted`}>Executive summary</p>
@@ -163,7 +211,7 @@ export function ReportView({ roast }: { roast: PublicRoast }) {
 			</section>
 
 			<section
-				className="border-t border-line py-9 opacity-0 animate-enter [animation-delay:80ms]"
+				className="border-t border-line py-9 opacity-0 animate-enter [animation-delay:120ms]"
 				aria-labelledby="report-findings-heading"
 			>
 				<p className={`${monoLabel} text-muted`}>Evidence</p>
@@ -221,7 +269,7 @@ export function ReportView({ roast }: { roast: PublicRoast }) {
 			</section>
 
 			<section
-				className="border-t border-line py-9 opacity-0 animate-enter [animation-delay:120ms]"
+				className="border-t border-line py-9 opacity-0 animate-enter [animation-delay:160ms]"
 				aria-labelledby="report-actions-heading"
 			>
 				<p className={`${monoLabel} text-muted`}>Remediation</p>
@@ -250,54 +298,6 @@ export function ReportView({ roast }: { roast: PublicRoast }) {
 					</div>
 				) : (
 					<p className="text-xs text-muted">No remediation actions required.</p>
-				)}
-			</section>
-
-			<section
-				className="border-t border-line py-9 opacity-0 animate-enter [animation-delay:160ms]"
-				aria-labelledby="report-cost-heading"
-			>
-				<p className={`${monoLabel} text-muted`}>
-					Usage and waste · {roast.cost.tokenSource} usage
-				</p>
-				<h2
-					className="mt-2 mb-5 text-2xl font-semibold tracking-[-0.02em]"
-					id="report-cost-heading"
-				>
-					Cost
-				</h2>
-				<dl className="grid border-t border-l border-line sm:grid-cols-2">
-					<ReportCostCell
-						label="Tokens in"
-						value={formatNumber(roast.cost.totalTokensIn)}
-					/>
-					<ReportCostCell
-						label="Tokens out"
-						value={formatNumber(roast.cost.totalTokensOut)}
-					/>
-					<ReportCostCell
-						label="Total cost"
-						value={formatUsd(roast.cost.totalUsd)}
-					/>
-					<ReportCostCell
-						label="Estimated waste"
-						value={formatUsd(roast.cost.wasteUsd)}
-					/>
-					<div className="border-r border-b border-line bg-paper p-4.5 sm:col-span-2">
-						<dt className={`${monoLabel} text-muted`}>Monthly projection</dt>
-						<dd className="mt-2 font-mono text-xl font-semibold">
-							{formatUsd(roast.cost.monthlyProjectionUsd)}
-						</dd>
-						<small className="mt-1.5 block text-[11px] text-muted">
-							{roast.cost.projectionAssumption}
-						</small>
-					</div>
-				</dl>
-				{roast.cost.unpricedModels.length > 0 && (
-					<p className="mt-3 text-xs leading-relaxed text-muted" role="note">
-						Dollar totals exclude unpriced models:{" "}
-						{roast.cost.unpricedModels.join(", ")}.
-					</p>
 				)}
 			</section>
 
