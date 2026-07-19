@@ -20,6 +20,7 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as UpdatePasswordRouteImport } from './routes/update-password'
 import { Route as ApiIngestRouteImport } from './routes/api.ingest'
 import { Route as AppIndexRouteImport } from './routes/app.index'
+import { Route as AppBillingRouteImport } from './routes/app.billing'
 import { Route as AppIntegrationsRouteImport } from './routes/app.integrations'
 import { Route as AppNewRouteImport } from './routes/app.new'
 import { Route as AppProfileRouteImport } from './routes/app.profile'
@@ -85,6 +86,11 @@ const AppIndexRoute = AppIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppRoute,
 } as any)
+const AppBillingRoute = AppBillingRouteImport.update({
+  id: '/billing',
+  path: '/billing',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppIntegrationsRoute = AppIntegrationsRouteImport.update({
   id: '/integrations',
   path: '/integrations',
@@ -143,6 +149,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/update-password': typeof UpdatePasswordRoute
   '/api/ingest': typeof ApiIngestRoute
+  '/app/billing': typeof AppBillingRoute
   '/app/integrations': typeof AppIntegrationsRouteWithChildren
   '/app/new': typeof AppNewRoute
   '/app/profile': typeof AppProfileRoute
@@ -164,6 +171,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/update-password': typeof UpdatePasswordRoute
   '/api/ingest': typeof ApiIngestRoute
+  '/app/billing': typeof AppBillingRoute
   '/app/new': typeof AppNewRoute
   '/app/profile': typeof AppProfileRoute
   '/r/$slug': typeof RSlugRoute
@@ -185,6 +193,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/update-password': typeof UpdatePasswordRoute
   '/api/ingest': typeof ApiIngestRoute
+  '/app/billing': typeof AppBillingRoute
   '/app/integrations': typeof AppIntegrationsRouteWithChildren
   '/app/new': typeof AppNewRoute
   '/app/profile': typeof AppProfileRoute
@@ -209,6 +218,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/update-password'
     | '/api/ingest'
+    | '/app/billing'
     | '/app/integrations'
     | '/app/new'
     | '/app/profile'
@@ -230,6 +240,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/update-password'
     | '/api/ingest'
+    | '/app/billing'
     | '/app/new'
     | '/app/profile'
     | '/r/$slug'
@@ -250,6 +261,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/update-password'
     | '/api/ingest'
+    | '/app/billing'
     | '/app/integrations'
     | '/app/new'
     | '/app/profile'
@@ -355,6 +367,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/billing': {
+      id: '/app/billing'
+      path: '/billing'
+      fullPath: '/app/billing'
+      preLoaderRoute: typeof AppBillingRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/integrations': {
       id: '/app/integrations'
       path: '/integrations'
@@ -450,6 +469,7 @@ const AppRoastsRouteWithChildren = AppRoastsRoute._addFileChildren(
 )
 
 interface AppRouteChildren {
+  AppBillingRoute: typeof AppBillingRoute
   AppIntegrationsRoute: typeof AppIntegrationsRouteWithChildren
   AppNewRoute: typeof AppNewRoute
   AppProfileRoute: typeof AppProfileRoute
@@ -458,6 +478,7 @@ interface AppRouteChildren {
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppBillingRoute: AppBillingRoute,
   AppIntegrationsRoute: AppIntegrationsRouteWithChildren,
   AppNewRoute: AppNewRoute,
   AppProfileRoute: AppProfileRoute,

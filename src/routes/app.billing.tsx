@@ -8,7 +8,7 @@ import {
 	getBillingStatus,
 } from "#/lib/billing.functions";
 
-export const Route = createFileRoute("/app/billing" as never)({
+export const Route = createFileRoute("/app/billing")({
 	component: BillingPage,
 });
 
