@@ -15,11 +15,11 @@ function Roasts() {
 	return (
 		<main>
 			<AppPageHeader
-				description="Search by title from the top bar."
+				description="Filter real scans by source or status. Sort any column."
 				title="All scans"
 			/>
 			<div className="mt-7">
-				<RoastTable roasts={roasts} query={query} />
+				<RoastTable controls roasts={roasts} query={query} />
 			</div>
 		</main>
 	);

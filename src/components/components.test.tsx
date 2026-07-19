@@ -364,6 +364,43 @@ describe("presentational components", () => {
 		expect(screen.getByText("3 critical, 1 warning")).toBeTruthy();
 		expect(screen.getByText("Unknown")).toBeTruthy();
 	});
+
+	it("filters scan rows and toggles date sorting", () => {
+		const rows = [
+			{
+				id: "old",
+				slug: "old-upload",
+				title: "Old upload",
+				source: "upload" as const,
+				score: 20,
+				tier: "Charcoal",
+				status: "done" as const,
+				createdAt: "2026-07-01T00:00:00Z",
+			},
+			{
+				id: "new",
+				slug: "new-live",
+				title: "New live",
+				source: "live" as const,
+				score: 80,
+				tier: "Rare",
+				status: "processing" as const,
+				createdAt: "2026-07-18T00:00:00Z",
+			},
+		];
+		render(<RoastTable controls query="" roasts={rows} />);
+
+		const created = screen.getByRole("columnheader", { name: /created/i });
+		expect(created.getAttribute("aria-sort")).toBe("descending");
+		fireEvent.click(screen.getByRole("button", { name: /created/i }));
+		expect(created.getAttribute("aria-sort")).toBe("ascending");
+
+		fireEvent.change(screen.getByLabelText("Source"), {
+			target: { value: "live" },
+		});
+		expect(screen.getByText("New live")).toBeTruthy();
+		expect(screen.queryByText("Old upload")).toBeNull();
+	});
 });
 
 describe("interactive components", () => {
