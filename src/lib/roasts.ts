@@ -28,6 +28,21 @@ export interface FindingCounts {
 	notice: number;
 }
 
+export type RoastSort =
+	| "title"
+	| "source"
+	| "score"
+	| "findings"
+	| "status"
+	| "createdAt";
+
+export type SortDirection = "asc" | "desc";
+
+export interface RoastFilters {
+	source: RoastSource | "all";
+	status: RoastStatus | "all";
+}
+
 export interface RoastMetrics {
 	createdAt: string;
 	score: number;
@@ -103,6 +118,53 @@ export function filterRoasts(rows: RoastListItem[], query: string) {
 				row.title.toLocaleLowerCase().includes(normalizedQuery),
 			)
 		: rows;
+}
+
+export function filterAndSortRoasts(
+	rows: RoastListItem[],
+	query: string,
+	filters: RoastFilters,
+	sort: RoastSort,
+	direction: SortDirection,
+) {
+	const filtered = filterRoasts(rows, query).filter(
+		(row) =>
+			(filters.source === "all" || row.source === filters.source) &&
+			(filters.status === "all" || row.status === filters.status),
+	);
+	const multiplier = direction === "asc" ? 1 : -1;
+
+	return [...filtered].sort((left, right) => {
+		const comparison = sortValue(left, sort).localeCompare(
+			sortValue(right, sort),
+			undefined,
+			{
+				numeric: true,
+			},
+		);
+		return comparison * multiplier;
+	});
+}
+
+function sortValue(row: RoastListItem, sort: RoastSort): string {
+	switch (sort) {
+		case "findings":
+			return String(
+				(row.findingCounts?.critical ?? 0) +
+					(row.findingCounts?.warning ?? 0) +
+					(row.findingCounts?.notice ?? 0),
+			);
+		case "createdAt":
+			return String(new Date(row.createdAt).getTime() || 0);
+		case "score":
+			return String(row.score);
+		case "source":
+			return row.source;
+		case "status":
+			return row.status;
+		case "title":
+			return row.title;
+	}
 }
 
 export function findingCounts(value: unknown): FindingCounts {

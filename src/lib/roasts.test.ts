@@ -2,6 +2,7 @@ import { describe, expect, test } from "vitest";
 
 import type { OwnerRoastRow } from "./api";
 import {
+	filterAndSortRoasts,
 	filterRoasts,
 	findingCounts,
 	mapOwnerRoastToBatchRoast,
@@ -89,6 +90,51 @@ describe("dashboard roast helpers", () => {
 			},
 		];
 		expect(filterRoasts(rows, " ")).toBe(rows);
+	});
+
+	test("filters owner scans and sorts dates without mutating API order", () => {
+		const rows = [
+			{
+				id: "1",
+				slug: "old-upload",
+				title: "Old upload",
+				source: "upload" as const,
+				score: 20,
+				tier: "Charcoal",
+				status: "done" as const,
+				createdAt: "2026-07-01T12:00:00.000Z",
+			},
+			{
+				id: "2",
+				slug: "new-live",
+				title: "New live",
+				source: "live" as const,
+				score: 80,
+				tier: "Rare",
+				status: "processing" as const,
+				createdAt: "2026-07-18T12:00:00.000Z",
+			},
+		];
+
+		expect(
+			filterAndSortRoasts(
+				rows,
+				"",
+				{ source: "all", status: "all" },
+				"createdAt",
+				"desc",
+			).map((row) => row.slug),
+		).toEqual(["new-live", "old-upload"]);
+		expect(
+			filterAndSortRoasts(
+				rows,
+				"",
+				{ source: "live", status: "processing" },
+				"title",
+				"asc",
+			).map((row) => row.slug),
+		).toEqual(["new-live"]);
+		expect(rows.map((row) => row.slug)).toEqual(["old-upload", "new-live"]);
 	});
 
 	test("maps owner rows using snake_case cost fields", () => {
